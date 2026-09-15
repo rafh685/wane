@@ -31,15 +31,15 @@ class Profile:
 
 PROFILES = [
     Profile("Marta",  "27, office job. Heavy all-day vaper; the pod is never out of reach.",
-            250, 0.35, 4.0, 0.15, 7.0, 1.0, 0.35, 0.10),
+            250, 0.45, 5.5, 0.12, 6.5, 1.0, 0.35, 0.10),
     Profile("Diego",  "22, student. Nothing before 19:00, then a dense evening block.",
-            40,  0.30, 3.5, 0.15, 7.0, 1.2, 0.90, 0.20),
+            40,  0.35, 5.0, 0.12, 6.5, 1.2, 0.90, 0.20),
     Profile("Lucía",  "31, quit twice on the ladder and relapsed both times. Compensates hard.",
-            150, 0.70, 6.0, 0.10, 6.5, 1.0, 0.40, 0.12),
+            150, 0.70, 7.0, 0.09, 6.0, 1.0, 0.40, 0.12),
     Profile("Karim",  "25, fine Monday to Friday, doubles at the weekend with friends and alcohol.",
-            120, 0.40, 4.5, 0.15, 7.0, 2.0, 0.50, 0.15),
+            120, 0.50, 6.0, 0.12, 6.0, 2.0, 0.50, 0.15),
     Profile("Ana",    "34, motivated, low cravings, stable routine. Could go faster than a standard taper.",
-            100, 0.15, 2.0, 0.25, 8.0, 1.0, 0.35, 0.10),
+            100, 0.15, 2.5, 0.22, 8.0, 1.0, 0.35, 0.10),
 ]
 
 START_MG = 20.0
@@ -77,9 +77,15 @@ class Vaper:
         puffs = p.puffs_per_day * comp * weekend * (1 + 0.06 * (self.craving - 2))
         puffs = max(0, self.rng.normal(puffs, puffs * p.noise))
 
-        # --- relapse: sustained craving above threshold -> chance of going back to 20 mg ---
-        if self.craving > p.relapse_threshold and self.rng.random() < 0.05:
-            self.relapsed = True
+        # --- relapse: craving above threshold -> daily chance of going back to 20 mg,
+        #     and the further above threshold, the higher the chance; weekends add temptation ---
+        if self.craving > p.relapse_threshold:
+            excess = self.craving - p.relapse_threshold
+            daily_p = 0.04 + 0.06 * excess
+            if weekend > 1.0:
+                daily_p *= 1.5
+            if self.rng.random() < daily_p:
+                self.relapsed = True
 
         # --- derived signals the device/sleeve could measure (no self-report needed) ---
         night_puffs = puffs * 0.02 * (1 + max(0, self.craving - 4))          # withdrawal shows at night

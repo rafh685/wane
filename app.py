@@ -70,17 +70,36 @@ m3.metric("Profiles still on the curve at week " + str(week_shown),
 
 
 # ---------------- the two panels ----------------
+COLORS = {"Marta": "#4FBFA8", "Diego": "#8FB8E8", "Lucía": "#E08163", "Karim": "#E8C46A", "Ana": "#C9A0E8"}
+show_runs = st.toggle("Show every individual run (✕ = relapse)", value=False)
+
+
 def dose_panel(engine_prefix, title):
     fig = go.Figure()
     sub = runs[runs.engine.str.startswith(engine_prefix)]
     for p in PROFILES:
-        d = sub[sub.profile == p.name].groupby("week")["dose"]
+        pp = sub[sub.profile == p.name]
+        col = COLORS[p.name]
+        if show_runs:
+            # every run as a faint line; the first day of relapse as a red cross
+            for s_, r in pp.groupby("seed"):
+                wk = r.groupby("week")["dose"].first()
+                fig.add_trace(go.Scatter(x=wk.index, y=wk.values, mode="lines", line=dict(color=col, width=1),
+                                         opacity=0.25, showlegend=False, hoverinfo="skip"))
+                rel = r[r.relapsed]
+                if len(rel):
+                    w0 = int(rel.week.min())
+                    fig.add_trace(go.Scatter(x=[w0], y=[START_MG], mode="markers",
+                                             marker=dict(symbol="x", size=10, color="#FF5A4A"),
+                                             showlegend=False, hoverinfo="skip"))
+        d = pp.groupby("week")["dose"]
         med, lo, hi = d.median(), d.quantile(0.1), d.quantile(0.9)
-        fig.add_trace(go.Scatter(x=list(hi.index) + list(lo.index[::-1]), y=list(hi) + list(lo[::-1]),
-                                 fill="toself", fillcolor="rgba(79,191,168,0.08)", line=dict(width=0),
-                                 showlegend=False, hoverinfo="skip"))
+        if not show_runs:
+            fig.add_trace(go.Scatter(x=list(hi.index) + list(lo.index[::-1]), y=list(hi) + list(lo[::-1]),
+                                     fill="toself", fillcolor="rgba(79,191,168,0.08)", line=dict(width=0),
+                                     showlegend=False, hoverinfo="skip"))
         fig.add_trace(go.Scatter(x=med.index, y=med.values, name=p.name, mode="lines+markers",
-                                 line=dict(width=2.5)))
+                                 line=dict(width=2.5, color=col)))
     fig.update_layout(title=title, paper_bgcolor=PINE, plot_bgcolor="#164038", font_color=CREAM,
                       xaxis=dict(title="week", range=[0.5, weeks + 0.5], gridcolor="#2C534B"),
                       yaxis=dict(title="nicotine mg/ml", range=[0, START_MG + 1], gridcolor="#2C534B"),
@@ -89,9 +108,22 @@ def dose_panel(engine_prefix, title):
 
 
 left, right = st.columns(2)
-left.plotly_chart(dose_panel("Fixed", "Traditional: cut 12 % every week, whatever happens"), width="stretch")
+left.plotly_chart(dose_panel("Fixed", f"Traditional: cut {weekly_cut:.0%} every week, whatever happens"), width="stretch")
 right.plotly_chart(dose_panel("Wane", "Wane: the same people, cut decided from their measured puffs"), width="stretch")
-st.caption("Line = median of the runs · band = 10th–90th percentile · a line that jumps back to 20 mg/ml is a relapse")
+st.caption("Line = median of the runs · band = 10th–90th percentile · ✕ at 20 mg/ml = the week that run relapsed (back to disposables)")
+
+# ---------------- relapse bars ----------------
+rb = summ.copy()
+rb["engine"] = rb.engine.str.split(" ").str[0]
+figb = go.Figure()
+for eng, col in (("Fixed", "#8FA7A2"), ("Wane", TEAL)):
+    e = rb[rb.engine == eng].set_index("profile").reindex([p.name for p in PROFILES])
+    figb.add_trace(go.Bar(x=e.index, y=e.relapse_rate, name=eng, marker_color=col,
+                          text=[f"{v:.0%}" for v in e.relapse_rate], textposition="outside"))
+figb.update_layout(barmode="group", paper_bgcolor=PINE, plot_bgcolor="#164038", font_color=CREAM, height=300,
+                   yaxis=dict(title="relapse rate", tickformat=".0%", range=[0, 1.15], gridcolor="#2C534B"),
+                   legend=dict(orientation="h", y=1.15), margin=dict(t=30, b=30), title="Who the ladder breaks, and who Wane keeps")
+st.plotly_chart(figb, width="stretch")
 
 # ---------------- per-profile table ----------------
 tbl = summ.pivot(index="profile", columns="engine", values=["relapse_rate", "final_dose_median"])
