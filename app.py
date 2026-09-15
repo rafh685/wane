@@ -24,11 +24,29 @@ st.title("Wane — adaptive nicotine tapering")
 st.caption("Five simulated vapers · the same people under a traditional fixed taper and under the Wane engine · synthetic behavioural model, parameters from published puff-topography and withdrawal studies")
 
 # ---------------- controls ----------------
-c1, c2, c3, c4 = st.columns([2, 2, 2, 3])
-weekly_cut = c1.slider("Weekly cut (both engines start here)", 0.05, 0.25, 0.12, 0.01, format="%d%%" if False else "%.2f")
+import time
+
+c1, c2, c3 = st.columns([2, 2, 2])
+weekly_cut = c1.slider("Weekly cut (both engines start here)", 0.05, 0.25, 0.12, 0.01, format="%.2f")
 weeks = c2.slider("Weeks", 8, 20, 14)
 n_runs = c3.select_slider("Runs per profile (noise)", [1, 10, 30, 100], value=30)
-week_shown = c4.slider("▶ Show up to week", 1, weeks, weeks)
+
+st.session_state.setdefault("playhead", 1)     # where the animation is
+st.session_state.setdefault("playing", False)
+
+p1, p2, p3 = st.columns([1, 1, 6])
+if p1.button("▶ Play" if not st.session_state.playing else "⏸ Pause", width="stretch"):
+    st.session_state.playing = not st.session_state.playing
+    if st.session_state.playing and st.session_state.playhead >= weeks:
+        st.session_state.playhead = 1
+if p2.button("↺ Reset", width="stretch"):
+    st.session_state.playing = False
+    st.session_state.playhead = 1
+
+# the slider FOLLOWS the playhead while playing; dragging it manually sets the playhead
+week_shown = p3.slider("Week", 1, weeks, value=min(st.session_state.playhead, weeks), key=f"week_slider_{st.session_state.playhead}" if st.session_state.playing else "week_slider")
+if not st.session_state.playing:
+    st.session_state.playhead = week_shown
 
 
 @st.cache_data(show_spinner="Simulating…")
@@ -71,15 +89,15 @@ def dose_panel(engine_prefix, title):
 
 
 left, right = st.columns(2)
-left.plotly_chart(dose_panel("Fixed", "Traditional: cut 12 % every week, whatever happens"), use_container_width=True)
-right.plotly_chart(dose_panel("Wane", "Wane: the same people, cut decided from their measured puffs"), use_container_width=True)
+left.plotly_chart(dose_panel("Fixed", "Traditional: cut 12 % every week, whatever happens"), width="stretch")
+right.plotly_chart(dose_panel("Wane", "Wane: the same people, cut decided from their measured puffs"), width="stretch")
 st.caption("Line = median of the runs · band = 10th–90th percentile · a line that jumps back to 20 mg/ml is a relapse")
 
 # ---------------- per-profile table ----------------
 tbl = summ.pivot(index="profile", columns="engine", values=["relapse_rate", "final_dose_median"])
 tbl.columns = [f"{a} — {b.split(' ')[0]}" for a, b in tbl.columns]
 st.dataframe(tbl.style.format({c: "{:.0%}" for c in tbl.columns if "relapse" in c} | {c: "{:.1f} mg/ml" for c in tbl.columns if "dose" in c}),
-             use_container_width=True)
+             width="stretch")
 
 # ---------------- zoom on one person ----------------
 st.subheader("Inside one person")
@@ -103,7 +121,7 @@ if log:
 fig.update_layout(paper_bgcolor=PINE, plot_bgcolor="#164038", font_color=CREAM, height=380,
                   xaxis=dict(title="day", gridcolor="#2C534B"), yaxis=dict(title="puffs / day", gridcolor="#2C534B"),
                   legend=dict(orientation="h", y=-0.25), margin=dict(t=20, b=60))
-zc2.plotly_chart(fig, use_container_width=True)
+zc2.plotly_chart(fig, width="stretch")
 zc2.caption("Dashed lines: weeks where the engine held (orange) or halved the cut (grey) because the measured puffs said so.")
 
 if log:
@@ -112,5 +130,16 @@ if log:
     st.dataframe(lg[["action", "cut", "rate", "risk", "crave", "puff_trend", "night_share", "ttfc_min"]]
                  .rename(columns={"rate": "personal rate (learned)", "crave": "derived craving", "puff_trend": "puff trend", "night_share": "night share", "ttfc_min": "time to first puff (min)"})
                  .style.format({"cut": "{:.0%}", "personal rate (learned)": "{:.0%}", "risk": "{:.2f}", "derived craving": "{:.1f}", "puff trend": "{:+.0%}", "night share": "{:.3f}", "time to first puff (min)": "{:.0f}"}),
-                 use_container_width=True)
+                 width="stretch")
     st.caption("Every row is a decision the engine made and the measured features it made it from. No self-report in any column.")
+
+
+# ---------------- autoplay: advance one week per tick while playing ----------------
+if st.session_state.playing:
+    if st.session_state.playhead < weeks:
+        time.sleep(0.7)
+        st.session_state.playhead += 1
+        st.rerun()
+    else:
+        st.session_state.playing = False
+        st.rerun()
