@@ -87,7 +87,7 @@ class Vaper:
             if self.rng.random() < daily_p:
                 self.relapsed = True
 
-        # --- derived signals the device/sleeve could measure (no self-report needed) ---
+        # --- derived signals that can be measured from puff timestamps (no self-report needed) ---
         night_puffs = puffs * 0.02 * (1 + max(0, self.craving - 4))          # withdrawal shows at night
         ttfc_min = max(1, 30 * np.exp(-0.25 * (self.craving - 2)))            # time to first puff after waking
         evening = p.evening_share

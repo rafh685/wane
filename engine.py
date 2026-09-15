@@ -25,7 +25,7 @@ class FixedTaper:
         return max(FLOOR_MG, dose * (1 - self.cut))
 
 
-# ---------- tailoring variables: what the device can measure, no self-report ----------
+# ---------- tailoring variables: computed from puff timestamps, no self-report ----------
 
 def features(week_rows, prev_week_rows):
     puffs = np.array([r["puffs"] for r in week_rows])
