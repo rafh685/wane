@@ -1,4 +1,4 @@
-"""Wane demo — five vapers, two engines, the curves draw themselves forward.
+"""Wane demo: five vapers, two engines, the curves draw themselves forward.
 
 Run:  streamlit run app.py
 """
@@ -13,14 +13,14 @@ from simulate import run_one, run_many, summarise
 
 PINE, TEAL, ALARM, MUTE, CREAM = "#0E2B26", "#4FBFA8", "#E08163", "#8FA7A2", "#F1F6F4"
 
-st.set_page_config(page_title="Wane — adaptive nicotine tapering", layout="wide")
+st.set_page_config(page_title="Wane: adaptive nicotine tapering", layout="wide")
 st.markdown(f"""<style>
 .stApp {{ background:{PINE}; color:{CREAM}; }}
 h1,h2,h3,p,label,.stMarkdown {{ color:{CREAM} !important; }}
 div[data-testid="stMetricValue"] {{ color:{TEAL}; }}
 </style>""", unsafe_allow_html=True)
 
-st.title("Wane — adaptive nicotine tapering")
+st.title("Wane: adaptive nicotine tapering")
 st.caption("Five simulated vapers · the same people under a traditional fixed taper and under the Wane engine · synthetic behavioural model, parameters from published puff-topography and withdrawal studies")
 
 # ---------------- controls ----------------
@@ -62,8 +62,8 @@ summ = summarise(runs)
 fixed = summ[summ.engine.str.startswith("Fixed")]
 adapt = summ[summ.engine.str.startswith("Wane")]
 m1, m2, m3 = st.columns(3)
-m1.metric("Relapse rate — fixed taper", f"{fixed.relapse_rate.mean():.0%}")
-m2.metric("Relapse rate — Wane", f"{adapt.relapse_rate.mean():.0%}",
+m1.metric("Relapse rate, fixed taper", f"{fixed.relapse_rate.mean():.0%}")
+m2.metric("Relapse rate, Wane", f"{adapt.relapse_rate.mean():.0%}",
           delta=f"{(adapt.relapse_rate.mean() - fixed.relapse_rate.mean()):+.0%}", delta_color="inverse")
 m3.metric("Profiles still on the curve at week " + str(week_shown),
           f"{(adapt.relapse_rate < 0.5).sum()} / 5 vs {(fixed.relapse_rate < 0.5).sum()} / 5")
@@ -127,7 +127,7 @@ st.plotly_chart(figb, width="stretch")
 
 # ---------------- per-profile table ----------------
 tbl = summ.pivot(index="profile", columns="engine", values=["relapse_rate", "final_dose_median"])
-tbl.columns = [f"{a} — {b.split(' ')[0]}" for a, b in tbl.columns]
+tbl.columns = [f"{a} ({b.split(' ')[0]})" for a, b in tbl.columns]
 st.dataframe(tbl.style.format({c: "{:.0%}" for c in tbl.columns if "relapse" in c} | {c: "{:.1f} mg/ml" for c in tbl.columns if "dose" in c}),
              width="stretch")
 
