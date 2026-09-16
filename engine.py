@@ -1,12 +1,15 @@
-"""Two tapering engines, same interface: engine.next_dose(history) -> mg/ml for the coming week.
+"""Two tapering engines, same interface: engine.next_dose(dose, window, prev_window) -> mg/ml until the next decision.
 
-FixedTaper   - the traditional approach: cut a fixed % every week, no matter what.
+FixedTaper   - the traditional approach: cut a fixed % at every decision, no matter what.
 AdaptiveTaper- Wane: the JITAI loop.
-                 decision point : every week (and a pre-emptive check before risky days)
-                 tailoring vars : features computed from the last 7 days of puff data
+                 decision point : every `period` days (7 = weekly refill, 1 = hardware that meters the dose)
+                 tailoring vars : features computed from the last 7 days of puff data (rolling window)
                  decision rule  : features -> risk score -> action
                  intervention   : cut / half cut / hold  (never raise)
-               plus per-person LEARNING: the tolerated weekly cut is updated from evidence.
+               plus per-person LEARNING: the tolerated rate is updated from evidence.
+
+Both engines are given the WEEKLY rate and the period; they work out the cut per decision so that
+the compounded weekly rate is the same whatever the period. That keeps comparisons fair.
 
 Only the risk score is a candidate for ML. The dose arithmetic stays rules, and monotonic.
 """
@@ -15,26 +18,38 @@ import numpy as np
 FLOOR_MG = 0.5
 
 
+def per_period_cut(weekly_cut, period):
+    """Cut per decision so the compounded rate per week stays `weekly_cut`."""
+    return 1 - (1 - weekly_cut) ** (period / 7)
+
+
+def is_weekend(row):
+    """profiles.Vaper counts day index t (0-based) with t % 7 in (5, 6) as the weekend; row['day'] is t + 1."""
+    return (row["day"] - 1) % 7 in (5, 6)
+
+
 class FixedTaper:
     name = "Fixed taper (traditional)"
 
-    def __init__(self, weekly_cut=0.12):
-        self.cut = weekly_cut
+    def __init__(self, weekly_cut=0.12, period=7):
+        self.cut = per_period_cut(weekly_cut, period)
 
-    def next_dose(self, dose, week_rows, prev_week_rows):
+    def next_dose(self, dose, window, prev_window):
         return max(FLOOR_MG, dose * (1 - self.cut))
 
 
 # ---------- tailoring variables: computed from puff timestamps, no self-report ----------
 
-def features(week_rows, prev_week_rows):
-    puffs = np.array([r["puffs"] for r in week_rows])
-    prev = np.array([r["puffs"] for r in prev_week_rows]) if prev_week_rows else puffs
+def features(window, prev_window):
+    puffs = np.array([r["puffs"] for r in window])
+    prev = np.array([r["puffs"] for r in prev_window]) if prev_window else puffs
     f = {}
     f["puff_trend"] = (puffs.mean() - prev.mean()) / max(prev.mean(), 1)          # +0.2 = 20 % more puffs
-    f["night_share"] = np.mean([r["night_puffs"] for r in week_rows]) / max(puffs.mean(), 1)
-    f["ttfc_min"] = np.mean([r["ttfc_min"] for r in week_rows])                    # time to first puff
-    f["weekend_ratio"] = (puffs[-2:].mean() / max(puffs[:-2].mean(), 1)) if len(puffs) >= 7 else 1.0
+    f["night_share"] = np.mean([r["night_puffs"] for r in window]) / max(puffs.mean(), 1)
+    f["ttfc_min"] = np.mean([r["ttfc_min"] for r in window])                      # time to first puff
+    wk = [r["puffs"] for r in window if is_weekend(r)]
+    wd = [r["puffs"] for r in window if not is_weekend(r)]
+    f["weekend_ratio"] = (np.mean(wk) / max(np.mean(wd), 1)) if (wk and wd) else 1.0
     f["volatility"] = puffs.std() / max(puffs.mean(), 1)
     return f
 
@@ -61,28 +76,35 @@ def risk_score(f):
 class AdaptiveTaper:
     name = "Wane adaptive engine"
 
-    def __init__(self, weekly_cut=0.12):
-        self.base_cut = weekly_cut
-        self.personal_cut = weekly_cut   # LEARNED per person: starts at the population rate
-        self.log = []                    # what it decided and why, for the demo
+    # learning, expressed per WEEK so behaviour is the same whatever the period
+    UP_PER_WEEK, DOWN_PER_WEEK = 1.05, 0.75     # tolerated: a little faster; struggled: a lot slower
+    MAX_WEEKLY, MIN_WEEKLY = 0.15, 0.03         # bounds on the learned weekly rate
 
-    def next_dose(self, dose, week_rows, prev_week_rows):
-        f = features(week_rows, prev_week_rows)
+    def __init__(self, weekly_cut=0.12, period=7):
+        self.period = period
+        self.base_cut = per_period_cut(weekly_cut, period)
+        self.personal_cut = self.base_cut       # LEARNED per person: starts at the population rate
+        self.up = self.UP_PER_WEEK ** (period / 7)
+        self.down = self.DOWN_PER_WEEK ** (period / 7)
+        self.max_cut = per_period_cut(self.MAX_WEEKLY, period)
+        self.min_cut = per_period_cut(self.MIN_WEEKLY, period)
+        self.log = []                           # what it decided and why, for the demo
+
+    def weekly_rate(self):
+        """The learned rate expressed per week, for display."""
+        return 1 - (1 - self.personal_cut) ** (7 / self.period)
+
+    def next_dose(self, dose, window, prev_window):
+        f = features(window, prev_window)
         risk = risk_score(f)
         crave = derived_craving(f)
+        day = window[-1]["day"]
 
-        # --- learning: was last week's cut tolerated? move the personal rate ---
+        # --- learning: was the recent taper tolerated? move the personal rate ---
         if risk < 0.2 and crave < 4:
-            self.personal_cut = min(0.15, self.personal_cut * 1.05)   # tolerated well: a little faster
+            self.personal_cut = min(self.max_cut, self.personal_cut * self.up)
         elif risk > 0.5 or crave > 6:
-            self.personal_cut = max(0.03, self.personal_cut * 0.75)   # struggled: slow the personal rate
-
-        # --- first decision has no history to judge by: start conservative ---
-        if not prev_week_rows:
-            cut = self.personal_cut / 2
-            new = max(FLOOR_MG, dose * (1 - cut))
-            self.log.append(dict(risk=risk, crave=crave, action="FIRST CUT (half)", cut=cut, rate=self.personal_cut, **f))
-            return new
+            self.personal_cut = max(self.min_cut, self.personal_cut * self.down)
 
         # --- decision rule: risk -> action (never raise) ---
         if risk > 0.6 or crave > 7:
@@ -92,6 +114,10 @@ class AdaptiveTaper:
         else:
             cut, action = self.personal_cut, "CUT"
 
+        # --- no full week of history yet: never more than half a cut, but a HOLD is still a HOLD ---
+        if len(prev_window) < 7 and action == "CUT":
+            cut, action = self.personal_cut / 2, "FIRST CUT (half)"
+
         new = max(FLOOR_MG, dose * (1 - cut))
-        self.log.append(dict(risk=risk, crave=crave, action=action, cut=cut, rate=self.personal_cut, **f))
+        self.log.append(dict(day=day, risk=risk, crave=crave, action=action, cut=cut, rate=self.weekly_rate(), **f))
         return new

@@ -26,10 +26,12 @@ st.caption("Five simulated vapers · the same people under a traditional fixed t
 # ---------------- controls ----------------
 import time
 
-c1, c2, c3 = st.columns([2, 2, 2])
+PERIODS = {7: "7 days (weekly refill)", 3: "3 days (pre-mixed kit)", 2: "2 days (pre-mixed kit)", 1: "1 day (metering pod)"}
+c1, c2, c3, c4 = st.columns([2, 2, 2, 2])
 weekly_cut = c1.slider("Weekly cut (both engines start here)", 0.05, 0.25, 0.12, 0.01, format="%.2f")
-weeks = c2.slider("Weeks", 8, 20, 14)
-n_runs = c3.select_slider("Runs per profile (noise)", [1, 10, 30, 100], value=30)
+period = c2.select_slider("Engine decides every", options=[7, 3, 2, 1], value=7, format_func=lambda d: PERIODS[d])
+weeks = c3.slider("Weeks", 8, 20, 14)
+n_runs = c4.select_slider("Runs per profile (noise)", [1, 10, 30, 100], value=30)
 
 st.session_state.setdefault("playhead", 1)     # where the animation is
 st.session_state.setdefault("playing", False)
@@ -50,11 +52,11 @@ if not st.session_state.playing:
 
 
 @st.cache_data(show_spinner="Simulating…")
-def cached_runs(n_runs, weeks, weekly_cut):
-    return run_many(n_runs=n_runs, weeks=weeks, weekly_cut=weekly_cut)
+def cached_runs(n_runs, weeks, weekly_cut, period):
+    return run_many(n_runs=n_runs, weeks=weeks, weekly_cut=weekly_cut, period=period)
 
 
-runs = cached_runs(n_runs, weeks, weekly_cut)
+runs = cached_runs(n_runs, weeks, weekly_cut, period)
 runs = runs[runs["week"] <= week_shown]
 
 # ---------------- headline numbers ----------------
@@ -108,7 +110,7 @@ def dose_panel(engine_prefix, title):
 
 
 left, right = st.columns(2)
-left.plotly_chart(dose_panel("Fixed", f"Traditional: cut {weekly_cut:.0%} every week, whatever happens"), width="stretch")
+left.plotly_chart(dose_panel("Fixed", f"Traditional: {weekly_cut:.0%} per week in steps every {period} day(s), whatever happens"), width="stretch")
 right.plotly_chart(dose_panel("Wane", "Wane: the same people, cut decided from their measured puffs"), width="stretch")
 st.caption("Line = median of the runs · band = 10th–90th percentile · ✕ at 20 mg/ml = the week that run relapsed (back to disposables)")
 
@@ -140,16 +142,16 @@ prof = next(p for p in PROFILES if p.name == who)
 zc1.markdown(f"*{prof.story}*")
 zc1.markdown(f"elasticity **{prof.elasticity}** · craving sensitivity **{prof.craving_sensitivity}** · relapse threshold **{prof.relapse_threshold}**")
 
-df, log = run_one(prof, AdaptiveTaper, weeks, seed=int(seed), weekly_cut=weekly_cut)
+df, log = run_one(prof, AdaptiveTaper, weeks, seed=int(seed), weekly_cut=weekly_cut, period=period)
+log = [e for e in (log or []) if e["day"] <= 7 * week_shown]
 df = df[df.week <= week_shown]
 fig = go.Figure()
 fig.add_trace(go.Bar(x=df.day, y=df.puffs, name="puffs/day (measured)", marker_color="#2C534B"))
 fig.add_trace(go.Scatter(x=df.day, y=df.dose * (df.puffs.max() / START_MG), name="dose (scaled)", line=dict(color=TEAL, width=3)))
 fig.add_trace(go.Scatter(x=df.day, y=df.craving * (df.puffs.max() / 10), name="craving (model truth, scaled)", line=dict(color=ALARM, width=2, dash="dot")))
-if log:
-    for i, e in enumerate(log[: week_shown]):
-        if e["action"] in ("HOLD", "HALF CUT"):
-            fig.add_vline(x=7 * (i + 1), line=dict(color=ALARM if e["action"] == "HOLD" else MUTE, width=1, dash="dash"))
+for e in log:
+    if e["action"] in ("HOLD", "HALF CUT"):
+        fig.add_vline(x=e["day"], line=dict(color=ALARM if e["action"] == "HOLD" else MUTE, width=1, dash="dash"))
 fig.update_layout(paper_bgcolor=PINE, plot_bgcolor="#164038", font_color=CREAM, height=380,
                   xaxis=dict(title="day", gridcolor="#2C534B"), yaxis=dict(title="puffs / day", gridcolor="#2C534B"),
                   legend=dict(orientation="h", y=-0.25), margin=dict(t=20, b=60))
@@ -157,13 +159,13 @@ zc2.plotly_chart(fig, width="stretch")
 zc2.caption("Dashed lines: weeks where the engine held (orange) or halved the cut (grey) because the measured puffs said so.")
 
 if log:
-    lg = pd.DataFrame(log[: week_shown])
-    lg.index = [f"week {i+1} → {i+2}" for i in range(len(lg))]
+    lg = pd.DataFrame(log)
+    lg.index = [f"day {int(d)}" for d in lg["day"]]
     st.dataframe(lg[["action", "cut", "rate", "risk", "crave", "puff_trend", "night_share", "ttfc_min"]]
                  .rename(columns={"rate": "personal rate (learned)", "crave": "derived craving", "puff_trend": "puff trend", "night_share": "night share", "ttfc_min": "time to first puff (min)"})
                  .style.format({"cut": "{:.0%}", "personal rate (learned)": "{:.0%}", "risk": "{:.2f}", "derived craving": "{:.1f}", "puff trend": "{:+.0%}", "night share": "{:.3f}", "time to first puff (min)": "{:.0f}"}),
                  width="stretch")
-    st.caption("Every row is a decision the engine made and the measured features it made it from. No self-report in any column.")
+    st.caption("Every row is a decision the engine made and the measured features it made it from. No self-report in any column. Personal rate is shown per week whatever the decision period.")
 
 
 # ---------------- autoplay: advance one week per tick while playing ----------------

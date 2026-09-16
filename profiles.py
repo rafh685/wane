@@ -62,7 +62,9 @@ class Vaper:
         # --- craving dynamics: a cut adds withdrawal; it decays daily ---
         rel_drop = max(0.0, (self.last_dose - dose_mg) / self.last_dose)
         if rel_drop > 0:
-            self.pending_withdrawal = p.craving_sensitivity * rel_drop * 4   # spread over the coming days
+            # ADDS to what is still pending, so cuts close together stack up.
+            # (Was "=", which discarded unreleased withdrawal and flattered frequent small cuts.)
+            self.pending_withdrawal += p.craving_sensitivity * rel_drop * 4
         release = self.pending_withdrawal * 0.35                             # ~a third arrives each day
         self.pending_withdrawal -= release
         self.craving += release
