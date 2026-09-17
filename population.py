@@ -31,8 +31,8 @@ def sample_profile(rng, name):
         cues.append(Cue((int(rng.integers(0, 5)),), 8, 18, rng.uniform(0.5, 1.5)))
     return Profile(
         name, f"synthetic {kind}",
-        puffs_per_day=float(np.exp(rng.uniform(np.log(30), np.log(300)))),
-        elasticity=float(rng.uniform(0.10, 0.80)),
+        puffs_per_day=float(np.exp(rng.uniform(np.log(50), np.log(450)))),   # LSBU device counts: median ~290, range ~110-590
+        elasticity=float(np.clip(rng.normal(0.47, 0.25), 0.0, 1.15)),        # LSBU implied elasticity: median 0.47, IQR 0.34-0.68, max 1.15
         craving_sensitivity=float(rng.uniform(2.0, 8.0)),
         craving_decay=float(rng.uniform(0.08, 0.25)),
         relapse_threshold=float(rng.uniform(5.5, 8.5)),
@@ -41,6 +41,7 @@ def sample_profile(rng, name):
         weekday_routine=wd, weekend_routine=we,
         weekend_factor=float(rng.uniform(1.0, 2.2)),
         cues=cues,
+        tonic_gain=float(rng.uniform(0.9, 3.0)),
     )
 
 

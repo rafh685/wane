@@ -85,6 +85,45 @@ Legend: **S** sourced from literature · **C** calibrated to reproduce a publish
 - **Personal rate learning** (× 1.05 when tolerated, × 0.75 when struggling, bounds 3% to 15% per week). G. Asymmetric on purpose: slow down fast, speed up slowly, because the cost of a relapse is larger than the cost of a slow week.
 - **Never raise the dose.** Design rule, not a parameter. Raising would reward the behaviour the product is trying to end.
 
+
+## Calibration against real data (17 Sept 2026)
+
+Source: Dawkins et al. 2018, *Addiction*, "Real-world compensatory behaviour with low nicotine concentration e-liquid",
+open data CC BY 4.0, DOI 10.18744/LSBU.002952, in `data/lsbu/`. 20 experienced UK vapers, eVic device logging every
+puff, one week each at 18 mg/ml and 6 mg/ml with fixed power, plus craving (urge to vape, 1-6) and the Mood and
+Physical Symptoms Scale (MPSS, 0-24). Per-condition summaries only, not timestamps.
+
+What the data says, 18 -> 6 mg (a 67 % cut), per person, medians:
+- puffs per day x1.18 (IQR 1.10-1.42), puff duration x1.26, total puffing time x1.47 (IQR 1.34-1.68, max 2.15)
+- e-liquid consumed x1.23
+- strength of urges +0.75 on a 1-6 scale (2.15 -> 2.90); MPSS +1.3 on 0-24; only 55 % of people had urges rise at all
+- nobody stopped or relapsed in the week
+- implied elasticity in our formula: median 0.47, IQR 0.34-0.68, range -0.07 to 1.15
+- device-measured puffs per day at 18 mg: median 292, range 114-585
+
+What changed in the model because of it:
+1. **Withdrawal scale x4 -> x0.6** (section 3). The old value gave a craving rise of about 3 points for this cut and
+   relapses within the week; the data shows roughly +1.5 on a 0-10 scale and none.
+2. **Withdrawal follows intake, not liquid strength.** Compensation gives part of the nicotine back, so the drop that
+   drives craving is dose x sqrt(compensation), not dose alone.
+3. **Compensation splits into more puffs (43 %) and longer puffs (57 %)**, matching the count/duration split.
+   Puff duration is now simulated and is a new engine feature (`dur_trend`): the device logs it, and it is the larger
+   compensation channel.
+4. **Tonic craving at low intake** (new). With honest withdrawal numbers, a gentle 12 %/week taper never broke anyone:
+   fixed-taper relapse fell to 1 %, against 20-33 % in reduction trials. The missing piece is chronic: at very low
+   nicotine, resting craving stays elevated for weeks (reduced-nicotine cigarette trials, Donny et al. 2015, NEJM).
+   Resting craving is now 2 + tonic_gain x (1 - intake ratio), tonic_gain 0.9-2.7 per profile, chosen so that the
+   one-week replay still matches the data AND a full 12 %/week taper to zero fails about 22 % of people.
+5. A bug: the craving effect on puffing was applied twice (hourly shape and daily total). Fixed.
+6. Baseline puffs per day raised toward the measured range; population elasticity now drawn around 0.47.
+
+Replay of the study in the calibrated model (five profiles x 15 seeds): total puffing x1.74, craving +1.44, relapse 1 %.
+Still a little heavier than the data on puffing. Left as is: the profiles are chosen to be harder than the average
+LSBU volunteer, who was not trying to quit.
+
+What this data cannot tell us: night puffs, time to first puff, weekend patterns, or what happens over months.
+Those parts of the model remain unsourced until the pilot.
+
 ## What is missing
 
 - An end rule so runs can reach 0 mg/ml, and an absolute-drop term for the last step.

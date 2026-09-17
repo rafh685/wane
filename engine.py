@@ -57,7 +57,7 @@ class FixedTaper:
 
 # ---------- tailoring variables: computed from puff timestamps, no self-report ----------
 
-FEATURE_NAMES = ["puff_trend", "night_share", "ttfc_min", "weekend_ratio", "volatility", "dose_ratio"]
+FEATURE_NAMES = ["puff_trend", "dur_trend", "night_share", "ttfc_min", "weekend_ratio", "volatility", "dose_ratio"]
 
 
 def feature_vector(f):
@@ -70,6 +70,8 @@ def features(window, prev_window, dose=None):
     f = {}
     f["dose_ratio"] = (dose if dose is not None else window[-1]["dose"]) / 20.0     # the engine knows the dose it set
     f["puff_trend"] = (puffs.mean() - prev.mean()) / max(prev.mean(), 1)          # +0.2 = 20 % more puffs
+    dur = np.array([r.get("puff_dur", 3.4) for r in window]); pdur = np.array([r.get("puff_dur", 3.4) for r in prev_window]) if prev_window else dur
+    f["dur_trend"] = (dur.mean() - pdur.mean()) / max(pdur.mean(), 0.1)            # longer puffs: the bigger compensation channel (LSBU)
     f["night_share"] = np.mean([r["night_puffs"] for r in window]) / max(puffs.mean(), 1)
     f["ttfc_min"] = np.mean([r["ttfc_min"] for r in window])                      # time to first puff
     wk = [r["puffs"] for r in window if is_weekend(r)]

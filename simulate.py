@@ -38,8 +38,8 @@ def run_one(profile, engine_cls, weeks=14, seed=0, weekly_cut=0.12, period=7):
         if v.relapsed:
             # relapse = back to 20 mg disposables; record the remaining days as failed
             for d in range(v.t + 1, total_days + 1):
-                rows.append(dict(day=d, week=(d - 1) // 7 + 1, dose=START_MG, puffs=profile.puffs_per_day,
-                                 craving=v.craving, night_puffs=0, ttfc_min=30, evening_share=0, relapsed=True))
+                rows.append(dict(day=d, week=(d - 1) // 7 + 1, dose=START_MG, puffs=profile.puffs_per_day, puff_dur=3.4,
+                                 craving=v.craving, night_puffs=0, ttfc_min=30, relapsed=True))
             break
         if v.t >= total_days:
             break
