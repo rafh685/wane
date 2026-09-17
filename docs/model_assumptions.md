@@ -95,6 +95,22 @@ Legend: **S** sourced from literature · **C** calibrated to reproduce a publish
 - **0.85 and 0.70 per step, the craving penalty, the 1 % weekly drift.** G. No study measures per-step adherence for e-liquid ladders. These are chosen so that 40-week completion under the ladder lands between a quarter and two thirds, the range implied by course-completion figures.
 - **Why it matters.** With adherence in the model, the ladder's main failure mode is stalling, not relapse, and automatic execution (hardware) becomes the largest single effect in the simulation, larger than any change to the decision rule. Measuring real per-step adherence is a pilot objective.
 
+## 11. Catching the minority a blind schedule loses (experiments/minority.py)
+
+Once steps are automatic, a blind 12 %/week schedule already gets about four people in five off nicotine. The engine's
+measurable job is the fifth person. Tried on the fitted engine, five profiles x 30 runs and an unseen population, 40 weeks:
+
+- **Slow down harder after trouble** (rate x0.5 instead of x0.75, floor 1 %/week): no effect.
+- **Hold at half the fitted risk threshold**: Lucía (hard compensator) 57 % -> 47 % relapse, small cost in speed.
+- **Weekend guard** (never more than half a cut when `weekend_low`, heavy weekends at a low dose, is above 0.15):
+  Karim (weekend drinker) 40 % -> 27 %. Cost: ordinary people with mild weekend patterns slow from 19 to 33 weeks to zero.
+- **Both**: five-profile relapse 21 % -> 15 %, Marta 10 % -> 0 %, Lucía 47 %, Karim 27 %.
+
+Status: the pattern is detectable (the `weekend_low` feature gets weight +0.32 in the risk model) and about a quarter to a
+third of the minority's failures are preventable in simulation. The rest need the person's own response to their first
+cuts, which only a pilot measures. The guard and the lower threshold are not in the default engine; they are a product
+decision about how much speed to trade for the fragile few, and are kept as evidence.
+
 ## Calibration against real data (17 Sept 2026)
 
 Source: Dawkins et al. 2018, *Addiction*, "Real-world compensatory behaviour with low nicotine concentration e-liquid",
