@@ -86,6 +86,15 @@ Legend: **S** sourced from literature · **C** calibrated to reproduce a publish
 - **Never raise the dose.** Design rule, not a parameter. Raising would reward the behaviour the product is trying to end.
 
 
+## 10. Step adherence (manual products)
+
+`step applied with probability adherence × exp(−0.25 × max(0, craving − 3)) × 0.99^week` · automatic delivery: always
+
+- **What it claims.** In a manual product every step requires the user to mix or buy a weaker liquid and switch. Some steps are skipped, more often when craving is up, and the habit of switching fades over months. Eight skipped steps in a row is counted as stalled: the person is parked on the ladder, not relapsed and not off.
+- **Direction.** S. Adherence is the weakest link of nicotine replacement: roughly a third to a half of users complete a full course, and e-liquid reducers commonly stay at 6 or 3 mg/ml for years.
+- **0.85 and 0.70 per step, the craving penalty, the 1 % weekly drift.** G. No study measures per-step adherence for e-liquid ladders. These are chosen so that 40-week completion under the ladder lands between a quarter and two thirds, the range implied by course-completion figures.
+- **Why it matters.** With adherence in the model, the ladder's main failure mode is stalling, not relapse, and automatic execution (hardware) becomes the largest single effect in the simulation, larger than any change to the decision rule. Measuring real per-step adherence is a pilot objective.
+
 ## Calibration against real data (17 Sept 2026)
 
 Source: Dawkins et al. 2018, *Addiction*, "Real-world compensatory behaviour with low nicotine concentration e-liquid",
