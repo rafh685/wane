@@ -57,7 +57,7 @@ class FixedTaper:
 
 # ---------- tailoring variables: computed from puff timestamps, no self-report ----------
 
-FEATURE_NAMES = ["puff_trend", "dur_trend", "night_share", "ttfc_min", "weekend_ratio", "volatility", "dose_ratio"]
+FEATURE_NAMES = ["puff_trend", "dur_trend", "night_share", "ttfc_min", "weekend_ratio", "volatility", "dose_ratio", "weekend_low"]
 
 
 def feature_vector(f):
@@ -78,6 +78,7 @@ def features(window, prev_window, dose=None):
     wd = [r["puffs"] for r in window if not is_weekend(r)]
     f["weekend_ratio"] = (np.mean(wk) / max(np.mean(wd), 1)) if (wk and wd) else 1.0
     f["volatility"] = puffs.std() / max(puffs.mean(), 1)
+    f["weekend_low"] = max(0.0, f["weekend_ratio"] - 1.0) * (1 - f["dose_ratio"])   # heavy weekends AND low dose: the Karim pattern
     return f
 
 
