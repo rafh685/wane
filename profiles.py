@@ -118,6 +118,8 @@ PROFILES = [
 ]
 
 START_MG = 20.0
+REF_MG = 3.0        # below this, a cut is judged by its absolute size (see Vaper.day)
+COMP_CAP = 2.5      # compensation saturates: nobody puffs more than 2.5x their baseline
 
 
 class Vaper:
@@ -138,7 +140,11 @@ class Vaper:
         dt = p.day_type(dow)
 
         # --- craving dynamics: a cut adds withdrawal (accumulates); it arrives over days and decays ---
-        rel_drop = max(0.0, (self.last_dose - dose_mg) / self.last_dose)
+        # Relative drop, but measured against at least REF_MG. At 20 mg a 12 % cut is a 12 % drop, unchanged.
+        # Near zero the relative formula explodes (1 -> 0 would be a "100 % cut"); the body is adapted to an
+        # absolute intake, and below REF_MG that intake is small, so the drop is scaled by REF_MG instead.
+        # 1 -> 0 counts as a 33 % drop. 3 -> 0 is still a 100 % drop: the cliff is real if you jump from high.
+        rel_drop = max(0.0, (self.last_dose - dose_mg) / max(self.last_dose, REF_MG))
         if rel_drop > 0:
             self.pending_withdrawal += p.craving_sensitivity * rel_drop * 4
         release = self.pending_withdrawal * 0.35
@@ -151,6 +157,7 @@ class Vaper:
         # --- how much today, overall ---
         dose_ratio = dose_mg / START_MG
         comp = 1 + p.elasticity * (1 / max(dose_ratio, 0.05) - 1) * 0.5      # compensation
+        comp = min(comp, COMP_CAP)                                            # puffing cannot rise without limit
         day_factor = p.weekend_factor if dow in WEEKEND else 1.0
         rate = p.puffs_per_day * comp * day_factor * max(0.2, rng.normal(1, p.noise))
 

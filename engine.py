@@ -15,7 +15,24 @@ Only the risk score is a candidate for ML. The dose arithmetic stays rules, and 
 """
 import numpy as np
 
-FLOOR_MG = 0.5
+LOW_MG = 3.0        # below this, cuts are ABSOLUTE steps, not percentages (the way patch ladders end: 7 -> 0, not 7 -> 6.2 -> 5.4 ...)
+
+
+def apply_cut(dose, cut):
+    """The one place a dose changes. Never raises.
+
+    Above LOW_MG: multiply by (1 - cut), the usual percentage taper.
+    Below LOW_MG: subtract a fixed step of LOW_MG * cut, so every step near the end is the same size in
+    absolute terms and the last one to zero is no bigger than the others. A percentage taper never reaches
+    zero and then has to jump; this reaches zero in a few equal steps.
+    """
+    if dose <= 0 or cut <= 0:
+        return max(0.0, dose)
+    if dose > LOW_MG:
+        return max(LOW_MG * (1 - cut), dose * (1 - cut)) if dose * (1 - cut) >= LOW_MG else LOW_MG - LOW_MG * cut
+    step = LOW_MG * cut
+    new = dose - step
+    return 0.0 if new < step / 2 else new
 
 
 def per_period_cut(weekly_cut, period):
@@ -35,7 +52,7 @@ class FixedTaper:
         self.cut = per_period_cut(weekly_cut, period)
 
     def next_dose(self, dose, window, prev_window):
-        return max(FLOOR_MG, dose * (1 - self.cut))
+        return apply_cut(dose, self.cut)
 
 
 # ---------- tailoring variables: computed from puff timestamps, no self-report ----------
@@ -118,6 +135,8 @@ class AdaptiveTaper:
         if len(prev_window) < 7 and action == "CUT":
             cut, action = self.personal_cut / 2, "FIRST CUT (half)"
 
-        new = max(FLOOR_MG, dose * (1 - cut))
+        new = apply_cut(dose, cut)
+        if new == 0.0 and dose > 0:
+            action = action + " -> ZERO"
         self.log.append(dict(day=day, risk=risk, crave=crave, action=action, cut=cut, rate=self.weekly_rate(), **f))
         return new

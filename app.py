@@ -122,9 +122,10 @@ for eng, col in (("Fixed", "#8FA7A2"), ("Wane", TEAL)):
     e = rb[rb.engine == eng].set_index("profile").reindex([p.name for p in PROFILES])
     figb.add_trace(go.Bar(x=e.index, y=e.relapse_rate, name=eng, marker_color=col,
                           text=[f"{v:.0%}" for v in e.relapse_rate], textposition="outside"))
-figb.update_layout(barmode="group", paper_bgcolor=PINE, plot_bgcolor="#164038", font_color=CREAM, height=300,
+figb.update_layout(barmode="group", paper_bgcolor=PINE, plot_bgcolor="#164038", font_color=CREAM, height=340,
                    yaxis=dict(title="relapse rate", tickformat=".0%", range=[0, 1.15], gridcolor="#2C534B"),
-                   legend=dict(orientation="h", y=1.15), margin=dict(t=30, b=30), title="Who the ladder breaks, and who Wane keeps")
+                   legend=dict(orientation="h", x=1, xanchor="right", y=0.98, yanchor="top", bgcolor="rgba(0,0,0,0)"),
+                   margin=dict(t=60, b=30), title=dict(text="Who the ladder breaks, and who Wane keeps", y=0.95))
 st.plotly_chart(figb, width="stretch")
 
 # ---------------- per-profile table ----------------
