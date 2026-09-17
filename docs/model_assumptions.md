@@ -157,9 +157,23 @@ Those parts of the model remain unsourced until the pilot.
 - Fitted weights instead of hand-set thresholds.
 - Real puff logs from adult volunteers to check sections 1, 5 and 7.
 
+## Reality check for any outcome number
+
+The simulation follows motivated people who keep using the product for the whole run. Real trials include early
+dropout, so every absolute number here is optimistic and only differences between rows are meaningful. For scale, the
+nicotine patch (the same ladder in another form, 21 -> 14 -> 7 mg, user buys the next box) gets about one person in six
+nicotine-free at six months in supported trials (Hartmann-Boyce et al. 2018, Cochrane: ~17 % vs ~10 % control), about
+one in fourteen over the counter, and only a third to a half of users complete the course. In Hajek et al. 2019 (NEJM),
+e-cigarettes beat patches for quitting smoking (18 % vs 9.9 % at one year) but about 80 % of the e-cigarette quitters
+were still vaping a year later: the "stuck" outcome, measured.
+
 ## References to name
 
 - Hughes JR (2007). Effects of abstinence from tobacco: valid symptoms and time course. Nicotine & Tobacco Research.
 - Heatherton et al. (1991). The Fagerström Test for Nicotine Dependence. British Journal of Addiction. (time to first cigarette)
 - Nahum-Shani I et al. (2018). Just-in-Time Adaptive Interventions (JITAIs) in mobile health. Annals of Behavioral Medicine.
 - Benowitz NL (2010). Nicotine addiction. New England Journal of Medicine. (compensation, dependence)
+- Donny EC et al. (2015). Randomized trial of reduced-nicotine standards for cigarettes. NEJM. (chronic craving at low nicotine)
+- Hartmann-Boyce J et al. (2018). Nicotine replacement therapy versus control for smoking cessation. Cochrane Database of Systematic Reviews. (patch outcomes, course completion)
+- Hajek P et al. (2019). A randomized trial of e-cigarettes versus nicotine-replacement therapy. NEJM. (quitters still vaping at one year)
+- Dawkins LE et al. (2018). 'Real-world' compensatory behaviour with low nicotine concentration e-liquid. Addiction 113(10). Open data DOI 10.18744/LSBU.002952. (calibration)
