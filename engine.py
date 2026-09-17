@@ -57,10 +57,18 @@ class FixedTaper:
 
 # ---------- tailoring variables: computed from puff timestamps, no self-report ----------
 
-def features(window, prev_window):
+FEATURE_NAMES = ["puff_trend", "night_share", "ttfc_min", "weekend_ratio", "volatility", "dose_ratio"]
+
+
+def feature_vector(f):
+    return [f[k] for k in FEATURE_NAMES]
+
+
+def features(window, prev_window, dose=None):
     puffs = np.array([r["puffs"] for r in window])
     prev = np.array([r["puffs"] for r in prev_window]) if prev_window else puffs
     f = {}
+    f["dose_ratio"] = (dose if dose is not None else window[-1]["dose"]) / 20.0     # the engine knows the dose it set
     f["puff_trend"] = (puffs.mean() - prev.mean()) / max(prev.mean(), 1)          # +0.2 = 20 % more puffs
     f["night_share"] = np.mean([r["night_puffs"] for r in window]) / max(puffs.mean(), 1)
     f["ttfc_min"] = np.mean([r["ttfc_min"] for r in window])                      # time to first puff
@@ -111,22 +119,30 @@ class AdaptiveTaper:
         """The learned rate expressed per week, for display."""
         return 1 - (1 - self.personal_cut) ** (7 / self.period)
 
+    # hand-set scoring; FittedTaper overrides these two with learned weights
+    HOLD, HALF = 0.6, 0.3
+    def risk(self, f):
+        return risk_score(f)
+    def crave(self, f):
+        return derived_craving(f)
+
     def next_dose(self, dose, window, prev_window):
-        f = features(window, prev_window)
-        risk = risk_score(f)
-        crave = derived_craving(f)
+        f = features(window, prev_window, dose=dose)
+        risk = self.risk(f)
+        crave = self.crave(f)
         day = window[-1]["day"]
 
         # --- learning: was the recent taper tolerated? move the personal rate ---
-        if risk < 0.2 and crave < 4:
+        #     thresholds scale with the engine's HOLD / HALF so the rule works for a 0-1 score and for a probability
+        if risk < self.HALF * 0.6 and crave < 4:
             self.personal_cut = min(self.max_cut, self.personal_cut * self.up)
-        elif risk > 0.5 or crave > 6:
+        elif risk > self.HOLD * 0.8 or crave > 6:
             self.personal_cut = max(self.min_cut, self.personal_cut * self.down)
 
         # --- decision rule: risk -> action (never raise) ---
-        if risk > 0.6 or crave > 7:
+        if risk > self.HOLD or crave > 7:
             cut, action = 0.0, "HOLD"
-        elif risk > 0.3 or crave > 5:
+        elif risk > self.HALF or crave > 5:
             cut, action = self.personal_cut / 2, "HALF CUT"
         else:
             cut, action = self.personal_cut, "CUT"
@@ -140,3 +156,28 @@ class AdaptiveTaper:
             action = action + " -> ZERO"
         self.log.append(dict(day=day, risk=risk, crave=crave, action=action, cut=cut, rate=self.weekly_rate(), **f))
         return new
+
+
+class FittedTaper(AdaptiveTaper):
+    """Same decision rule and learning as AdaptiveTaper, but risk and craving come from weights FITTED on a
+    synthetic population (fit.py -> engine_weights.json). risk is now a probability of relapse within 7 days,
+    so its thresholds are much lower than the hand-set 0.6 / 0.3."""
+    name = "Wane fitted engine"
+
+    def __init__(self, weekly_cut=0.12, period=7, weights=None):
+        super().__init__(weekly_cut, period)
+        if weights is None:
+            import json, pathlib
+            weights = json.load(open(pathlib.Path(__file__).with_name("engine_weights.json")))
+        self.wts = weights
+        self.HOLD, self.HALF = weights["hold"], weights["half"]
+
+    def _lin(self, m, f):
+        x = (np.array(feature_vector(f)) - np.array(m["mu"])) / np.array(m["sd"])
+        return m["w"][0] + x @ np.array(m["w"][1:])
+
+    def risk(self, f):
+        return float(1 / (1 + np.exp(-self._lin(self.wts["risk"], f))))
+
+    def crave(self, f):
+        return float(np.clip(self._lin(self.wts["craving"], f), 0, 10))

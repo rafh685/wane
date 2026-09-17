@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from profiles import PROFILES, START_MG
-from engine import FixedTaper, AdaptiveTaper
+from engine import FixedTaper, AdaptiveTaper, FittedTaper
 from simulate import run_one, run_many, summarise
 
 PINE, TEAL, ALARM, MUTE, CREAM = "#0E2B26", "#4FBFA8", "#E08163", "#8FA7A2", "#F1F6F4"
@@ -30,8 +30,11 @@ PERIODS = {7: "7 days (weekly refill)", 3: "3 days (pre-mixed kit)", 2: "2 days 
 c1, c2, c3, c4 = st.columns([2, 2, 2, 2])
 weekly_cut = c1.slider("Weekly cut (both engines start here)", 0.05, 0.25, 0.12, 0.01, format="%.2f")
 period = c2.select_slider("Engine decides every", options=[7, 3, 2, 1], value=7, format_func=lambda d: PERIODS[d])
-weeks = c3.slider("Weeks", 8, 20, 14)
+weeks = c3.slider("Weeks", 8, 40, 26)
 n_runs = c4.select_slider("Runs per profile (noise)", [1, 10, 30, 100], value=30)
+ENGINES = {"fitted weights (learned on a synthetic population)": FittedTaper, "hand-set weights": AdaptiveTaper}
+engine_label = st.radio("Wane engine", list(ENGINES), horizontal=True)
+WaneEngine = ENGINES[engine_label]
 
 st.session_state.setdefault("playhead", 1)     # where the animation is
 st.session_state.setdefault("playing", False)
@@ -52,23 +55,25 @@ if not st.session_state.playing:
 
 
 @st.cache_data(show_spinner="Simulating…")
-def cached_runs(n_runs, weeks, weekly_cut, period):
-    return run_many(n_runs=n_runs, weeks=weeks, weekly_cut=weekly_cut, period=period)
+def cached_runs(n_runs, weeks, weekly_cut, period, engine_label):
+    return run_many(n_runs=n_runs, weeks=weeks, weekly_cut=weekly_cut, period=period,
+                    engines=(FixedTaper, ENGINES[engine_label]))
 
 
-runs = cached_runs(n_runs, weeks, weekly_cut, period)
+runs = cached_runs(n_runs, weeks, weekly_cut, period, engine_label)
 runs = runs[runs["week"] <= week_shown]
 
 # ---------------- headline numbers ----------------
 summ = summarise(runs)
 fixed = summ[summ.engine.str.startswith("Fixed")]
 adapt = summ[summ.engine.str.startswith("Wane")]
-m1, m2, m3 = st.columns(3)
+m1, m2, m3, m4 = st.columns(4)
 m1.metric("Relapse rate, fixed taper", f"{fixed.relapse_rate.mean():.0%}")
 m2.metric("Relapse rate, Wane", f"{adapt.relapse_rate.mean():.0%}",
           delta=f"{(adapt.relapse_rate.mean() - fixed.relapse_rate.mean()):+.0%}", delta_color="inverse")
-m3.metric("Profiles still on the curve at week " + str(week_shown),
-          f"{(adapt.relapse_rate < 0.5).sum()} / 5 vs {(fixed.relapse_rate < 0.5).sum()} / 5")
+m3.metric("Off nicotine, fixed taper", f"{fixed.off_rate.mean():.0%}")
+m4.metric("Off nicotine, Wane", f"{adapt.off_rate.mean():.0%}",
+          delta=f"{(adapt.off_rate.mean() - fixed.off_rate.mean()):+.0%}")
 
 
 # ---------------- the two panels ----------------
@@ -104,7 +109,7 @@ def dose_panel(engine_prefix, title):
                                  line=dict(width=2.5, color=col)))
     fig.update_layout(title=title, paper_bgcolor=PINE, plot_bgcolor="#164038", font_color=CREAM,
                       xaxis=dict(title="week", range=[0.5, weeks + 0.5], gridcolor="#2C534B"),
-                      yaxis=dict(title="nicotine mg/ml", range=[0, START_MG + 1], gridcolor="#2C534B"),
+                      yaxis=dict(title="nicotine mg/ml", range=[-0.5, START_MG + 1], gridcolor="#2C534B"),
                       height=420, legend=dict(orientation="h", y=-0.2), margin=dict(t=50, b=60))
     return fig
 
@@ -129,10 +134,11 @@ figb.update_layout(barmode="group", paper_bgcolor=PINE, plot_bgcolor="#164038", 
 st.plotly_chart(figb, width="stretch")
 
 # ---------------- per-profile table ----------------
-tbl = summ.pivot(index="profile", columns="engine", values=["relapse_rate", "final_dose_median"])
+tbl = summ.pivot(index="profile", columns="engine", values=["relapse_rate", "off_rate", "weeks_to_zero_median"])
 tbl.columns = [f"{a} ({b.split(' ')[0]})" for a, b in tbl.columns]
-st.dataframe(tbl.style.format({c: "{:.0%}" for c in tbl.columns if "relapse" in c} | {c: "{:.1f} mg/ml" for c in tbl.columns if "dose" in c}),
+st.dataframe(tbl.style.format({c: "{:.0%}" for c in tbl.columns if "rate" in c} | {c: "{:.0f} wk" for c in tbl.columns if "weeks" in c}, na_rep="not yet"),
              width="stretch")
+st.caption("Off nicotine = reached 0 mg/ml and stayed there two clean weeks. Weeks to zero = median over the runs that got there.")
 
 # ---------------- zoom on one person ----------------
 st.subheader("Inside one person")
@@ -143,7 +149,7 @@ prof = next(p for p in PROFILES if p.name == who)
 zc1.markdown(f"*{prof.story}*")
 zc1.markdown(f"elasticity **{prof.elasticity}** · craving sensitivity **{prof.craving_sensitivity}** · relapse threshold **{prof.relapse_threshold}**")
 
-df, log = run_one(prof, AdaptiveTaper, weeks, seed=int(seed), weekly_cut=weekly_cut, period=period)
+df, log = run_one(prof, WaneEngine, weeks, seed=int(seed), weekly_cut=weekly_cut, period=period)
 log = [e for e in (log or []) if e["day"] <= 7 * week_shown]
 df = df[df.week <= week_shown]
 fig = go.Figure()
