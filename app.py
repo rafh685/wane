@@ -26,7 +26,7 @@ st.caption("Five simulated vapers · the same people under a traditional fixed t
 # ---------------- controls ----------------
 import time
 
-PERIODS = {7: "7 days (weekly refill)", 3: "3 days (pre-mixed kit)", 2: "2 days (pre-mixed kit)", 1: "1 day (metering pod)"}
+PERIODS = {7: "7 days (weekly step, the default)", 3: "3 days", 2: "2 days", 1: "1 day (daily steps)"}
 c1, c2, c3, c4 = st.columns([2, 2, 2, 2])
 weekly_cut = c1.slider("Weekly cut (both engines start here)", 0.05, 0.25, 0.12, 0.01, format="%.2f")
 period = c2.select_slider("Engine decides every", options=[7, 3, 2, 1], value=7, format_func=lambda d: PERIODS[d])
@@ -111,7 +111,8 @@ def dose_panel(engine_prefix, title):
                     fig.add_trace(go.Scatter(x=[w0], y=[START_MG], mode="markers",
                                              marker=dict(symbol="x", size=10, color="#FF5A4A"),
                                              showlegend=False, hoverinfo="skip"))
-        d = pp.groupby("week")["dose"]
+        alive = pp[~pp.relapsed]                       # relapsed runs sit at 20 mg; keep them out of the curve, the crosses show them
+        d = alive.groupby("week")["dose"]
         med, lo, hi = d.median(), d.quantile(0.1), d.quantile(0.9)
         if not show_runs:
             fig.add_trace(go.Scatter(x=list(hi.index) + list(lo.index[::-1]), y=list(hi) + list(lo[::-1]),
@@ -129,7 +130,7 @@ def dose_panel(engine_prefix, title):
 left, right = st.columns(2)
 left.plotly_chart(dose_panel("Fixed", f"Traditional: {weekly_cut:.0%} per week in steps every {period} day(s), whatever happens"), width="stretch")
 right.plotly_chart(dose_panel("Wane", "Wane: the same people, cut decided from their measured puffs"), width="stretch")
-st.caption("Line = median of the runs · band = 10th–90th percentile · ✕ at 20 mg/ml = the week that run relapsed (back to disposables)")
+st.caption("Line = median dose of the runs still tapering · band = 10th to 90th percentile · ✕ at 20 mg/ml = the week a run relapsed (back to disposables). Toggle the individual runs to see them.")
 
 # ---------------- relapse bars ----------------
 rb = summ.copy()
