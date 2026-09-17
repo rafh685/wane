@@ -33,8 +33,14 @@ period = c2.select_slider("Engine decides every", options=[7, 3, 2, 1], value=7,
 weeks = c3.slider("Weeks", 8, 40, 26)
 n_runs = c4.select_slider("Runs per profile (noise)", [1, 10, 30, 100], value=30)
 ENGINES = {"fitted weights (learned on a synthetic population)": FittedTaper, "hand-set weights": AdaptiveTaper}
-engine_label = st.radio("Wane engine", list(ENGINES), horizontal=True)
+DELIVERY = {"manual: the user mixes and switches liquid at every step (adherence 0.85)": 0.85,
+            "manual, less diligent user (adherence 0.70)": 0.70,
+            "automatic: the device applies every step (hardware)": None}
+r1, r2 = st.columns([1, 1])
+engine_label = r1.radio("Wane engine", list(ENGINES), horizontal=False)
+delivery_label = r2.radio("How steps get applied (both engines)", list(DELIVERY), horizontal=False)
 WaneEngine = ENGINES[engine_label]
+adherence = DELIVERY[delivery_label]
 
 st.session_state.setdefault("playhead", 1)     # where the animation is
 st.session_state.setdefault("playing", False)
@@ -55,25 +61,31 @@ if not st.session_state.playing:
 
 
 @st.cache_data(show_spinner="Simulating…")
-def cached_runs(n_runs, weeks, weekly_cut, period, engine_label):
+def cached_runs(n_runs, weeks, weekly_cut, period, engine_label, delivery_label):
     return run_many(n_runs=n_runs, weeks=weeks, weekly_cut=weekly_cut, period=period,
-                    engines=(FixedTaper, ENGINES[engine_label]))
+                    engines=(FixedTaper, ENGINES[engine_label]), adherence=DELIVERY[delivery_label])
 
 
-runs = cached_runs(n_runs, weeks, weekly_cut, period, engine_label)
+runs = cached_runs(n_runs, weeks, weekly_cut, period, engine_label, delivery_label)
 runs = runs[runs["week"] <= week_shown]
 
 # ---------------- headline numbers ----------------
 summ = summarise(runs)
 fixed = summ[summ.engine.str.startswith("Fixed")]
 adapt = summ[summ.engine.str.startswith("Wane")]
-m1, m2, m3, m4 = st.columns(4)
-m1.metric("Relapse rate, fixed taper", f"{fixed.relapse_rate.mean():.0%}")
-m2.metric("Relapse rate, Wane", f"{adapt.relapse_rate.mean():.0%}",
+m1, m2, m3, m4, m5, m6 = st.columns(6)
+m1.metric("Relapse, fixed taper", f"{fixed.relapse_rate.mean():.0%}")
+m2.metric("Relapse, Wane", f"{adapt.relapse_rate.mean():.0%}",
           delta=f"{(adapt.relapse_rate.mean() - fixed.relapse_rate.mean()):+.0%}", delta_color="inverse")
-m3.metric("Off nicotine, fixed taper", f"{fixed.off_rate.mean():.0%}")
-m4.metric("Off nicotine, Wane", f"{adapt.off_rate.mean():.0%}",
+m3.metric("Stalled on the ladder, fixed", f"{fixed.stall_rate.mean():.0%}")
+m4.metric("Stalled, Wane", f"{adapt.stall_rate.mean():.0%}",
+          delta=f"{(adapt.stall_rate.mean() - fixed.stall_rate.mean()):+.0%}", delta_color="inverse")
+m5.metric("Off nicotine, fixed", f"{fixed.off_rate.mean():.0%}")
+m6.metric("Off nicotine, Wane", f"{adapt.off_rate.mean():.0%}",
           delta=f"{(adapt.off_rate.mean() - fixed.off_rate.mean()):+.0%}")
+if adherence is not None:
+    st.caption("Manual delivery: at each step the user has to mix or buy a weaker liquid and switch. The chance they do falls when craving is up and drifts down over the weeks. "
+               "Stalled = eight scheduled steps in a row not applied. Automatic delivery removes this entirely: that is what the hardware is for.")
 
 
 # ---------------- the two panels ----------------
@@ -134,7 +146,7 @@ figb.update_layout(barmode="group", paper_bgcolor=PINE, plot_bgcolor="#164038", 
 st.plotly_chart(figb, width="stretch")
 
 # ---------------- per-profile table ----------------
-tbl = summ.pivot(index="profile", columns="engine", values=["relapse_rate", "off_rate", "weeks_to_zero_median"])
+tbl = summ.pivot(index="profile", columns="engine", values=["relapse_rate", "stall_rate", "off_rate", "weeks_to_zero_median"])
 tbl.columns = [f"{a} ({b.split(' ')[0]})" for a, b in tbl.columns]
 st.dataframe(tbl.style.format({c: "{:.0%}" for c in tbl.columns if "rate" in c} | {c: "{:.0f} wk" for c in tbl.columns if "weeks" in c}, na_rep="not yet"),
              width="stretch")
@@ -149,7 +161,7 @@ prof = next(p for p in PROFILES if p.name == who)
 zc1.markdown(f"*{prof.story}*")
 zc1.markdown(f"elasticity **{prof.elasticity}** · craving sensitivity **{prof.craving_sensitivity}** · relapse threshold **{prof.relapse_threshold}**")
 
-df, log = run_one(prof, WaneEngine, weeks, seed=int(seed), weekly_cut=weekly_cut, period=period)
+df, log = run_one(prof, WaneEngine, weeks, seed=int(seed), weekly_cut=weekly_cut, period=period, adherence=adherence)
 log = [e for e in (log or []) if e["day"] <= 7 * week_shown]
 df = df[df.week <= week_shown]
 fig = go.Figure()
