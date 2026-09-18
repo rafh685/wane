@@ -1,0 +1,38 @@
+
+====================================================================================================
+HOURLY GENERATOR (demo default)   40 weeks, 12 %/week   columns: relapse / stuck or still tapering / nicotine-free / median weeks to zero
+====================================================================================================
+product                                           five profiles (30 runs each)             unseen pop (80)               Sofia, unseen
+Manual taper, user switches (adherence 0.85)         14% /  18% /  68% /  32wk    8% /  21% /  71% /  33wk   33% /  27% /  40% /  34wk
+Manual, less diligent (0.70)                          9% /  65% /  26% /  36wk    8% /  62% /  30% /  36wk   17% /  60% /  23% /  37wk
+Wane software, manual steps (0.85)                    9% /  29% /  62% /  31wk   10% /  22% /  68% /  31wk   23% /  47% /  30% /  33wk
+Automatic taper, same schedule for all               21% /   0% /  79% /  22wk    8% /   0% /  92% /  22wk   27% /   0% /  73% /  22wk
+Wane, automatic                                      14% /   3% /  83% /  23wk    6% /   0% /  94% /  23wk   20% /   0% /  80% /  25wk
+
+per profile, relapse / nicotine-free:
+                                                    Marta      Diego      Lucía      Karim        Ana
+Manual taper, user switches (adherence 0.85)     0%/87%     0%/90%    37%/27%    33%/43%     0%/93%  
+Manual, less diligent (0.70)                     0%/37%     0%/23%    23%/3%     23%/20%     0%/47%  
+Wane software, manual steps (0.85)               0%/83%     3%/77%    10%/7%     30%/47%     0%/97%  
+Automatic taper, same schedule for all          10%/90%     0%/100%   63%/37%    33%/67%     0%/100% 
+Wane, automatic                                  0%/100%    0%/100%   43%/43%    27%/73%     0%/100% 
+
+====================================================================================================
+BOUT-LEVEL GENERATOR (Ilian)   40 weeks, 12 %/week   columns: relapse / stuck or still tapering / nicotine-free / median weeks to zero
+====================================================================================================
+product                                           five profiles (30 runs each)             unseen pop (80)               Sofia, unseen
+Manual taper, user switches (adherence 0.85)         13% /  15% /  73% /  33wk    6% /  14% /  80% /  33wk   33% /  33% /  33% /  35wk
+Manual, less diligent (0.70)                          8% /  59% /  33% /  36wk    5% /  60% /  35% /  36wk    7% /  77% /  17% /  35wk
+Wane software, manual steps (0.85)                   12% /  18% /  70% /  32wk    8% /  25% /  68% /  32wk   17% /  37% /  47% /  35wk
+Automatic taper, same schedule for all               15% /   0% /  85% /  22wk    9% /   0% /  91% /  22wk   20% /   0% /  80% /  22wk
+Wane, automatic                                      20% /   0% /  80% /  23wk   10% /   0% /  90% /  23wk   40% /   0% /  60% /  23wk
+
+per profile, relapse / nicotine-free:
+                                                    Marta      Diego      Lucía      Karim        Ana
+Manual taper, user switches (adherence 0.85)     3%/93%     3%/87%    23%/37%    33%/50%     0%/97%  
+Manual, less diligent (0.70)                     0%/27%     0%/50%    13%/7%     27%/23%     0%/57%  
+Wane software, manual steps (0.85)               0%/93%     0%/90%    37%/10%    23%/57%     0%/100% 
+Automatic taper, same schedule for all           0%/100%    0%/100%   33%/67%    40%/60%     0%/100% 
+Wane, automatic                                  0%/100%    3%/97%    57%/43%    40%/60%     0%/100% 
+
+320s
