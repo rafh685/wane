@@ -57,14 +57,15 @@ class FixedTaper:
 
 # ---------- tailoring variables: computed from puff timestamps, no self-report ----------
 
-FEATURE_NAMES = ["puff_trend", "dur_trend", "night_share", "ttfc_min", "weekend_ratio", "volatility", "dose_ratio", "weekend_low"]
+FEATURE_NAMES = ["puff_trend", "dur_trend", "night_share", "ttfc_min", "weekend_ratio", "volatility", "dose_ratio", "weekend_low",
+                 "night_rel", "ttfc_rel", "intake_trend"]
 
 
 def feature_vector(f):
     return [f[k] for k in FEATURE_NAMES]
 
 
-def features(window, prev_window, dose=None):
+def features(window, prev_window, dose=None, baseline=None):
     puffs = np.array([r["puffs"] for r in window])
     prev = np.array([r["puffs"] for r in prev_window]) if prev_window else puffs
     f = {}
@@ -79,7 +80,19 @@ def features(window, prev_window, dose=None):
     f["weekend_ratio"] = (np.mean(wk) / max(np.mean(wd), 1)) if (wk and wd) else 1.0
     f["volatility"] = puffs.std() / max(puffs.mean(), 1)
     f["weekend_low"] = max(0.0, f["weekend_ratio"] - 1.0) * (1 - f["dose_ratio"])   # heavy weekends AND low dose: the Karim pattern
+    # --- self-referenced: this person against THEIR OWN first week at full strength ---
+    #     a night share of 0.025 means nothing across people; a rise from one's own 0.025 to 0.04 does
+    b = baseline or {"night_share": f["night_share"], "ttfc_min": f["ttfc_min"], "intake": 1.0}
+    f["night_rel"] = f["night_share"] / max(b["night_share"], 0.005) - 1
+    f["ttfc_rel"] = f["ttfc_min"] / max(b["ttfc_min"], 1.0) - 1
+    f["intake_trend"] = (1 + f["puff_trend"]) * (1 + f["dur_trend"]) - 1          # puffs x duration: total puffing vs last week
     return f
+
+
+def make_baseline(window):
+    """The person's own reference, taken from their first week at full strength."""
+    f = features(window, [], dose=window[-1]["dose"])
+    return {"night_share": f["night_share"], "ttfc_min": f["ttfc_min"], "intake": 1.0}
 
 
 def derived_craving(f):
@@ -117,6 +130,8 @@ class AdaptiveTaper:
         self.max_cut = per_period_cut(self.MAX_WEEKLY, period)
         self.min_cut = per_period_cut(self.MIN_WEEKLY, period)
         self.log = []                           # what it decided and why, for the demo
+        self.baseline = None                    # this person's own first-week reference (set at the first decision)
+        self.calm_streak = 0                    # consecutive decisions with a demonstrably small response to the last cut
 
     def weekly_rate(self):
         """The learned rate expressed per week, for display."""
@@ -130,17 +145,25 @@ class AdaptiveTaper:
         return derived_craving(f)
 
     def next_dose(self, dose, window, prev_window):
-        f = features(window, prev_window, dose=dose)
+        if self.baseline is None:
+            self.baseline = make_baseline(window)     # first decision: this week at full strength IS the reference
+        f = features(window, prev_window, dose=dose, baseline=self.baseline)
         risk = self.risk(f)
         crave = self.crave(f)
         day = window[-1]["day"]
 
         # --- learning: was the recent taper tolerated? move the personal rate ---
-        #     thresholds scale with the engine's HOLD / HALF so the rule works for a 0-1 score and for a probability
-        if risk < self.HALF * 0.6 and crave < 4:
-            self.personal_cut = min(self.max_cut, self.personal_cut * self.up)
-        elif risk > self.HOLD * 0.8 or crave > 6:
+        #     SLOW DOWN on any sign of trouble. SPEED UP only on positive evidence: the response to the last cut
+        #     was demonstrably small, against this person's own baseline, for two decisions in a row.
+        #     Absence of alarm is not evidence of coping (an unfamiliar person can look calm and be sinking).
+        tolerated = (f["intake_trend"] < 0.05 and f["night_rel"] < 0.25 and f["ttfc_rel"] > -0.25
+                     and risk < self.HALF * 0.6 and crave < 4)
+        self.calm_streak = self.calm_streak + 1 if tolerated else 0
+        if risk > self.HOLD * 0.8 or crave > 6:
             self.personal_cut = max(self.min_cut, self.personal_cut * self.down)
+            self.calm_streak = 0
+        elif self.calm_streak >= 2:
+            self.personal_cut = min(self.max_cut, self.personal_cut * self.up)
 
         # --- decision rule: risk -> action (never raise) ---
         if risk > self.HOLD or crave > 7:
@@ -173,7 +196,9 @@ class FittedTaper(AdaptiveTaper):
             import json, pathlib
             weights = json.load(open(pathlib.Path(__file__).with_name("engine_weights.json")))
         self.wts = weights
-        self.HOLD, self.HALF = weights["hold"], weights["half"]
+        self.BUDGET = weights.get("budget", 0.02)          # max predicted relapse risk per week we are willing to take
+        self.CRAVE_HALF, self.CRAVE_HOLD = weights.get("crave_half", 4.5), weights.get("crave_hold", 5.5)
+        self.HOLD, self.HALF = weights.get("hold", self.BUDGET), weights.get("half", self.BUDGET / 2)
 
     def _lin(self, m, f):
         x = (np.array(feature_vector(f)) - np.array(m["mu"])) / np.array(m["sd"])
@@ -184,3 +209,51 @@ class FittedTaper(AdaptiveTaper):
 
     def crave(self, f):
         return float(np.clip(self._lin(self.wts["craving"], f), 0, 10))
+
+    def risk_at(self, f, new_dose):
+        """Predicted relapse risk for the coming week IF the dose becomes new_dose. Dose is an input to the risk
+        model, so the same features scored at a lower dose give a higher risk. This is what turns the model
+        from an alarm into a planner."""
+        g = dict(f)
+        g["dose_ratio"] = new_dose / 20.0
+        g["weekend_low"] = max(0.0, g["weekend_ratio"] - 1.0) * (1 - g["dose_ratio"])
+        return self.risk(g)
+
+    def next_dose(self, dose, window, prev_window):
+        """Risk-budget rule. Candidates: the full personal cut, half of it, or hold. Take the largest cut whose
+        predicted risk for the coming week stays under BUDGET; if none does, hold. A person whose weekly risk is
+        1 to 2 % never trips an alarm, but 2 % a week for twenty weeks is a third of them lost: the budget sees that,
+        a threshold does not. Learning of the personal rate is unchanged (see AdaptiveTaper)."""
+        if self.baseline is None:
+            self.baseline = make_baseline(window)
+        f = features(window, prev_window, dose=dose, baseline=self.baseline)
+        risk, crave = self.risk(f), self.crave(f)
+        day = window[-1]["day"]
+        tolerated = (f["intake_trend"] < 0.05 and f["night_rel"] < 0.25 and f["ttfc_rel"] > -0.25
+                     and risk < self.BUDGET * 0.5 and crave < 4)
+        self.calm_streak = self.calm_streak + 1 if tolerated else 0
+        if risk > self.BUDGET or crave > 6:
+            self.personal_cut = max(self.min_cut, self.personal_cut * self.down); self.calm_streak = 0
+        elif self.calm_streak >= 2:
+            self.personal_cut = min(self.max_cut, self.personal_cut * self.up)
+
+        full = self.personal_cut if len(prev_window) >= 7 else self.personal_cut / 2
+        options = [(full, "CUT" if len(prev_window) >= 7 else "FIRST CUT (half)"), (full / 2, "HALF CUT"), (0.0, "HOLD")]
+        chosen = None
+        for cut, action in options:
+            new = apply_cut(dose, cut)
+            if self.risk_at(f, new) <= self.BUDGET or cut == 0.0:
+                chosen = (cut, action, new); break
+        cut, action, new = chosen
+        # --- craving budget: the risk model sees one week ahead; estimated craving sees the slow build-up.
+        #     Above CRAVE_HOLD hold; above CRAVE_HALF never more than half a cut. (Sofia, the unseen night-shift
+        #     nurse, was lost by the risk budget alone: her weekly risk never spiked, her craving crept.)
+        if crave > self.CRAVE_HOLD and cut > 0:
+            cut, action, new = 0.0, "HOLD (craving)", dose
+        elif crave > self.CRAVE_HALF and cut > full / 2:
+            cut, action, new = full / 2, "HALF CUT (craving)", apply_cut(dose, full / 2)
+        if new == 0.0 and dose > 0:
+            action += " -> ZERO"
+        self.log.append(dict(day=day, risk=risk, crave=crave, action=action, cut=cut, rate=self.weekly_rate(),
+                             risk_next=self.risk_at(f, new), **f))
+        return new

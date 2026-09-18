@@ -12,7 +12,7 @@ import json, sys, time
 import numpy as np, pandas as pd
 from profiles import Vaper, START_MG
 from population import population
-from engine import FixedTaper, AdaptiveTaper, FittedTaper, features, FEATURE_NAMES, feature_vector
+from engine import FixedTaper, AdaptiveTaper, FittedTaper, features, FEATURE_NAMES, feature_vector, make_baseline
 from simulate import run_one, per_run
 
 WEEKS = 30          # training horizon
@@ -30,14 +30,15 @@ def collect(profiles, rates=(0.08, 0.12, 0.16), seeds=(0, 1)):
         for rate in rates:
             for s in seeds:
                 rng = np.random.default_rng(s); v = Vaper(p, rng); eng = FixedTaper(rate, 7)
-                dose, rows = START_MG, []
+                dose, rows, base = START_MG, [], None
                 while v.t < WEEKS * 7 and not v.relapsed and dose > 0:
                     for _ in range(7):
                         rows.append(v.day(dose))
                         if v.relapsed: break
                     if v.relapsed: break
                     window, prev = rows[-7:], (rows[-14:-7] if len(rows) >= 14 else [])
-                    f = features(window, prev, dose=dose)
+                    if base is None: base = make_baseline(window)
+                    f = features(window, prev, dose=dose, baseline=base)
                     # label: what happens in the NEXT 7 days at the dose the engine is about to set
                     nxt = eng.next_dose(dose, window, prev)
                     probe_v = _clone(v); rel = False
@@ -106,21 +107,20 @@ if __name__ == "__main__":
     for name, wc, wr in zip(FEATURE_NAMES, crave_m["w"][1:], risk_m["w"][1:]):
         print(f"  {name:14} craving {wc:+6.2f}   risk {wr:+6.2f}")
 
-    # ---- thresholds chosen on A: maximise share OFF nicotine at 30 weeks ----
+    # ---- risk budget chosen on A: maximise off - relapse at 40 weeks ----
     best = None
-    grid = [(h, h / 2) for h in (0.01, 0.02, 0.03, 0.05, 0.08, 0.12)]
-    print(f"\nthreshold search on population A, {WEEKS_EVAL} weeks. Objective = off - relapse "
-          "(hold if risk > h or craving > 7; half cut if risk > h/2 or craving > 5):")
-    for hold, half in grid:
-        weights = dict(craving=crave_m, risk=risk_m, hold=hold, half=half)
+    print(f"\nrisk-budget search on population A, {WEEKS_EVAL} weeks. Objective = off - relapse "
+          "(take the largest cut whose predicted risk next week stays under the budget):")
+    for budget in (0.005, 0.01, 0.015, 0.02, 0.03, 0.05):
+        weights = dict(craving=crave_m, risk=risk_m, budget=budget)
         res = evaluate(A, lambda cut, period: FittedTaper(cut, period, weights=weights), seeds=(3,))
         score = res["off"] - res["relapse"]
-        print(f"  hold {hold:.2f} half {half:.3f}  ->  relapse {res['relapse']:.0%}  off {res['off']:.0%}  weeks to zero {res['weeks_to_zero']:.0f}   score {score:+.2f}")
+        print(f"  budget {budget:.3f}/week  ->  relapse {res['relapse']:.0%}  off {res['off']:.0%}  weeks to zero {res['weeks_to_zero']:.0f}   score {score:+.2f}")
         if best is None or score > best[1]:
             best = (weights, score)
     weights = best[0]
     json.dump(weights, open("engine_weights.json", "w"), indent=1)
-    print(f"\nchosen: hold {weights['hold']:.2f}, half {weights['half']:.2f}  -> engine_weights.json")
+    print(f"\nchosen: budget {weights['budget']:.3f} per week  -> engine_weights.json")
 
     # ---- the honest test: population B, never seen ----
     print(f"\npopulation B ({N_B} people x 2 seeds, {WEEKS_EVAL} weeks, 12 %/week):")

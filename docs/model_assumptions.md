@@ -111,6 +111,27 @@ third of the minority's failures are preventable in simulation. The rest need th
 cuts, which only a pilot measures. The guard and the lower threshold are not in the default engine; they are a product
 decision about how much speed to trade for the fragile few, and are kept as evidence.
 
+## 12. Engine upgrade after the unseen-person test (18 Sept 2026)
+
+Sofia, a night-shift nurse the engine had never seen (`experiments/unseen_profile.py`), was lost by the fitted engine:
+42 % relapse against 35 % under a blind automatic schedule. Her decision log showed risk at 0.00 for sixteen weeks
+while the engine sped her up to 15 %/week. Three changes, each tested on the five profiles, the unseen population and Sofia:
+
+1. **Self-referenced signals.** Each person's first week at full strength becomes their own baseline; night share,
+   time to first puff and puffing volume are read as changes against it (`night_rel`, `ttfc_rel`, `intake_trend`).
+   A night share of 0.025 means nothing across people; a rise from one's own 0.025 does.
+2. **Speed up only on positive evidence.** The personal rate rises only after two consecutive weeks in which the
+   response to the last cut was demonstrably small against that baseline. Absence of alarm is not evidence of coping.
+   (A first attempt also added self-referenced triggers to the slow-down; they fired on noise and parked everyone. Reverted.)
+3. **Risk as a budget, not an alarm.** Dose is the strongest input to the relapse model, so the same features scored at
+   a lower dose give a higher risk. The engine now takes the largest cut (full, half, hold) whose predicted risk for the
+   coming week stays under a budget chosen on the training population (0.03/week). Plus a **craving budget**: estimated
+   craving above 4.5 caps the step at half, above 5.5 holds. The risk model sees one week ahead; the craving estimate
+   sees the slow build-up that never trips a weekly threshold.
+
+Result (40 weeks, 12 %/week): five profiles relapse 21 % -> 14 %, off 79 % -> 83 %; unseen population 8 %/92 % -> 6 %/94 %;
+Sofia 35 %/65 % -> 25 %/75 %. G for the two craving thresholds; C for the budget.
+
 ## Calibration against real data (17 Sept 2026)
 
 Source: Dawkins et al. 2018, *Addiction*, "Real-world compensatory behaviour with low nicotine concentration e-liquid",
