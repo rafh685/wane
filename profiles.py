@@ -125,6 +125,7 @@ PUFF_DUR_S = 3.4    # baseline puff duration, seconds (PR-ENDS field study mean 
 WITHDRAWAL_SCALE = 0.6   # was 4.0; calibrated on the LSBU 18 -> 6 mg data (see docs/model_assumptions.md)
 # how compensation splits between MORE puffs and LONGER puffs (LSBU: count x1.18, duration x1.26, total x1.47)
 COMP_COUNT_SHARE, COMP_DUR_SHARE = 0.43, 0.57
+BOUT_MODE = False   # True: puffs come in bouts (bouts.py, built on Ilian's generator) instead of hourly Poisson counts
 
 
 class Vaper:
@@ -180,6 +181,33 @@ class Vaper:
         day_factor = p.weekend_factor if dow in WEEKEND else 1.0
         rate = p.puffs_per_day * comp_count * day_factor * max(0.2, rng.normal(1, p.noise))
         puff_dur = PUFF_DUR_S * comp_dur * (1 + 0.03 * (self.craving - 2)) * max(0.5, rng.normal(1, 0.08))
+
+        if BOUT_MODE:
+            import bouts
+            wake, bed = p.wake[dt], p.bed[dt]
+            target = rate * (1 + 0.06 * (self.craving - 2) + 0.03 * p.cue_vector(dow).mean())
+            plist = bouts.day(rng, self.craving, wake, bed, target, p.routine(dow), p.cue_vector(dow), dur_mult=comp_dur)
+            sleep_hours = [h % 24 for h in range(int(np.ceil(bed)), int(np.ceil(bed)) + int(24 - (bed - wake)))]
+            sleep_hours = [h for h in sleep_hours if h != int(wake)]
+            times = [t for t, _, _ in plist]; puffs = len(times)
+            counts = np.zeros(24, dtype=int)
+            for t in times: counts[int(t) % 24] += 1
+            night_puffs = sum(1 for t in times if int(t) % 24 in sleep_hours)
+            first_awake = min([t for t in times if not (int(t) % 24 in sleep_hours)], default=wake + 0.5)
+            ttfc_min = max(1.0, (first_awake - wake) * 60)
+            puff_dur = float(np.mean([d for _, d, _ in plist])) if plist else PUFF_DUR_S
+            flows = [f for _, _, f in plist]
+            # relapse and return, same as below
+            pressure = self.craving + 0.5 * p.cue_vector(dow).max()
+            if pressure > p.relapse_threshold:
+                excess = pressure - p.relapse_threshold
+                daily_p = 0.04 + 0.06 * excess
+                if dow in WEEKEND or p.has_alcohol(dow): daily_p *= 1.5
+                if rng.random() < daily_p: self.relapsed = True
+            self.t += 1
+            return dict(day=self.t, dow=dow, dose=dose_mg, puffs=puffs, puff_dur=puff_dur, craving=self.craving,
+                        night_puffs=night_puffs, ttfc_min=ttfc_min, hours=[int(c) for c in counts],
+                        times=times, flows=flows, relapsed=self.relapsed)
 
         # --- spread over the hours: routine shape x (withdrawal + cue) ---
         routine = p.routine(dow)
