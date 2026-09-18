@@ -5,9 +5,9 @@
 <style>
 :root{
   --ink:#080d10; --ink-2:#0f171b; --ink-3:#152026;
-  --pine:#0e2b26; --sage:#8fa79b; --bone:#d9d4c7;
   --line:rgba(190,220,222,.12); --line-strong:rgba(190,220,222,.28);
   --text:#e6eeef; --text-2:#9fb1b6; --text-3:#6b7d83;
+  --pine:#0e2b26; --sage:#8fa79b; --bone:#d9d4c7;
   --amber:#f0a75a; --teal:#5fd3c4; --teal-deep:#1f8f86;
   --display:"Fraunces",Georgia,"Times New Roman",serif;
   --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -21,62 +21,58 @@ html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit}
-h1,h2,h3{font-family:var(--display);font-weight:300;letter-spacing:-.01em;line-height:1.08;text-wrap:balance;margin:0}
+h1,h2,h3{font-family:var(--display);font-weight:300;letter-spacing:-.01em;line-height:1.06;text-wrap:balance;margin:0}
 p{margin:0}
 .label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
 .num{font-variant-numeric:tabular-nums}
 :focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:2px}
 
 /* nav */
-.nav{position:fixed;inset:0 0 auto 0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px var(--gutter);
-  background:linear-gradient(to bottom,rgba(8,13,16,.85),rgba(8,13,16,0));pointer-events:none}
+.nav{position:fixed;inset:0 0 auto 0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px var(--gutter);pointer-events:none}
 .nav>*{pointer-events:auto}
 .wordmark{font-family:var(--display);font-size:24px;font-weight:400;text-decoration:none;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
 .wordmark i{width:8px;height:8px;border-radius:50%;background:var(--led,var(--teal));box-shadow:0 0 12px var(--led,var(--teal));transition:background .4s,box-shadow .4s}
-.nav ul{list-style:none;margin:0;padding:0;display:flex;gap:24px}
+.nav ul{list-style:none;margin:0;padding:0;display:flex;gap:26px}
 .nav a.link{font-size:13.5px;text-decoration:none;color:var(--text-2);transition:color .2s}
 .nav a.link:hover{color:var(--text)}
+.hud{display:flex;align-items:baseline;gap:8px;white-space:nowrap;pointer-events:none}
+.hud .val{font-family:var(--display);font-size:22px;font-weight:300;line-height:1;letter-spacing:-.02em}
+.hud .unit{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3)}
+.nav .right{display:flex;align-items:center;gap:28px}
 @media (max-width:820px){.nav ul{display:none}}
 
-/* hero */
-.hero{position:relative;padding:calc(96px + 6vh) var(--gutter) 6vh;max-width:var(--w);margin:0 auto;display:grid;grid-template-columns:1fr;gap:28px;min-height:auto}
-.hero h1{font-size:clamp(38px,6.2vw,84px);max-width:16ch}
-.hero .lede{font-size:clamp(17px,1.5vw,21px);color:var(--text-2);max-width:52ch}
-.hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px}
+/* story: the device pinned in the background, text fixed top and bottom */
+.story{position:relative}
+.stage{position:sticky;top:0;height:100vh;height:100svh;z-index:1;overflow:hidden}
+.stage canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
+.veil{position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(42% 38% at 50% 52%,rgba(95,211,196,.09),transparent 70%),
+    linear-gradient(to bottom,rgba(8,13,16,.94) 0%,rgba(8,13,16,.55) 20%,rgba(8,13,16,0) 38%,rgba(8,13,16,0) 68%,rgba(8,13,16,.6) 84%,rgba(8,13,16,.96) 100%)}
+.slides{position:absolute;inset:0;pointer-events:none}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;align-items:center;text-align:center;
+  padding:calc(78px + 3vh) var(--gutter) 5vh;visibility:hidden}
+.slide.on{visibility:visible}
+.slide .top,.slide .bottom{display:grid;gap:14px;justify-items:center;width:min(780px,100%);will-change:transform,opacity;opacity:0}
+.slide.live .top,.slide.live .bottom{pointer-events:auto}
+.slide h1{font-size:clamp(38px,6vw,78px);max-width:18ch}
+.slide h2{font-size:clamp(28px,4.2vw,54px);max-width:20ch}
+.slide .lede,.slide p.body{color:var(--text-2);font-size:clamp(15.5px,1.4vw,19px);max-width:58ch;text-wrap:pretty}
+.slide .cta{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:6px}
 .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 20px;border-radius:999px;font-size:14.5px;font-weight:600;text-decoration:none;cursor:pointer;border:1px solid var(--line-strong);transition:transform .2s ease,background .2s,border-color .2s;min-height:44px}
 .btn:hover{transform:translateY(-1px)}
 .btn.primary{background:var(--text);color:var(--ink);border-color:var(--text)}
 .btn.primary:hover{background:#fff}
 .btn.ghost:hover{border-color:var(--text-2)}
-.hero .scrollhint{display:flex;align-items:center;gap:12px;color:var(--text-3);font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-top:18px}
-.hero .scrollhint span{display:block;width:1px;height:38px;background:linear-gradient(var(--text-3),transparent)}
-@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-.hero [data-reveal]{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
-.hero [data-reveal]:nth-child(2){animation-delay:.08s}
-.hero [data-reveal]:nth-child(3){animation-delay:.16s}
-.hero [data-reveal]:nth-child(4){animation-delay:.24s}
-.hero [data-reveal]:nth-child(5){animation-delay:.32s}
-@media (prefers-reduced-motion:reduce){.hero [data-reveal]{animation:none}}
-
-/* story */
-.story{position:relative}
-.stage{position:sticky;top:0;height:100vh;height:100svh;z-index:0;overflow:hidden}
-.stage canvas{display:block;width:100%;height:100%}
-.stage .glow{position:absolute;inset:0;background:radial-gradient(40% 35% at 50% 55%,rgba(95,211,196,.10),transparent 70%);pointer-events:none;mix-blend-mode:screen}
-.hud{position:absolute;right:var(--gutter);top:calc(76px + 2vh);display:flex;flex-direction:column;align-items:flex-end;gap:4px;pointer-events:none;white-space:nowrap}
-.hud .val{font-family:var(--display);font-size:clamp(34px,4.4vw,56px);font-weight:300;line-height:1;letter-spacing:-.02em}
-.hud .unit{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3)}
-.chapters{position:relative;z-index:2;margin-top:-100vh;margin-top:-100svh;pointer-events:none}
-.chapter{min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:0 var(--gutter);max-width:var(--w);margin:0 auto}
-.chapter .inner{pointer-events:auto;width:min(460px,calc(50vw - 80px));display:grid;gap:18px;padding:28px 0}
-.chapter.right{justify-content:flex-end}
-.chapter h2{font-size:clamp(28px,3.2vw,42px)}
-.chapter p{color:var(--text-2);font-size:16.5px}
-.chapter .k{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:baseline;border-top:1px solid var(--line);padding-top:16px;margin-top:4px}
-.chapter .k b{font-family:var(--display);font-weight:300;font-size:30px;line-height:1;letter-spacing:-.02em;white-space:nowrap}
-.chapter .k small{font-size:13px;color:var(--text-3)}
+.scrollhint{display:flex;align-items:center;gap:12px;color:var(--text-3);font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;margin-top:10px}
+.scrollhint span{display:block;width:1px;height:30px;background:linear-gradient(var(--text-3),transparent)}
+.k{display:inline-grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:baseline;border-top:1px solid var(--line);padding-top:14px;margin-top:6px;max-width:52ch;text-align:left}
+.k b{font-family:var(--display);font-weight:300;font-size:30px;line-height:1;letter-spacing:-.02em;white-space:nowrap}
+.k small{font-size:13px;color:var(--text-3)}
 .tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
 .tag i{width:18px;height:1px;background:var(--text-3)}
+.chapters{position:relative;margin-top:-100vh;margin-top:-100svh;pointer-events:none}
+.chapter{height:100vh;height:100svh}
 
 /* rail */
 .rail{position:fixed;right:clamp(14px,2.4vw,34px);top:50%;transform:translateY(-50%);z-index:20;display:grid;gap:14px;justify-items:center}
@@ -100,7 +96,6 @@ p{margin:0}
 .pilot h2{font-size:clamp(30px,3.6vw,52px)}
 .pilot p{color:var(--text-2);margin-top:12px}
 .pilot .card>div:last-child{display:grid;gap:14px;justify-items:start}
-.pilot .card>div:last-child .btn{width:auto}
 footer{max-width:var(--w);margin:0 auto;padding:28px var(--gutter) 40px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;color:var(--text-3);font-size:13px;border-top:1px solid var(--line)}
 footer a{color:var(--text-2)}
 
@@ -108,16 +103,11 @@ footer a{color:var(--text-2)}
   .status,.pilot .card{grid-template-columns:1fr}
 }
 @media (max-width:760px){
-  .stage{height:50vh;height:50svh;z-index:3;background:linear-gradient(var(--ink) 78%,rgba(8,13,16,0))}
-  .stage .glow{background:radial-gradient(60% 45% at 50% 55%,rgba(95,211,196,.10),transparent 70%)}
-  .chapters{margin-top:0;z-index:1}
-  .chapter{min-height:auto;padding-block:6vh 10vh}
-  .chapter:first-child{padding-top:4vh}
-  .chapter .inner{width:100%}
-  .chapter.right{justify-content:flex-start}
-  .hud{top:66px;gap:2px}
-  .hud .val{font-size:28px}
-  .hud .unit{font-size:10px}
+  .slide{padding:calc(66px + 2vh) var(--gutter) 4vh}
+  .slide .top,.slide .bottom{gap:10px}
+  .k{grid-template-columns:auto 1fr;gap:4px 12px}
+  .k b{font-size:24px}
+  .scrollhint{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   .btn{transition:none}
@@ -125,90 +115,119 @@ footer a{color:var(--text-2)}
 </style>
 
 <header class="nav">
-  <a class="wordmark" href="#top" aria-label="Wane, home"><i aria-hidden="true"></i>wane</a>
-  <nav aria-label="Sections"><ul>
-    <li><a class="link" href="#problem">Problem</a></li>
-    <li><a class="link" href="#signal">Signal</a></li>
-    <li><a class="link" href="#engine">Engine</a></li>
-    <li><a class="link" href="#device">Device</a></li>
-    <li><a class="link" href="#evidence">Evidence</a></li>
-    <li><a class="link" href="#pilot">Pilot</a></li>
-  </ul></nav>
+  <a class="wordmark" href="#intro" aria-label="Wane, home"><i aria-hidden="true"></i>wane</a>
+  <div class="right">
+    <nav aria-label="Sections"><ul>
+      <li><a class="link" href="#problem">Problem</a></li>
+      <li><a class="link" href="#signal">Signal</a></li>
+      <li><a class="link" href="#engine">Engine</a></li>
+      <li><a class="link" href="#device">Device</a></li>
+      <li><a class="link" href="#evidence">Evidence</a></li>
+      <li><a class="link" href="#pilot">Pilot</a></li>
+    </ul></nav>
+    <div class="hud" aria-live="off"><span class="val num" id="nic">40 %</span><span class="unit">nicotine share</span></div>
+  </div>
 </header>
 
-<main id="top">
-  <section class="hero">
-    <p class="label" data-reveal>Adaptive nicotine tapering</p>
-    <h1 data-reveal>Your flavour never changes. Only the nicotine wanes.</h1>
-    <p class="lede" data-reveal>Every quit product tapers how often you vape. Wane tapers how much nicotine is in each puff, from your measured behaviour, so you never have to decide when to step down. Scroll to follow one taper from a 40 % nicotine share to zero.</p>
-    <div class="cta" data-reveal>
-      <a class="btn primary" href="#problem">Follow the taper</a>
-      <a class="btn ghost" href="#evidence">See the evidence</a>
-    </div>
-    <div class="scrollhint" data-reveal><span aria-hidden="true"></span>Scroll turns the device</div>
-  </section>
-
+<main>
   <div class="story" id="story">
-    <div class="stage" aria-hidden="true">
-      <canvas id="c"></canvas>
-      <div class="glow"></div>
-      <div class="hud"><span class="val num" id="nic">40 %</span><span class="unit">nicotine share</span></div>
+    <div class="stage">
+      <canvas id="c" aria-hidden="true"></canvas>
+      <div class="veil" aria-hidden="true"></div>
+      <div class="slides">
+
+        <section class="slide" data-slide>
+          <div class="top">
+            <p class="label">Adaptive nicotine tapering</p>
+            <h1>Your flavour never changes. Only the nicotine wanes.</h1>
+          </div>
+          <div class="bottom">
+            <p class="lede">Every quit product tapers how often you vape. Wane tapers how much nicotine is in each puff, from your measured behaviour, so you never have to decide when to step down. Scroll to follow one taper from a 40 % nicotine share to zero.</p>
+            <div class="cta">
+              <a class="btn primary" href="#problem">Follow the taper</a>
+              <a class="btn ghost" href="#evidence">See the evidence</a>
+            </div>
+            <div class="scrollhint"><span aria-hidden="true"></span>Scroll turns the device</div>
+          </div>
+        </section>
+
+        <section class="slide" data-slide>
+          <div class="top">
+            <span class="tag"><i></i>The problem</span>
+            <h2>The ladder does not lose people to relapse. It loses them to stalling.</h2>
+          </div>
+          <div class="bottom">
+            <p class="body">A fixed ladder cuts a set percentage per step and asks you to switch liquid. Most people manage the chemistry. What they skip is the decision, and a step never applied is a taper that has quietly stopped.</p>
+            <div class="k"><b>1</b><small>largest effect in the simulation: taking the decision away from the user, with automatic delivery</small></div>
+          </div>
+        </section>
+
+        <section class="slide" data-slide>
+          <div class="top">
+            <span class="tag"><i></i>The signal</span>
+            <h2>Seven days of puffs say who is about to stall, a week ahead.</h2>
+          </div>
+          <div class="bottom">
+            <p class="body">The device counts and times every puff with a pressure sensor. Night puffs and time to first puff carry most of the signal. Puffs per hour and puff length fill in the rest.</p>
+            <div class="k"><b>7 d</b><small>window of measured behaviour behind every decision</small></div>
+          </div>
+        </section>
+
+        <section class="slide" data-slide>
+          <div class="top">
+            <span class="tag"><i></i>The engine</span>
+            <h2>Estimate craving. Estimate risk of relapse. Then cut, half cut, or hold.</h2>
+          </div>
+          <div class="bottom">
+            <p class="body">Each period the app turns the last week into features, scores next week's relapse risk and current craving, and picks one of three moves. It can only lower or hold, never raise. The device measures. The app decides.</p>
+            <div class="k"><b>3</b><small>moves: cut, half cut, hold. The per-person rate is learned, not set.</small></div>
+          </div>
+        </section>
+
+        <section class="slide" data-slide>
+          <div class="top">
+            <span class="tag"><i></i>The device</span>
+            <h2>Two chambers. One ring. No numbers on the hardware.</h2>
+          </div>
+          <div class="bottom">
+            <p class="body">A flavour chamber you fill with any 0 mg liquid, and a small nicotine chamber from a standard 20 mg/ml shot. Each has its own coil. The app lowers the nicotine coil's share of the power week by week, so the dose falls while the flavour stays the same. The ring at the base fills as today's allowance and empties as the day goes on. It never shows a number and never refuses a puff.</p>
+            <div class="k"><b>105 mm</b><small>by 22 by 12, 35 g. Pen format, flat oval section, matte anodised aluminium. One light ring, one haptic, zero buttons.</small></div>
+          </div>
+        </section>
+
+        <section class="slide" data-slide>
+          <div class="top">
+            <span class="tag"><i></i>The evidence</span>
+            <h2>Calibrated on the one public dataset of real vapers under a nicotine cut.</h2>
+          </div>
+          <div class="bottom">
+            <p class="body">Twenty experienced vapers, one week each at 18 and 6 mg/ml, every puff logged by the device (Dawkins et al., 2018). It fixed the size of compensation, the craving response, and the fact that a single cut on its own does not make people relapse.</p>
+            <div class="k"><b>×1.47</b><small>total puffing after a 67 % cut, split between more puffs and longer puffs</small></div>
+          </div>
+        </section>
+
+        <section class="slide" data-slide>
+          <div class="top">
+            <span class="tag"><i></i>Zero</span>
+            <h2>The last step is the same size as every other. Then there is nothing left to step down.</h2>
+          </div>
+          <div class="bottom">
+            <p class="body">Deciding daily is not better than weekly unless the signals are faster than the decisions, and small steps are not free, withdrawal accumulates. Wane's job is the pace, and the pace is yours.</p>
+            <div class="k"><b>0 %</b><small>nicotine share. The nicotine coil is off. The device keeps working, the flavour is the same.</small></div>
+          </div>
+        </section>
+
+      </div>
     </div>
 
-    <div class="chapters">
-      <section class="chapter" id="problem">
-        <div class="inner" data-reveal>
-          <span class="tag"><i></i>The problem</span>
-          <h2>The ladder does not lose people to relapse. It loses them to stalling.</h2>
-          <p>A fixed ladder cuts a set percentage per step and asks you to switch liquid. Most people manage the chemistry. What they skip is the decision, and a step never applied is a taper that has quietly stopped.</p>
-          <div class="k"><b>1</b><small>largest effect in the simulation: taking the decision away from the user, with automatic delivery</small></div>
-        </div>
-      </section>
-
-      <section class="chapter right" id="signal">
-        <div class="inner" data-reveal>
-          <span class="tag"><i></i>The signal</span>
-          <h2>Seven days of puffs say who is about to stall, a week ahead.</h2>
-          <p>The device counts and times every puff with a pressure sensor. Night puffs and time to first puff carry most of the signal. Puffs per hour and puff length fill in the rest.</p>
-          <div class="k"><b>7 d</b><small>window of measured behaviour behind every decision</small></div>
-        </div>
-      </section>
-
-      <section class="chapter" id="engine">
-        <div class="inner" data-reveal>
-          <span class="tag"><i></i>The engine</span>
-          <h2>Estimate craving. Estimate risk of relapse. Then cut, half cut, or hold.</h2>
-          <p>Each period the app turns the last week into features, scores next week's relapse risk and current craving, and picks one of three moves. It can only lower or hold, never raise. The device measures. The app decides.</p>
-          <div class="k"><b>3</b><small>moves: cut, half cut, hold. The per-person rate is learned, not set.</small></div>
-        </div>
-      </section>
-
-      <section class="chapter right" id="device">
-        <div class="inner" data-reveal>
-          <span class="tag"><i></i>The device</span>
-          <h2>Two chambers. One ring. No numbers on the hardware.</h2>
-          <p>A flavour chamber you fill with any 0 mg liquid, and a small nicotine chamber from a standard 20 mg/ml shot. Each has its own coil. The app lowers the nicotine coil's share of the power week by week, so the dose falls while the flavour stays exactly the same. The ring at the base is the whole interface: it fills as today's allowance and empties as the day goes on. It never shows a number and never refuses a puff.</p>
-          <div class="k"><b>105 mm</b><small>by 22 by 12, 35 g. Pen format, flat oval section, matte anodised aluminium. One light ring, one haptic, zero buttons.</small></div>
-        </div>
-      </section>
-
-      <section class="chapter" id="evidence">
-        <div class="inner" data-reveal>
-          <span class="tag"><i></i>The evidence</span>
-          <h2>Calibrated on the one public dataset of real vapers under a nicotine cut.</h2>
-          <p>Twenty experienced vapers, one week each at 18 and 6 mg/ml, every puff logged by the device (Dawkins et al., 2018). It fixed the size of compensation, the craving response, and the fact that a single cut on its own does not make people relapse.</p>
-          <div class="k"><b>×1.47</b><small>total puffing after a 67 % cut, split between more puffs and longer puffs</small></div>
-        </div>
-      </section>
-
-      <section class="chapter right" id="zero">
-        <div class="inner" data-reveal>
-          <span class="tag"><i></i>Zero</span>
-          <h2>The last step is the same size as every other. Then there is nothing left to step down.</h2>
-          <p>Deciding daily is not better than weekly unless the signals are faster than the decisions, and small steps are not free, withdrawal accumulates. Wane's job is the pace, and the pace is yours.</p>
-          <div class="k"><b>0 %</b><small>nicotine share. The nicotine coil is off. The device keeps working, the flavour is the same.</small></div>
-        </div>
-      </section>
+    <div class="chapters" aria-hidden="true">
+      <div class="chapter" id="intro"></div>
+      <div class="chapter" id="problem"></div>
+      <div class="chapter" id="signal"></div>
+      <div class="chapter" id="engine"></div>
+      <div class="chapter" id="device"></div>
+      <div class="chapter" id="evidence"></div>
+      <div class="chapter" id="zero"></div>
     </div>
   </div>
 
@@ -259,8 +278,6 @@ footer a{color:var(--text-2)}
 </nav>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
 (function(){
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -268,7 +285,10 @@ footer a{color:var(--text-2)}
   var canvas = document.getElementById('c');
   var nicEl = document.getElementById('nic');
   var rail = Array.prototype.slice.call(document.querySelectorAll('[data-rail]'));
-  var chapters = Array.prototype.slice.call(document.querySelectorAll('.chapter'));
+  var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]')).map(function(el){
+    return {el:el, top:el.querySelector('.top'), bottom:el.querySelector('.bottom'), o:-1};
+  });
+  var N = slides.length;
 
   /* ---------- in-page links: scroll by script, not by hash ---------- */
   document.addEventListener('click', function(e){
@@ -290,7 +310,7 @@ footer a{color:var(--text-2)}
 
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
-  camera.position.set(0, 0.15, 10);
+  camera.position.set(0, 0.1, 9.2);
 
   scene.add(new THREE.HemisphereLight(0x9fd6cc, 0x03100d, 0.35));
   var key = new THREE.DirectionalLight(0xfff4e6, 1.15); key.position.set(4, 6, 7); scene.add(key);
@@ -302,7 +322,7 @@ footer a{color:var(--text-2)}
   var dev = new THREE.Group();            // millimetres
   var oval = new THREE.Group();           // 22 mm wide, 12 mm deep: flat oval section
   oval.scale.set(1, 1, 12/22);
-  dev.scale.setScalar(0.037);
+  
   dev.add(oval); outer.add(dev); scene.add(outer);
 
   var pine  = new THREE.MeshPhysicalMaterial({color:0x0e2b26, metalness:0.35, roughness:0.62, clearcoat:0.12, clearcoatRoughness:0.6});
@@ -373,33 +393,35 @@ footer a{color:var(--text-2)}
     // lit from twelve o'clock, emptying clockwise
     arc.geometry = new THREE.RingGeometry(LED_R - LED_W, LED_R, Math.max(6, Math.round(64 * sweep / (Math.PI*2))), 1, Math.PI/2 - sweep, sweep);
   }
-  var ledLight = new THREE.PointLight(0x5fd3c4, 1.2, 4, 2); ledLight.position.set(0, RING_Y * 0.037, 0.55); outer.add(ledLight);
+  var ledLight = new THREE.PointLight(0x5fd3c4, 1.2, 4, 2);  outer.add(ledLight);
 
-  var TEAL = new THREE.Color(0x5fd3c4), tmp = new THREE.Color();
+  var TEAL = new THREE.Color(0x5fd3c4), tmp = new THREE.Color(), haloBase = 0.26;
 
   function setLevel(p){
     var share = 40 * Math.pow(1 - p, 1.15);           // nicotine share of coil power, %
     var f = Math.max(0, 1 - p);                        // ring fill, full to empty
     setArc(Math.max(0.05, f * Math.PI * 2));
     arcMat.color.copy(TEAL).multiplyScalar(0.35 + 0.7 * f);
-    haloMat.opacity = 0.04 + 0.22 * f;
+    haloBase = 0.04 + 0.22 * f;
     ledLight.intensity = 0.15 + 1.2 * f;
     tmp.copy(TEAL).multiplyScalar(0.3 + 0.7 * f);
     document.documentElement.style.setProperty('--led', '#' + tmp.getHexString());
     nicEl.textContent = Math.round(share) + ' %';
   }
 
-  var mobile = false, sideOffset = 0;
+  var mobile = false, restY = 0;
   function resize(){
     var w = canvas.clientWidth, h = canvas.clientHeight;
     renderer.setSize(w, h, false);
     camera.aspect = w/h; camera.updateProjectionMatrix();
     mobile = w < 760;
-    var s = mobile ? 0.62 : Math.min(1, w/900);
-    outer.scale.setScalar(s);
-    outer.position.y = mobile ? 0.15 : -0.05;
-    var halfW = Math.tan(camera.fov * Math.PI/360) * camera.position.z * camera.aspect;
-    sideOffset = mobile ? 0 : Math.min(1.5, halfW * 0.42);
+    // the device fills most of the height and sits behind the text
+    var visH = 2 * camera.position.z * Math.tan(camera.fov * Math.PI/360);
+    var s = (mobile ? 0.56 : 0.8) * visH / 108;   // model is in millimetres, about 108 mm tall
+    dev.scale.setScalar(s);
+    ledLight.position.set(0, RING_Y * s, 0.5);
+    restY = mobile ? 0.45 : 0.53;              // lift the base so the LED sits in the clear band
+    outer.position.y = restY;
   }
   addEventListener('resize', resize); resize();
 
@@ -410,7 +432,7 @@ footer a{color:var(--text-2)}
     var span = story.offsetHeight - innerHeight;
     var p = span > 0 ? (-r.top) / span : 0;
     target = Math.min(1, Math.max(0, p));
-    var idx = Math.round(target * (rail.length - 1));
+    var idx = Math.round(target * (N - 1)) - 1;
     rail.forEach(function(a, i){ a.classList.toggle('on', i === idx); });
   }
   addEventListener('scroll', readScroll, {passive:true}); readScroll();
@@ -419,38 +441,107 @@ footer a{color:var(--text-2)}
     tmx = (e.clientX/innerWidth - 0.5); tmy = (e.clientY/innerHeight - 0.5);
   }, {passive:true});
 
-  // which side of the screen is free for the device at each chapter
-  var SIDES = chapters.map(function(ch){ return ch.classList.contains('right') ? -1 : 1; });
-  function smooth(t){ return t * t * (3 - 2 * t); }
-  var t0 = performance.now();
+  function clamp01(t){ return Math.min(1, Math.max(0, t)); }
+  function smooth(t){ t = clamp01(t); return t * t * (3 - 2 * t); }
+  function easeInOutCubic(t){ t = clamp01(t); return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; }
+  function easeOutBack(t){ t = clamp01(t); var c = 1.4; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); }
+  function easeInCubic(t){ t = clamp01(t); return t * t * t; }
+
+  /* text blocks: pop up from below with a little overshoot, hold, then lift out as the next one arrives */
+  function layoutSlides(p){
+    var s = p * (N - 1);
+    for (var i = 0; i < N; i++){
+      var u = s - i, o, y, sc;
+      if (u <= -0.44 || u >= 0.44){ o = 0; y = u < 0 ? 1 : -1; sc = u < 0 ? 0.9 : 0.96; }
+      else if (u < -0.1){
+        var t = (u + 0.44) / 0.34;
+        var e = easeOutBack(t);
+        o = clamp01(t * 1.6); y = 1 - e; sc = 0.9 + 0.1 * e;
+      }
+      else if (u > 0.1){
+        var t2 = easeInCubic((u - 0.1) / 0.34);
+        o = 1 - t2; y = -t2; sc = 1 - 0.04 * t2;
+      }
+      else { o = 1; y = 0; sc = 1; }
+      var sl = slides[i];
+      if (sl.o === o && o === 0) continue;
+      sl.o = o;
+      var dy = reduced ? 0 : y * 96, scl = reduced ? 1 : sc;
+      sl.top.style.opacity = o;
+      sl.top.style.transform = 'translateY(' + (dy * 0.8).toFixed(1) + 'px) scale(' + scl.toFixed(3) + ')';
+      sl.bottom.style.opacity = o;
+      sl.bottom.style.transform = 'translateY(' + (dy * 1.25).toFixed(1) + 'px) scale(' + scl.toFixed(3) + ')';
+      sl.el.classList.toggle('on', o > 0.001);
+      sl.el.classList.toggle('live', o > 0.5);
+    }
+  }
+
+  function easeInOutSine(t){ t = clamp01(t); return -(Math.cos(Math.PI * t) - 1) / 2; }
+  function easeInOutQuint(t){ t = clamp01(t); return t < 0.5 ? 16*t*t*t*t*t : 1 - Math.pow(-2*t + 2, 5) / 2; }
+
+  /* one pose per chapter: lean (degrees, like a pen on a desk), pitch toward the viewer, and a drift off centre */
+  var POSES = [
+    {lean:-45, pitch: 0.16, x: 0.00, y: 0.00},   // intro
+    {lean: 45, pitch: 0.10, x: 0.00, y: 0.00},   // problem: swings to the other side
+    {lean:-30, pitch: 0.42, x: 0.25, y: 0.10},   // signal: tipped toward you, off to the right
+    {lean: 14, pitch:-0.22, x:-0.20, y: 0.16},   // engine: nearly upright, tipped away
+    {lean:  0, pitch: 0.05, x: 0.00, y: 0.06},   // device: upright and front on, like the sheet
+    {lean:-58, pitch: 0.30, x: 0.30, y:-0.04},   // evidence: lying down
+    {lean: 40, pitch: 0.12, x:-0.15, y: 0.10}    // zero
+  ];
+  /* one transition between each pair: turns around its own axis (sign is direction), the nod mid-turn, the lift, the easing */
+  var TRANS = [
+    {turns: 1, nod:0.55, lift:0.18, arc: 0.00, ease:easeInOutCubic},
+    {turns:-1, nod:0.30, lift:0.10, arc: 0.35, ease:easeInOutSine},
+    {turns: 2, nod:0.75, lift:0.26, arc:-0.30, ease:easeInOutQuint},   // fast double whip
+    {turns:-1, nod:0.18, lift:0.04, arc: 0.00, ease:easeInOutSine},    // slow, calm, presents the device
+    {turns: 1, nod:0.90, lift:0.34, arc: 0.40, ease:easeInOutCubic},   // big nod and lift
+    {turns:-2, nod:0.35, lift:0.12, arc:-0.45, ease:easeInOutQuint}    // fast reverse spin into zero
+  ];
+  var lastTurnsAt = []; (function(){ var a = 0; for (var i = 0; i < N; i++){ lastTurnsAt.push(a); if (i < N - 1) a += TRANS[i].turns; } })();
+
+  outer.rotation.order = 'XZY';           // spin around its own axis first, then lean, then pitch
+  var IDLE_SPIN = 0.11;                   // radians per second while reading: a full turn in about a minute
+  var idleSpin = 0, vel = 0, last = performance.now(), t0 = last;
   function frame(now){
-    var k = reduced ? 1 : 0.075;
-    progress += (target - progress) * k;
+    var dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (reduced){ progress = target; vel = 0; }
+    else {
+      // a slightly underdamped spring, so the device settles with a small organic overshoot
+      var K = 38, D = 2 * Math.sqrt(K) * 0.78;
+      vel += ((target - progress) * K - vel * D) * dt;
+      progress += vel * dt;
+      idleSpin += IDLE_SPIN * dt;
+    }
     mx += (tmx - mx) * 0.05; my += (tmy - my) * 0.05;
-    var idle = reduced ? 0 : Math.sin((now - t0)/2600) * 0.05;
-    var n = SIDES.length, sc = progress * (n - 1), ci = Math.min(n - 2, Math.floor(sc)), ct = smooth(sc - ci);
-    var side = SIDES[ci] + (SIDES[ci + 1] - SIDES[ci]) * ct;
-    outer.rotation.y = (ci + ct) * Math.PI * 2 + mx * 0.35 + idle;
-    outer.rotation.x = 0.08 + my * 0.2;
-    outer.rotation.z = 0;
-    outer.position.x = side * sideOffset;
+
+    var sc = progress * (N - 1), ci = Math.floor(sc), ct = sc - ci;
+    if (ci >= N - 1){ ci = N - 2; ct = 1; } if (ci < 0){ ci = 0; ct = 0; }
+    var A = POSES[ci], B = POSES[ci + 1], T = TRANS[ci];
+    var e = T.ease(ct);
+    var swing = Math.sin(e * Math.PI);                   // 0 at rest, 1 mid-transition
+    var leanK = mobile ? 0.55 : 1, driftK = mobile ? 0.4 : 1;
+    var deg = Math.PI / 180;
+
+    var t = (now - t0) / 1000;
+    var breathe = reduced ? 0 : 1;
+    // the scroll spin: this chapter's turns so far, plus the idle spin, plus a lean into the scroll direction
+    var spin = (lastTurnsAt[ci] + T.turns * e) * Math.PI * 2;
+    var momentum = Math.max(-0.3, Math.min(0.3, vel * 0.25));
+    outer.rotation.y = spin + idleSpin + mx * 0.4 + breathe * Math.sin(t * 0.45) * 0.05;
+    outer.rotation.z = (A.lean + (B.lean - A.lean) * e) * deg * leanK + momentum + breathe * Math.sin(t * 0.31) * 0.025;
+    outer.rotation.x = A.pitch + (B.pitch - A.pitch) * e + swing * T.nod + my * 0.18 + breathe * Math.sin(t * 0.52) * 0.03;
+    outer.position.x = (A.x + (B.x - A.x) * e + swing * T.arc) * driftK;
+    outer.position.y = restY + A.y + (B.y - A.y) * e + swing * T.lift + breathe * Math.sin(t * 0.4) * 0.03;
+
+    haloMat.opacity = haloBase * (1 + breathe * Math.sin(t * 1.3) * 0.18);
+
     setLevel(progress);
+    layoutSlides(progress);
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }
+  layoutSlides(0);
   requestAnimationFrame(frame);
-
-  /* ---------- reveals ---------- */
-  if (window.gsap && !reduced){
-    gsap.registerPlugin(ScrollTrigger);
-    chapters.forEach(function(ch){
-      var el = ch.querySelector('[data-reveal]');
-      gsap.from(el, {opacity:0, y:28, duration:0.7, ease:'power2.out',
-        scrollTrigger:{trigger:ch, start:'top 70%', toggleActions:'play none none reverse'}});
-    });
-    gsap.from('.status > *, .pilot .card', {opacity:0, y:20, duration:0.6, ease:'power1.out', stagger:0.1,
-      scrollTrigger:{trigger:'.after', start:'top 85%'}});
-    addEventListener('load', function(){ ScrollTrigger.refresh(); });
-  }
 })();
 </script>
