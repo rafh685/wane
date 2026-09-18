@@ -132,6 +132,17 @@ while the engine sped her up to 15 %/week. Three changes, each tested on the fiv
 Result (40 weeks, 12 %/week): five profiles relapse 21 % -> 14 %, off 79 % -> 83 %; unseen population 8 %/92 % -> 6 %/94 %;
 Sofia 35 %/65 % -> 25 %/75 %. G for the two craving thresholds; C for the budget.
 
+## 13. The Lucía problem (experiments/lucia.py)
+
+The hard compensator with slow craving decay fails every automatic schedule: blind 63 % relapse, Wane 43 %. On the manual
+taper she protects herself by skipping steps and never finishes. Four engine-side fixes were tried (readiness gate, rising-craving
+gate, first-cut rate, first-cut brake). Each lowers her relapse and each costs the rest of the population, because the only thing
+that identifies her early, her puffing response to the first cuts, is +3 to +16 % against a week-to-week noise of about the same
+size; Ana's response spans -18 to +11 %. The distributions overlap, so any rule that catches Lucía in week 3 also catches noise.
+Status: not solvable inside the simulation with weekly puff counts alone. It needs either a longer observation before the rate is
+set, a lower base rate for everyone (a product decision: 8 %/week finishes her at 25 % relapse but adds six weeks for all), or
+real response sizes from the pilot. The current engine keeps her at 43 %/43 % and finishes about half of her runs given 60 weeks.
+
 ## Calibration against real data (17 Sept 2026)
 
 Source: Dawkins et al. 2018, *Addiction*, "Real-world compensatory behaviour with low nicotine concentration e-liquid",
