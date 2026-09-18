@@ -91,6 +91,10 @@ def evaluate(profiles, engine_factory, seeds=(0, 1), weeks=WEEKS_EVAL):
 
 
 if __name__ == "__main__":
+    import profiles
+    BOUTS = "--bouts" in sys.argv                     # fit on the bout-level generator instead of hourly counts
+    profiles.BOUT_MODE = BOUTS
+    OUT = "engine_weights_bouts.json" if BOUTS else "engine_weights.json"
     t0 = time.time()
     A, B = population(N_A, seed=1), population(N_B, seed=2)
     X, yc, yr = collect(A)
@@ -119,8 +123,10 @@ if __name__ == "__main__":
         if best is None or score > best[1]:
             best = (weights, score)
     weights = best[0]
-    json.dump(weights, open("engine_weights.json", "w"), indent=1)
-    print(f"\nchosen: budget {weights['budget']:.3f} per week  -> engine_weights.json")
+    json.dump(weights, open(OUT, "w"), indent=1)
+    weights["crave_half"], weights["crave_hold"] = 4.5, 5.5
+    json.dump(weights, open(OUT, "w"), indent=1)
+    print(f"\nchosen: budget {weights['budget']:.3f} per week  -> {OUT}")
 
     # ---- the honest test: population B, never seen ----
     print(f"\npopulation B ({N_B} people x 2 seeds, {WEEKS_EVAL} weeks, 12 %/week):")

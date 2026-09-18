@@ -1,11 +1,10 @@
-<title>Wane</title>
+<title>Wane v1</title>
 <meta name="description" content="Wane tapers how much nicotine is in each puff, from measured behaviour.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 :root{
   --ink:#080d10; --ink-2:#0f171b; --ink-3:#152026;
-  --pine:#0e2b26; --sage:#8fa79b; --bone:#d9d4c7;
   --line:rgba(190,220,222,.12); --line-strong:rgba(190,220,222,.28);
   --text:#e6eeef; --text-2:#9fb1b6; --text-3:#6b7d83;
   --amber:#f0a75a; --teal:#5fd3c4; --teal-deep:#1f8f86;
@@ -32,11 +31,11 @@ p{margin:0}
   background:linear-gradient(to bottom,rgba(8,13,16,.85),rgba(8,13,16,0));pointer-events:none}
 .nav>*{pointer-events:auto}
 .wordmark{font-family:var(--display);font-size:24px;font-weight:400;text-decoration:none;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
-.wordmark i{width:8px;height:8px;border-radius:50%;background:var(--led,var(--teal));box-shadow:0 0 12px var(--led,var(--teal));transition:background .4s,box-shadow .4s}
-.nav ul{list-style:none;margin:0;padding:0;display:flex;gap:24px}
+.wordmark i{width:8px;height:8px;border-radius:50%;background:var(--led,var(--amber));box-shadow:0 0 12px var(--led,var(--amber));transition:background .4s,box-shadow .4s}
+.nav ul{list-style:none;margin:0;padding:0;display:flex;gap:26px}
 .nav a.link{font-size:13.5px;text-decoration:none;color:var(--text-2);transition:color .2s}
 .nav a.link:hover{color:var(--text)}
-@media (max-width:820px){.nav ul{display:none}}
+@media (max-width:760px){.nav ul{display:none}}
 
 /* hero */
 .hero{position:relative;padding:calc(96px + 6vh) var(--gutter) 6vh;max-width:var(--w);margin:0 auto;display:grid;grid-template-columns:1fr;gap:28px;min-height:auto}
@@ -63,17 +62,17 @@ p{margin:0}
 .stage{position:sticky;top:0;height:100vh;height:100svh;z-index:0;overflow:hidden}
 .stage canvas{display:block;width:100%;height:100%}
 .stage .glow{position:absolute;inset:0;background:radial-gradient(40% 35% at 50% 55%,rgba(95,211,196,.10),transparent 70%);pointer-events:none;mix-blend-mode:screen}
-.hud{position:absolute;right:var(--gutter);top:calc(76px + 2vh);display:flex;flex-direction:column;align-items:flex-end;gap:4px;pointer-events:none;white-space:nowrap}
+.hud{position:absolute;left:50%;top:calc(76px + 2vh);transform:translateX(-50%);display:flex;align-items:baseline;gap:12px;pointer-events:none;white-space:nowrap}
 .hud .val{font-family:var(--display);font-size:clamp(34px,4.4vw,56px);font-weight:300;line-height:1;letter-spacing:-.02em}
 .hud .unit{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3)}
 .chapters{position:relative;z-index:2;margin-top:-100vh;margin-top:-100svh;pointer-events:none}
 .chapter{min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:0 var(--gutter);max-width:var(--w);margin:0 auto}
-.chapter .inner{pointer-events:auto;width:min(460px,calc(50vw - 80px));display:grid;gap:18px;padding:28px 0}
+.chapter .inner{pointer-events:auto;width:min(430px,100%);display:grid;gap:18px;padding:28px 0}
 .chapter.right{justify-content:flex-end}
 .chapter h2{font-size:clamp(28px,3.2vw,42px)}
 .chapter p{color:var(--text-2);font-size:16.5px}
 .chapter .k{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:baseline;border-top:1px solid var(--line);padding-top:16px;margin-top:4px}
-.chapter .k b{font-family:var(--display);font-weight:300;font-size:30px;line-height:1;letter-spacing:-.02em;white-space:nowrap}
+.chapter .k b{font-family:var(--display);font-weight:300;font-size:30px;line-height:1;letter-spacing:-.02em}
 .chapter .k small{font-size:13px;color:var(--text-3)}
 .tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
 .tag i{width:18px;height:1px;background:var(--text-3)}
@@ -115,7 +114,7 @@ footer a{color:var(--text-2)}
   .chapter:first-child{padding-top:4vh}
   .chapter .inner{width:100%}
   .chapter.right{justify-content:flex-start}
-  .hud{top:66px;gap:2px}
+  .hud{left:auto;right:var(--gutter);top:66px;transform:none;flex-direction:column;align-items:flex-end;gap:2px}
   .hud .val{font-size:28px}
   .hud .unit{font-size:10px}
 }
@@ -130,7 +129,6 @@ footer a{color:var(--text-2)}
     <li><a class="link" href="#problem">Problem</a></li>
     <li><a class="link" href="#signal">Signal</a></li>
     <li><a class="link" href="#engine">Engine</a></li>
-    <li><a class="link" href="#device">Device</a></li>
     <li><a class="link" href="#evidence">Evidence</a></li>
     <li><a class="link" href="#pilot">Pilot</a></li>
   </ul></nav>
@@ -139,8 +137,8 @@ footer a{color:var(--text-2)}
 <main id="top">
   <section class="hero">
     <p class="label" data-reveal>Adaptive nicotine tapering</p>
-    <h1 data-reveal>Your flavour never changes. Only the nicotine wanes.</h1>
-    <p class="lede" data-reveal>Every quit product tapers how often you vape. Wane tapers how much nicotine is in each puff, from your measured behaviour, so you never have to decide when to step down. Scroll to follow one taper from a 40 % nicotine share to zero.</p>
+    <h1 data-reveal>Every quit product tapers how often you vape. Wane tapers how much.</h1>
+    <p class="lede" data-reveal>The nicotine in each puff steps down from your measured behaviour, so you never have to decide when to step down. Scroll to follow one taper from 18 mg/ml to zero.</p>
     <div class="cta" data-reveal>
       <a class="btn primary" href="#problem">Follow the taper</a>
       <a class="btn ghost" href="#evidence">See the evidence</a>
@@ -152,7 +150,7 @@ footer a{color:var(--text-2)}
     <div class="stage" aria-hidden="true">
       <canvas id="c"></canvas>
       <div class="glow"></div>
-      <div class="hud"><span class="val num" id="nic">40 %</span><span class="unit">nicotine share</span></div>
+      <div class="hud"><span class="val num" id="nic">18.0</span><span class="unit">mg/ml in the liquid</span></div>
     </div>
 
     <div class="chapters">
@@ -169,7 +167,7 @@ footer a{color:var(--text-2)}
         <div class="inner" data-reveal>
           <span class="tag"><i></i>The signal</span>
           <h2>Seven days of puffs say who is about to stall, a week ahead.</h2>
-          <p>The device counts and times every puff with a pressure sensor. Night puffs and time to first puff carry most of the signal. Puffs per hour and puff length fill in the rest.</p>
+          <p>Wane reads the same puff timestamps a counter app or a metering device already produces. Night puffs and time to first puff carry most of the signal. Puffs per hour and puff length fill in the rest.</p>
           <div class="k"><b>7 d</b><small>window of measured behaviour behind every decision</small></div>
         </div>
       </section>
@@ -178,21 +176,12 @@ footer a{color:var(--text-2)}
         <div class="inner" data-reveal>
           <span class="tag"><i></i>The engine</span>
           <h2>Estimate craving. Estimate risk of relapse. Then cut, half cut, or hold.</h2>
-          <p>Each period the app turns the last week into features, scores next week's relapse risk and current craving, and picks one of three moves. It can only lower or hold, never raise. The device measures. The app decides.</p>
+          <p>Each period the engine turns the last week into features, scores next week's relapse risk and current craving, and picks one of three moves. It can only lower or hold, never raise. Below 3 mg/ml it switches to absolute steps, so the last step to zero is no bigger than the ones before it.</p>
           <div class="k"><b>3</b><small>moves: cut, half cut, hold. The per-person rate is learned, not set.</small></div>
         </div>
       </section>
 
-      <section class="chapter right" id="device">
-        <div class="inner" data-reveal>
-          <span class="tag"><i></i>The device</span>
-          <h2>Two chambers. One ring. No numbers on the hardware.</h2>
-          <p>A flavour chamber you fill with any 0 mg liquid, and a small nicotine chamber from a standard 20 mg/ml shot. Each has its own coil. The app lowers the nicotine coil's share of the power week by week, so the dose falls while the flavour stays exactly the same. The ring at the base is the whole interface: it fills as today's allowance and empties as the day goes on. It never shows a number and never refuses a puff.</p>
-          <div class="k"><b>105 mm</b><small>by 22 by 12, 35 g. Pen format, flat oval section, matte anodised aluminium. One light ring, one haptic, zero buttons.</small></div>
-        </div>
-      </section>
-
-      <section class="chapter" id="evidence">
+      <section class="chapter right" id="evidence">
         <div class="inner" data-reveal>
           <span class="tag"><i></i>The evidence</span>
           <h2>Calibrated on the one public dataset of real vapers under a nicotine cut.</h2>
@@ -201,12 +190,12 @@ footer a{color:var(--text-2)}
         </div>
       </section>
 
-      <section class="chapter right" id="zero">
+      <section class="chapter" id="zero">
         <div class="inner" data-reveal>
           <span class="tag"><i></i>Zero</span>
           <h2>The last step is the same size as every other. Then there is nothing left to step down.</h2>
           <p>Deciding daily is not better than weekly unless the signals are faster than the decisions, and small steps are not free, withdrawal accumulates. Wane's job is the pace, and the pace is yours.</p>
-          <div class="k"><b>0 %</b><small>nicotine share. The nicotine coil is off. The device keeps working, the flavour is the same.</small></div>
+          <div class="k"><b>0.0</b><small>mg/ml. The device keeps working. The nicotine is gone.</small></div>
         </div>
       </section>
     </div>
@@ -219,7 +208,7 @@ footer a{color:var(--text-2)}
         <h2>The engine is evaluated on synthetic people who obey the assumptions it was written with.</h2>
       </div>
       <div>
-        <p style="margin-bottom:20px">Every constant in the model is labelled by where it comes from. What remains synthetic until a pilot: night puffs, time to first puff, weekend patterns and months of tapering. The device is a concept sheet drawn to scale, not a render or a tested part.</p>
+        <p style="margin-bottom:20px">Every constant in the model is labelled by where it comes from. What remains synthetic until a pilot: night puffs, time to first puff, weekend patterns and months of tapering.</p>
         <div class="list">
           <div><span class="s-ok">Sourced</span><p>Compensation size and split, craving response, single-cut relapse rate</p></div>
           <div><span class="s-cal">Calibrated</span><p>Population ranges for routines, cues and withdrawal, from the literature</p></div>
@@ -253,7 +242,6 @@ footer a{color:var(--text-2)}
   <a href="#problem" data-rail><span>Problem</span></a>
   <a href="#signal" data-rail><span>Signal</span></a>
   <a href="#engine" data-rail><span>Engine</span></a>
-  <a href="#device" data-rail><span>Device</span></a>
   <a href="#evidence" data-rail><span>Evidence</span></a>
   <a href="#zero" data-rail><span>Zero</span></a>
 </nav>
@@ -281,115 +269,77 @@ footer a{color:var(--text-2)}
     t.scrollIntoView({behavior: reduced ? 'auto' : 'smooth', block: 'start'});
   });
 
-  /* ---------- three.js device, built in millimetres from the concept sheet ---------- */
+  /* ---------- three.js device ---------- */
   var renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.0;
+  renderer.toneMappingExposure = 1.05;
 
   var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
-  camera.position.set(0, 0.15, 10);
+  var camera = new THREE.PerspectiveCamera(28, 1, 0.1, 50);
+  camera.position.set(0, 0.2, 10);
 
-  scene.add(new THREE.HemisphereLight(0x9fd6cc, 0x03100d, 0.35));
-  var key = new THREE.DirectionalLight(0xfff4e6, 1.15); key.position.set(4, 6, 7); scene.add(key);
-  var rim = new THREE.DirectionalLight(0x5fd3c4, 1.1); rim.position.set(-6, 3, -5); scene.add(rim);
-  var rim2 = new THREE.DirectionalLight(0x8fa79b, 0.45); rim2.position.set(6, -2, -4); scene.add(rim2);
-  var fill = new THREE.DirectionalLight(0xf0a75a, 0.25); fill.position.set(-3, -5, 4); scene.add(fill);
+  scene.add(new THREE.HemisphereLight(0xbfe6e2, 0x0a0f12, 0.55));
+  var key = new THREE.DirectionalLight(0xffffff, 1.35); key.position.set(3.5, 5, 6); scene.add(key);
+  var rim = new THREE.DirectionalLight(0x5fd3c4, 1.1); rim.position.set(-5, 2, -4); scene.add(rim);
+  var fill = new THREE.DirectionalLight(0xf0a75a, 0.35); fill.position.set(-2, -4, 3); scene.add(fill);
 
-  var outer = new THREE.Group();          // rotation, page scale
-  var dev = new THREE.Group();            // millimetres
-  var oval = new THREE.Group();           // 22 mm wide, 12 mm deep: flat oval section
-  oval.scale.set(1, 1, 12/22);
-  dev.scale.setScalar(0.037);
-  dev.add(oval); outer.add(dev); scene.add(outer);
+  var outer = new THREE.Group();   // rotation
+  var inner = new THREE.Group();   // oval cross-section
+  inner.scale.set(1, 1, 0.56);
+  outer.add(inner); scene.add(outer);
 
-  var pine  = new THREE.MeshPhysicalMaterial({color:0x0e2b26, metalness:0.35, roughness:0.62, clearcoat:0.12, clearcoatRoughness:0.6});
-  var bone  = new THREE.MeshPhysicalMaterial({color:0xd9d4c7, metalness:0, roughness:0.55, clearcoat:0.3});
-  var darkM = new THREE.MeshStandardMaterial({color:0x06201b, metalness:0.3, roughness:0.8});
-  var bezel = new THREE.MeshStandardMaterial({color:0x08231e, metalness:0.4, roughness:0.7});
-  var recess= new THREE.MeshStandardMaterial({color:0x061a17, metalness:0.1, roughness:0.95});
-  var glass = new THREE.MeshPhysicalMaterial({color:0x9fd6cc, metalness:0, roughness:0.35, clearcoat:0.25, clearcoatRoughness:0.4, transparent:true, opacity:0.14, depthWrite:false});
-  var flavourM = new THREE.MeshStandardMaterial({color:0x2f9d84, emissive:0x2f9d84, emissiveIntensity:0.45, roughness:0.4, metalness:0});
-  var nicM     = new THREE.MeshStandardMaterial({color:0x9a5a35, emissive:0x8a4a25, emissiveIntensity:0.45, roughness:0.4, metalness:0});
+  var shell = new THREE.MeshPhysicalMaterial({color:0x1a2429, metalness:0.55, roughness:0.32, clearcoat:1, clearcoatRoughness:0.18});
+  var dark  = new THREE.MeshPhysicalMaterial({color:0x0c1114, metalness:0.7, roughness:0.4, clearcoat:0.6});
+  var steel = new THREE.MeshStandardMaterial({color:0xb9c6c9, metalness:1, roughness:0.28});
 
-  // rounded pen body: a revolved rounded-rectangle profile, then squashed into the oval
-  function roundedPill(halfW, halfH, r, mat, seg){
-    var pts = [], n = 10, i, a;
-    pts.push(new THREE.Vector2(0, -halfH));
-    for (i = 0; i <= n; i++){ a = -Math.PI/2 + (i/n) * Math.PI/2; pts.push(new THREE.Vector2(halfW - r + r*Math.cos(a), -halfH + r + r*Math.sin(a))); }
-    for (i = 0; i <= n; i++){ a = (i/n) * Math.PI/2; pts.push(new THREE.Vector2(halfW - r + r*Math.cos(a), halfH - r + r*Math.sin(a))); }
-    pts.push(new THREE.Vector2(0, halfH));
-    return new THREE.Mesh(new THREE.LatheGeometry(pts, seg || 96), mat);
+  function cyl(rt, rb, h, mat, y, seg){
+    var m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg||64), mat);
+    m.position.y = y; inner.add(m); return m;
   }
-  var BODY_H = 98, R = 11;
-  oval.add(roundedPill(R, BODY_H/2, 6, pine));
+  cyl(0.58, 0.58, 3.7, shell, 0);            // body
+  cyl(0.58, 0.52, 0.22, dark, 1.96);         // shoulder
+  cyl(0.50, 0.55, 0.06, steel, 2.09);        // trim ring
+  cyl(0.34, 0.44, 0.52, dark, 2.38);         // mouthpiece
+  cyl(0.30, 0.34, 0.03, steel, 2.66);        // lip
+  cyl(0.52, 0.46, 0.22, dark, -1.96);        // base
+  var band = new THREE.Mesh(new THREE.TorusGeometry(0.585, 0.02, 16, 96), steel);
+  band.rotation.x = Math.PI/2; band.position.y = -1.2; inner.add(band);
 
-  // mouthpiece, food-grade PCTG in bone
-  var mp = roundedPill(4.3, 3.6, 2.6, bone, 48); mp.position.y = BODY_H/2 + 2.2; oval.add(mp);
+  // liquid window on the front face
+  var winH = 1.75;
+  var win = new THREE.Mesh(new THREE.BoxGeometry(0.30, winH, 0.16),
+    new THREE.MeshPhysicalMaterial({color:0xcfeeea, metalness:0, roughness:0.05, transparent:true, opacity:0.28, clearcoat:1}));
+  win.position.set(0, 0.35, 0.52); inner.add(win);
+  var winFrame = new THREE.Mesh(new THREE.BoxGeometry(0.36, winH+0.06, 0.05), steel);
+  winFrame.position.set(0, 0.35, 0.50); inner.add(winFrame);
+  var liquidMat = new THREE.MeshPhysicalMaterial({color:0xf0a75a, emissive:0xf0a75a, emissiveIntensity:0.35, roughness:0.2, transparent:true, opacity:0.9});
+  var liquid = new THREE.Mesh(new THREE.BoxGeometry(0.24, 1, 0.08), liquidMat);
+  liquid.position.set(0, 0.35, 0.56); inner.add(liquid);
 
-  // USB-C at the base, air inlet on the side
-  var usb = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 7.5, 16), darkM);
-  usb.rotation.z = Math.PI/2; usb.position.y = -BODY_H/2 + 0.2; oval.add(usb);
-  var inlet = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 1.4, 12), darkM);
-  inlet.rotation.z = Math.PI/2; inlet.position.set(R, 12, 0); oval.add(inlet);
+  // LED ring near the base
+  var ledMat = new THREE.MeshBasicMaterial({color:0xf0a75a});
+  var led = new THREE.Mesh(new THREE.TorusGeometry(0.585, 0.028, 16, 96), ledMat);
+  led.rotation.x = Math.PI/2; led.position.y = -1.72; inner.add(led);
+  var ledLight = new THREE.PointLight(0xf0a75a, 1.4, 6, 2); ledLight.position.set(0, -1.72, 0); outer.add(ledLight);
 
-  // level windows: curved segments that hug the body. theta 0 faces the camera.
-  var WIN_TOP = 42, WIN_H = 22;
-  function seg(radius, height, x0, x1, mat, pad){
-    pad = pad || 0;
-    var t0 = Math.asin(x0/R) - pad, t1 = Math.asin(x1/R) + pad;
-    var m = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, height, 32, 1, true, t0, t1 - t0), mat);
-    return m;
-  }
-  function windowAt(x0, x1, level, liquidMat){
-    var yc = WIN_TOP - WIN_H/2;
-    var b = seg(R + 0.15, WIN_H + 1.4, x0, x1, bezel, 0.06); b.position.y = yc; oval.add(b);
-    var r = seg(R + 0.28, WIN_H, x0, x1, recess);       r.position.y = yc; oval.add(r);
-    var l = seg(R + 0.40, WIN_H * level, x0 + 0.25, x1 - 0.25, liquidMat); l.position.y = WIN_TOP - WIN_H + (WIN_H*level)/2; oval.add(l);
-    var g = seg(R + 0.55, WIN_H, x0, x1, glass);        g.position.y = yc; g.renderOrder = 2; oval.add(g);
-  }
-  windowAt(-6.3, 0.8, 0.56, flavourM);   // flavour chamber, 1.4 ml
-  windowAt( 2.6, 6.0, 0.44, nicM);       // nicotine chamber, 0.6 ml
-
-  // the light at the base: one circular LED on the front face, today's allowance as a fraction of a circle
-  var RING_Y = -41, LED_R = 3.4, LED_W = 0.8, FRONT_Z = R + 0.35;
-  var lens = new THREE.Mesh(new THREE.CircleGeometry(LED_R + 1.1, 48), new THREE.MeshStandardMaterial({color:0x061a17, roughness:0.9, metalness:0.1}));
-  lens.position.set(0, RING_Y, FRONT_Z - 0.2); oval.add(lens);
-  var track = new THREE.Mesh(new THREE.RingGeometry(LED_R - LED_W, LED_R, 64, 1), new THREE.MeshBasicMaterial({color:0x123c36}));
-  track.position.set(0, RING_Y, FRONT_Z - 0.1); oval.add(track);
-  var arcMat = new THREE.MeshBasicMaterial({color:0x5fd3c4});
-  var arc = new THREE.Mesh(new THREE.RingGeometry(LED_R - LED_W, LED_R, 64, 1, 0, Math.PI*2), arcMat);
-  arc.position.set(0, RING_Y, FRONT_Z); oval.add(arc);
-  var haloMat = new THREE.MeshBasicMaterial({color:0x5fd3c4, transparent:true, opacity:0.22, blending:THREE.AdditiveBlending, depthWrite:false});
-  var halo = new THREE.Mesh(new THREE.CircleGeometry(LED_R * 2.6, 48), haloMat);
-  halo.position.set(0, RING_Y, FRONT_Z + 0.05); oval.add(halo);
-  var lastSweep = -1;
-  function setArc(sweep){
-    if (Math.abs(sweep - lastSweep) < 0.01) return;
-    lastSweep = sweep;
-    arc.geometry.dispose();
-    // lit from twelve o'clock, emptying clockwise
-    arc.geometry = new THREE.RingGeometry(LED_R - LED_W, LED_R, Math.max(6, Math.round(64 * sweep / (Math.PI*2))), 1, Math.PI/2 - sweep, sweep);
-  }
-  var ledLight = new THREE.PointLight(0x5fd3c4, 1.2, 4, 2); ledLight.position.set(0, RING_Y * 0.037, 0.55); outer.add(ledLight);
-
-  var TEAL = new THREE.Color(0x5fd3c4), tmp = new THREE.Color();
+  var AMBER = new THREE.Color(0xf0a75a), TEAL = new THREE.Color(0x5fd3c4), tmp = new THREE.Color();
 
   function setLevel(p){
-    var share = 40 * Math.pow(1 - p, 1.15);           // nicotine share of coil power, %
-    var f = Math.max(0, 1 - p);                        // ring fill, full to empty
-    setArc(Math.max(0.05, f * Math.PI * 2));
-    arcMat.color.copy(TEAL).multiplyScalar(0.35 + 0.7 * f);
-    haloMat.opacity = 0.04 + 0.22 * f;
-    ledLight.intensity = 0.15 + 1.2 * f;
-    tmp.copy(TEAL).multiplyScalar(0.3 + 0.7 * f);
+    var nic = 18 * Math.pow(1 - p, 1.25);
+    var lvl = Math.max(0.005, nic/18);
+    liquid.scale.y = lvl * (winH - 0.1);
+    liquid.position.y = 0.35 - (winH - 0.1)/2 + liquid.scale.y/2;
+    liquidMat.opacity = 0.35 + 0.55*lvl;
+    tmp.copy(AMBER).lerp(TEAL, p);
+    ledMat.color.copy(tmp); ledLight.color.copy(tmp);
+    liquidMat.color.copy(tmp); liquidMat.emissive.copy(tmp);
+    nicEl.textContent = nic.toFixed(1);
     document.documentElement.style.setProperty('--led', '#' + tmp.getHexString());
-    nicEl.textContent = Math.round(share) + ' %';
   }
 
-  var mobile = false, sideOffset = 0;
+  var mobile = false;
   function resize(){
     var w = canvas.clientWidth, h = canvas.clientHeight;
     renderer.setSize(w, h, false);
@@ -397,9 +347,7 @@ footer a{color:var(--text-2)}
     mobile = w < 760;
     var s = mobile ? 0.62 : Math.min(1, w/900);
     outer.scale.setScalar(s);
-    outer.position.y = mobile ? 0.15 : -0.05;
-    var halfW = Math.tan(camera.fov * Math.PI/360) * camera.position.z * camera.aspect;
-    sideOffset = mobile ? 0 : Math.min(1.5, halfW * 0.42);
+    outer.position.y = mobile ? 0.15 : -0.1;
   }
   addEventListener('resize', resize); resize();
 
@@ -419,21 +367,15 @@ footer a{color:var(--text-2)}
     tmx = (e.clientX/innerWidth - 0.5); tmy = (e.clientY/innerHeight - 0.5);
   }, {passive:true});
 
-  // which side of the screen is free for the device at each chapter
-  var SIDES = chapters.map(function(ch){ return ch.classList.contains('right') ? -1 : 1; });
-  function smooth(t){ return t * t * (3 - 2 * t); }
   var t0 = performance.now();
   function frame(now){
     var k = reduced ? 1 : 0.075;
     progress += (target - progress) * k;
     mx += (tmx - mx) * 0.05; my += (tmy - my) * 0.05;
-    var idle = reduced ? 0 : Math.sin((now - t0)/2600) * 0.05;
-    var n = SIDES.length, sc = progress * (n - 1), ci = Math.min(n - 2, Math.floor(sc)), ct = smooth(sc - ci);
-    var side = SIDES[ci] + (SIDES[ci + 1] - SIDES[ci]) * ct;
-    outer.rotation.y = (ci + ct) * Math.PI * 2 + mx * 0.35 + idle;
-    outer.rotation.x = 0.08 + my * 0.2;
-    outer.rotation.z = 0;
-    outer.position.x = side * sideOffset;
+    var idle = reduced ? 0 : Math.sin((now - t0)/2400) * 0.06;
+    outer.rotation.y = progress * Math.PI * 3.5 + mx * 0.5 + idle;
+    outer.rotation.x = 0.12 + my * 0.25 + Math.sin(progress * Math.PI) * 0.18;
+    outer.rotation.z = -0.08 + Math.sin(progress * Math.PI * 2) * 0.06;
     setLevel(progress);
     renderer.render(scene, camera);
     requestAnimationFrame(frame);

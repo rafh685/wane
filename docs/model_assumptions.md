@@ -143,6 +143,29 @@ Status: not solvable inside the simulation with weekly puff counts alone. It nee
 set, a lower base rate for everyone (a product decision: 8 %/week finishes her at 25 % relapse but adds six weeks for all), or
 real response sizes from the pilot. The current engine keeps her at 43 %/43 % and finishes about half of her runs given 60 weeks.
 
+## 14. Bout-level generator and the puff-duration channel (18 Sept 2026, with Ilian)
+
+`bouts.py` (built on Ilian's session generator) makes puffs arrive in bouts: 3 to 15 puffs 16 to 69 s apart, bouts placed
+from the person's routine, night bouts from withdrawal, per-puff duration and flow. `profiles.BOUT_MODE = True` switches it on.
+
+**What it found.** After two full cuts, the two-week change in mean puff duration separates Lucía (hard compensator) from
+Ana with AUC 0.98 in bout mode and 0.75 in the hourly model; daily puff counts give 0.63. Reason: a mean over a thousand
+puffs a week is nearly flat unless the person is compensating, while daily counts swing 10 to 20 % on their own. This matches
+the LSBU data, where duration was the larger compensation channel. Bouts per day, puffs per bout and the gap inside bouts
+carry nothing here, because the generator does not make them respond to compensation (a limit of the generator, or a fact;
+only real logs will say). Flow carries nothing for the same reason.
+
+**What it also found, and this is a warning.** The engine refitted on the bout generator is WORSE than a blind schedule on
+the same generator (five profiles 20 % vs 12 % relapse; Sofia 40 % vs 15 %). Risk AUC drops to 0.83, night share loses
+most of its weight, and a duration brake that catches Lucía also slows everyone (off nicotine 40 %). The engine's advantage
+in the hourly model depends on how that model generates night puffs and time to first puff. Two synthetic generators, two
+answers: the size of Wane's edge is not a fact about vapers yet, it is a fact about our generators. The default stays
+`BOUT_MODE = False` and the demo numbers come from the hourly model, stated as relative.
+
+**What the pilot has to measure first, in order.** Week-to-week noise of mean puff duration per person; whether night puffs
+and time to first puff move with craving in real logs; whether bouts change with compensation. Those three numbers decide
+which generator is closer to the truth and how large the engine's real edge is.
+
 ## Calibration against real data (17 Sept 2026)
 
 Source: Dawkins et al. 2018, *Addiction*, "Real-world compensatory behaviour with low nicotine concentration e-liquid",
