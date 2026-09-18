@@ -33,7 +33,7 @@ def week_feats(rows):
     f["intake"] = f["puffs"] * f["puff_dur"]
     f["night_share"] = np.mean([r["night_puffs"] for r in rows]) / max(f["puffs"], 1)
     f["ttfc"] = np.mean([r["ttfc_min"] for r in rows])
-    bs = [bout_stats(r["times"], r["flows"]) for r in rows]
+    bs = [bout_stats(r["times"], r.get("flows", [20.0])) for r in rows]
     for k in ("bouts", "per_bout", "ipi", "flow"):
         f[k] = np.nanmean([b[k] for b in bs])
     f["volume"] = f["puffs"] * f["puff_dur"] * f["flow"]
