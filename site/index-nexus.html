@@ -1838,7 +1838,7 @@ async function Wn(url){
   let [{GLTFLoader},{DRACOLoader}]=await Promise.all([import("three/addons/loaders/GLTFLoader.js"),import("three/addons/loaders/DRACOLoader.js")]);
   let loader=new GLTFLoader(),draco=new DRACOLoader();
   draco.setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/libs/draco/"),loader.setDRACOLoader(draco);
-  let gltf=await loader.loadAsync(url);draco.dispose();return Xn(gltf.scene)}
+  let gltf;try{gltf=await loader.loadAsync(url)}catch(e0){/* hosts that will not serve .glb: the same bytes, base64 in a JSON wrapper */let j=await(await fetch(url+".json")).json(),bin=atob(j.b64),buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);gltf=await loader.parseAsync(buf.buffer,"")}draco.dispose();return Xn(gltf.scene)}
 function Xn(scene){
   let r=be[0],TEAL=new p.Color(0x5FD3C4),AMBER=new p.Color(0xF0A75A),
   haloTex=(()=>{let h=De(128),w=h.getContext("2d"),k=w.createRadialGradient(64,64,0,64,64,64);k.addColorStop(0,"rgba(255,255,255,1)"),k.addColorStop(.22,"rgba(255,255,255,.72)"),k.addColorStop(.55,"rgba(255,255,255,.2)"),k.addColorStop(1,"rgba(255,255,255,0)"),w.fillStyle=k,w.fillRect(0,0,128,128);let $=new p.CanvasTexture(h);return $.colorSpace=p.SRGBColorSpace,$})(),
