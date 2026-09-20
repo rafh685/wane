@@ -1,0 +1,103 @@
+/Users/raf/Projects/wane/models/wane-v1/build_model.py:26: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m=bpy.data.materials.new(name); m.diffuse_color=linear(color); m.use_nodes=True
+INFO Draco is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_draco_bridge.dylib
+INFO MeshOptimizer is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_meshopt_bridge.dylib
+17:59:55 | INFO: Starting glTF 2.0 export
+17:59:55 | INFO: Extracting primitive: Mouthpiece_shadow
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.006
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Soft_mouthpiece
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.001
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.004
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.002
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.003
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.005
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Pod_lower_rim
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Smoked_plastic_pod
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cylinder.001
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cylinder
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Dial_unlit_track
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: STUDIO_LED_ARC
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Base_heel
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.007
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.008
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Base_shadow_seam
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Body_top_recess
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Rear_revision
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Rear_signature
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: SHELL_FRONT
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Finished glTF 2.0 export in 0.02752399444580078 s
+
+17:59:55 | INFO: Starting glTF 2.0 export
+17:59:55 | INFO: Extracting primitive: Mouthpiece_shadow
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.006
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Soft_mouthpiece
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.001
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.004
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.002
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.003
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.005
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Pod_lower_rim
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Smoked_plastic_pod
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cylinder.001
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cylinder
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Dial_unlit_track
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Base_heel
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.007
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Cube.008
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Base_shadow_seam
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Body_top_recess
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Rear_revision
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: Rear_signature
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Extracting primitive: SHELL_FRONT
+17:59:55 | INFO: Primitives created: 1
+17:59:55 | INFO: Finished glTF 2.0 export in 0.019095897674560547 s
+/Users/raf/Projects/wane/models/wane-v1/build_model.py:26: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m=bpy.data.materials.new(name); m.diffuse_color=linear(color); m.use_nodes=True
+/Users/raf/Projects/wane/models/wane-v1/build_model.py:183: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  world=bpy.data.worlds.new('Soft studio') if not bpy.data.worlds else bpy.data.worlds[0];scene.world=world;world.use_nodes=True;world.node_tree.nodes['Background'].inputs[0].default_value=(.22,.27,.24,1);world.node_tree.nodes['Background'].inputs[1].default_value=.45
+00:19.945  render           | Saved: '/Users/raf/Projects/wane/models/wane-v1/05-wordmark-rear.png'
+Blender 5.2.2 LTS (hash d13f752e3b9c built 2026-09-15 01:49:19)
+
+Info: Saved as "wane-studio.blend"

@@ -1,0 +1,11 @@
+{
+  "visual_envelope_mm": [
+    105,
+    22,
+    12
+  ],
+  "mesh_objects": 22,
+  "triangles": 16181,
+  "glb_bytes": 400588,
+  "notes": "Exterior concept only; no internal feasibility validation. Static LED arc excluded from integration GLB."
+}
