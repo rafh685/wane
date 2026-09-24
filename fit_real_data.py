@@ -59,7 +59,7 @@ def build_calibration(source=SOURCE):
             withdrawal_delta.append(mpss_6 - mpss_18)
 
     calibration = {
-        "engine_version": "0.2.0-data-calibrated",
+        "engine_version": "0.2.1",
         "schema_version": 1,
         "source": {
             "dataset": "Dawkins et al. 2018 LSBU open data",
@@ -80,7 +80,7 @@ def build_calibration(source=SOURCE):
             "high_pressure": 1.0,
             "immediate_pressure": 3.0,
             "calm_pressure": 0.35,
-            "description": "A pressure of 1.0 equals the study's upper-quartile total-puffing response after scaling for the preceding dose reduction. The engine slows after two consecutive high responses or one response at 3.0.",
+            "description": "A pressure of 1.0 equals the study's upper-quartile observed total-puffing response. The engine does not scale small cuts up to the study's 67% reduction. It slows after two consecutive high responses or one response at 3.0.",
         },
         "limitations": [
             "The study is small and does not contain relapse outcomes.",

@@ -178,10 +178,11 @@ class AdaptiveTaper:
     def response_pressure(self, f, dose, prev_window):
         """How strong was this person's compensation for their *last* dose cut?
 
-        The observed rise in total puffing is scaled to the 18 -> 6 mg reduction
-        measured in the real paired study. A pressure of 1.0 is its upper-quartile
-        response, not a clinical threshold. No prior dose history means there is no
-        response evidence, so the method returns zero rather than inventing it.
+        A pressure of 1.0 is the study's upper-quartile observed rise in total
+        puffing. We intentionally do not scale a small cut up to a 67% reduction:
+        the study does not establish that relationship. No prior dose history means
+        there is no response evidence, so the method returns zero rather than
+        inventing it.
         """
         if not prev_window:
             return 0.0
@@ -190,10 +191,8 @@ class AdaptiveTaper:
         if reduction < 0.01:
             return 0.0
         observed_increase = max(0.0, f["intake_trend"])
-        reference_drop = self.response_calibration["reference_dose_reduction"]
         reference_increase = self.response_calibration["total_puffing"]["p75_ratio"] - 1
-        equivalent_increase = observed_increase * reference_drop / reduction
-        return float(equivalent_increase / max(reference_increase, 1e-6))
+        return float(observed_increase / max(reference_increase, 1e-6))
 
     def update_personal_rate(self, f, risk, crave, dose, prev_window, risk_brake, calm_risk):
         """Update the per-person taper speed from measured response to the last cut.
@@ -338,3 +337,29 @@ class FittedTaper(AdaptiveTaper):
                              response_streak=self.high_response_streak,
                              action=action, cut=cut, rate=self.weekly_rate(), risk_next=self.risk_at(f, new), **f))
         return new
+
+
+class PreCalibrationFittedTaper(FittedTaper):
+    """Wane v0.1, retained only as a reproducible baseline in the testing site.
+
+    It uses the same fitted synthetic risk weights as v0.2 but omits the real-data
+    compensation guard. This lets the demo isolate the behavioural impact of the
+    v0.2 change with identical profiles, random seeds and decision policy.
+    """
+    name = "Wane v0.1 fitted engine"
+
+    def update_personal_rate(self, f, risk, crave, dose, prev_window, risk_brake, calm_risk):
+        tolerated = (
+            f["intake_trend"] < 0.05
+            and f["night_rel"] < 0.25
+            and f["ttfc_rel"] > -0.25
+            and risk < calm_risk
+            and crave < 4
+        )
+        self.calm_streak = self.calm_streak + 1 if tolerated else 0
+        if risk > risk_brake or crave > 6:
+            self.personal_cut = max(self.min_cut, self.personal_cut * self.down)
+            self.calm_streak = 0
+        elif self.calm_streak >= 2:
+            self.personal_cut = min(self.max_cut, self.personal_cut * self.up)
+        return 0.0

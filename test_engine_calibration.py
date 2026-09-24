@@ -30,7 +30,7 @@ class RealDataCalibrationTests(unittest.TestCase):
         self.assertAlmostEqual(calibration["total_puffing"]["p75_ratio"], 1.682, places=3)
 
     def test_extreme_response_reduces_rate_but_moderate_response_does_not(self):
-        extreme = week(8, 18.0, 142, 4.85)
+        extreme = week(8, 18.0, 220, 8.5)
         engine = FittedTaper(weekly_cut=0.12, period=7)
         features_after_cut = features(extreme, self.baseline, dose=18.0, baseline=make_baseline(self.baseline))
         original_rate = engine.personal_cut

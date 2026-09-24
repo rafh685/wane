@@ -2,7 +2,7 @@
 
 ## Version
 
-`0.2.0-data-calibrated` · 24 September 2026
+`0.2.1` · 24 September 2026
 
 ## GPT version used for this release
 
@@ -13,8 +13,8 @@
 The engine already adapted its taper rate from simulated risk and inferred craving. This release adds a separate, real-data-calibrated response signal:
 
 1. After each dose reduction, it measures the person's change in total puffing (`puff count × puff duration`).
-2. It scales that response by the size of the reduction.
-3. If the scaled response stays at or above the upper-quartile response observed in the paired adult study for two consecutive decision windows, it slows the next taper rate. One extreme response triggers the same brake.
+2. It compares that raw response to the observed adult response range. It does not extrapolate small reductions up to the study's 67% nicotine reduction.
+3. If the response stays at or above the upper-quartile response observed in the paired adult study for two consecutive decision windows, it slows the next taper rate. One extreme response triggers the same brake.
 4. It only speeds up after two calm, low-compensation decision windows.
 
 The policy remains monotonic: it can cut, half cut or hold. It never increases nicotine concentration.

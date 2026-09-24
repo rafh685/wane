@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from profiles import PROFILES, START_MG
-from engine import FixedTaper, AdaptiveTaper, FittedTaper
+from engine import FixedTaper, AdaptiveTaper, FittedTaper, PreCalibrationFittedTaper
 from simulate import run_one, run_many, summarise
 
 PINE, TEAL, ALARM, MUTE, CREAM = "#0E2B26", "#4FBFA8", "#E08163", "#8FA7A2", "#F1F6F4"
@@ -21,7 +21,7 @@ div[data-testid="stMetricValue"] {{ color:{TEAL}; }}
 </style>""", unsafe_allow_html=True)
 
 st.title("Wane: adaptive nicotine tapering")
-st.caption("Five simulated vapers · the same people under a traditional fixed taper and under the Wane engine · synthetic behavioural model, parameters from published puff-topography and withdrawal studies")
+st.caption("Five simulated vapers · identical profiles and random seeds across every comparison · synthetic behavioural model, with a real adult puff-response calibration in Wane v0.2")
 
 # ---------------- controls ----------------
 import time
@@ -32,15 +32,32 @@ weekly_cut = c1.slider("Weekly cut (both engines start here)", 0.05, 0.25, 0.12,
 period = c2.select_slider("Engine decides every", options=[7, 3, 2, 1], value=7, format_func=lambda d: PERIODS[d])
 weeks = c3.slider("Weeks", 8, 40, 26)
 n_runs = c4.select_slider("Runs per profile (noise)", [1, 10, 30, 100], value=30)
-ENGINES = {"fitted weights (learned on a synthetic population)": FittedTaper, "hand-set weights": AdaptiveTaper}
 DELIVERY = {"manual: the user mixes and switches liquid at every step (adherence 0.85)": 0.85,
             "manual, less diligent user (adherence 0.70)": 0.70,
             "automatic: the device applies every step (hardware)": None}
+COMPARISONS = {
+    "Traditional fixed taper vs Wane v0.2 data-calibrated": {
+        "engines": (FixedTaper, FittedTaper),
+        "labels": ("Traditional fixed taper", "Wane v0.2 data-calibrated"),
+    },
+    "Wane v0.1 vs Wane v0.2 data-calibrated": {
+        "engines": (PreCalibrationFittedTaper, FittedTaper),
+        "labels": ("Wane v0.1 before real-data guard", "Wane v0.2 data-calibrated"),
+    },
+    "Wane hand-set weights vs Wane v0.2 data-calibrated": {
+        "engines": (AdaptiveTaper, FittedTaper),
+        "labels": ("Wane hand-set weights", "Wane v0.2 data-calibrated"),
+    },
+}
 r1, r2 = st.columns([1, 1])
-engine_label = r1.radio("Wane engine", list(ENGINES), horizontal=False)
+comparison_label = r1.radio("Comparison", list(COMPARISONS), horizontal=False)
 delivery_label = r2.radio("How steps get applied (both engines)", list(DELIVERY), horizontal=False)
-WaneEngine = ENGINES[engine_label]
+left_engine, right_engine = COMPARISONS[comparison_label]["engines"]
+left_label, right_label = COMPARISONS[comparison_label]["labels"]
 adherence = DELIVERY[delivery_label]
+
+if comparison_label == "Wane v0.1 vs Wane v0.2 data-calibrated":
+    st.info("Read this comparison as a guardrail test. v0.2 changes its rate only after sustained compensation at the real study's upper-quartile response, or one extreme response. If the profiles do not show that pattern, both versions should match.")
 
 st.session_state.setdefault("playhead", 1)     # where the animation is
 st.session_state.setdefault("playing", False)
@@ -61,28 +78,28 @@ if not st.session_state.playing:
 
 
 @st.cache_data(show_spinner="Simulating…")
-def cached_runs(n_runs, weeks, weekly_cut, period, engine_label, delivery_label):
+def cached_runs(n_runs, weeks, weekly_cut, period, comparison_label, delivery_label):
     return run_many(n_runs=n_runs, weeks=weeks, weekly_cut=weekly_cut, period=period,
-                    engines=(FixedTaper, ENGINES[engine_label]), adherence=DELIVERY[delivery_label])
+                    engines=COMPARISONS[comparison_label]["engines"], adherence=DELIVERY[delivery_label])
 
 
-runs = cached_runs(n_runs, weeks, weekly_cut, period, engine_label, delivery_label)
+runs = cached_runs(n_runs, weeks, weekly_cut, period, comparison_label, delivery_label)
 runs = runs[runs["week"] <= week_shown]
 
 # ---------------- headline numbers ----------------
 summ = summarise(runs)
-fixed = summ[summ.engine.str.startswith("Fixed")]
-adapt = summ[summ.engine.str.startswith("Wane")]
+left_summary = summ[summ.engine == left_engine.name]
+right_summary = summ[summ.engine == right_engine.name]
 m1, m2, m3, m4, m5, m6 = st.columns(6)
-m1.metric("Relapse, fixed taper", f"{fixed.relapse_rate.mean():.0%}")
-m2.metric("Relapse, Wane", f"{adapt.relapse_rate.mean():.0%}",
-          delta=f"{(adapt.relapse_rate.mean() - fixed.relapse_rate.mean()):+.0%}", delta_color="inverse")
-m3.metric("Stalled on the ladder, fixed", f"{fixed.stall_rate.mean():.0%}")
-m4.metric("Stalled, Wane", f"{adapt.stall_rate.mean():.0%}",
-          delta=f"{(adapt.stall_rate.mean() - fixed.stall_rate.mean()):+.0%}", delta_color="inverse")
-m5.metric("Off nicotine, fixed", f"{fixed.off_rate.mean():.0%}")
-m6.metric("Off nicotine, Wane", f"{adapt.off_rate.mean():.0%}",
-          delta=f"{(adapt.off_rate.mean() - fixed.off_rate.mean()):+.0%}")
+m1.metric(f"Relapse, {left_label}", f"{left_summary.relapse_rate.mean():.0%}")
+m2.metric(f"Relapse, {right_label}", f"{right_summary.relapse_rate.mean():.0%}",
+          delta=f"{(right_summary.relapse_rate.mean() - left_summary.relapse_rate.mean()):+.0%}", delta_color="inverse")
+m3.metric(f"Stalled, {left_label}", f"{left_summary.stall_rate.mean():.0%}")
+m4.metric(f"Stalled, {right_label}", f"{right_summary.stall_rate.mean():.0%}",
+          delta=f"{(right_summary.stall_rate.mean() - left_summary.stall_rate.mean()):+.0%}", delta_color="inverse")
+m5.metric(f"Off nicotine, {left_label}", f"{left_summary.off_rate.mean():.0%}")
+m6.metric(f"Off nicotine, {right_label}", f"{right_summary.off_rate.mean():.0%}",
+          delta=f"{(right_summary.off_rate.mean() - left_summary.off_rate.mean()):+.0%}")
 if adherence is not None:
     st.caption("Manual delivery: at each step the user has to mix or buy a weaker liquid and switch. The chance they do falls when craving is up and drifts down over the weeks. "
                "Stalled = eight scheduled steps in a row not applied. Automatic delivery removes this entirely: that is what the hardware is for.")
@@ -93,9 +110,9 @@ COLORS = {"Marta": "#4FBFA8", "Diego": "#8FB8E8", "Lucía": "#E08163", "Karim": 
 show_runs = st.toggle("Show every individual run (✕ = relapse)", value=False)
 
 
-def dose_panel(engine_prefix, title):
+def dose_panel(engine_name, title):
     fig = go.Figure()
-    sub = runs[runs.engine.str.startswith(engine_prefix)]
+    sub = runs[runs.engine == engine_name]
     for p in PROFILES:
         pp = sub[sub.profile == p.name]
         col = COLORS[p.name]
@@ -128,27 +145,27 @@ def dose_panel(engine_prefix, title):
 
 
 left, right = st.columns(2)
-left.plotly_chart(dose_panel("Fixed", f"Traditional: {weekly_cut:.0%} per week in steps every {period} day(s), whatever happens"), width="stretch")
-right.plotly_chart(dose_panel("Wane", "Wane: the same people, cut decided from their measured puffs"), width="stretch")
-st.caption("Line = median dose of the runs still tapering · band = 10th to 90th percentile · ✕ at 20 mg/ml = the week a run relapsed (back to disposables). Toggle the individual runs to see them.")
+left.plotly_chart(dose_panel(left_engine.name, left_label), width="stretch")
+right.plotly_chart(dose_panel(right_engine.name, right_label), width="stretch")
+st.caption("Line = median dose of the runs still tapering · band = 10th to 90th percentile · ✕ at 20 mg/ml = the week a run relapsed. In the v0.1 vs v0.2 view, the profile, random seed, cut rate and delivery setting are identical on both sides.")
 
 # ---------------- relapse bars ----------------
 rb = summ.copy()
-rb["engine"] = rb.engine.str.split(" ").str[0]
 figb = go.Figure()
-for eng, col in (("Fixed", "#8FA7A2"), ("Wane", TEAL)):
+for eng, label, col in ((left_engine.name, left_label, "#8FA7A2"), (right_engine.name, right_label, TEAL)):
     e = rb[rb.engine == eng].set_index("profile").reindex([p.name for p in PROFILES])
-    figb.add_trace(go.Bar(x=e.index, y=e.relapse_rate, name=eng, marker_color=col,
+    figb.add_trace(go.Bar(x=e.index, y=e.relapse_rate, name=label, marker_color=col,
                           text=[f"{v:.0%}" for v in e.relapse_rate], textposition="outside"))
 figb.update_layout(barmode="group", paper_bgcolor=PINE, plot_bgcolor="#164038", font_color=CREAM, height=340,
                    yaxis=dict(title="relapse rate", tickformat=".0%", range=[0, 1.15], gridcolor="#2C534B"),
                    legend=dict(orientation="h", x=1, xanchor="right", y=0.98, yanchor="top", bgcolor="rgba(0,0,0,0)"),
-                   margin=dict(t=60, b=30), title=dict(text="Who the ladder breaks, and who Wane keeps", y=0.95))
+                   margin=dict(t=60, b=30), title=dict(text="Relapse rate by demo profile", y=0.95))
 st.plotly_chart(figb, width="stretch")
 
 # ---------------- per-profile table ----------------
 tbl = summ.pivot(index="profile", columns="engine", values=["relapse_rate", "stall_rate", "off_rate", "weeks_to_zero_median"])
-tbl.columns = [f"{a} ({b.split(' ')[0]})" for a, b in tbl.columns]
+display_names = {left_engine.name: left_label, right_engine.name: right_label}
+tbl.columns = [f"{a} ({display_names[b]})" for a, b in tbl.columns]
 st.dataframe(tbl.style.format({c: "{:.0%}" for c in tbl.columns if "rate" in c} | {c: "{:.0f} wk" for c in tbl.columns if "weeks" in c}, na_rep="not yet"),
              width="stretch")
 st.caption("Off nicotine = reached 0 mg/ml and stayed there two clean weeks. Weeks to zero = median over the runs that got there.")
@@ -162,7 +179,7 @@ prof = next(p for p in PROFILES if p.name == who)
 zc1.markdown(f"*{prof.story}*")
 zc1.markdown(f"elasticity **{prof.elasticity}** · craving sensitivity **{prof.craving_sensitivity}** · relapse threshold **{prof.relapse_threshold}**")
 
-df, log = run_one(prof, WaneEngine, weeks, seed=int(seed), weekly_cut=weekly_cut, period=period, adherence=adherence)
+df, log = run_one(prof, right_engine, weeks, seed=int(seed), weekly_cut=weekly_cut, period=period, adherence=adherence)
 log = [e for e in (log or []) if e["day"] <= 7 * week_shown]
 df = df[df.week <= week_shown]
 fig = go.Figure()
@@ -176,16 +193,16 @@ fig.update_layout(paper_bgcolor=PINE, plot_bgcolor="#164038", font_color=CREAM, 
                   xaxis=dict(title="day", gridcolor="#2C534B"), yaxis=dict(title="puffs / day", gridcolor="#2C534B"),
                   legend=dict(orientation="h", y=-0.25), margin=dict(t=20, b=60))
 zc2.plotly_chart(fig, width="stretch")
-zc2.caption("Dashed lines: weeks where the engine held (orange) or halved the cut (grey) because the measured puffs said so.")
+zc2.caption(f"Decision log for {right_label}. Dashed lines: weeks where the engine held (orange) or halved the cut (grey).")
 
 if log:
     lg = pd.DataFrame(log)
     lg.index = [f"day {int(d)}" for d in lg["day"]]
-    st.dataframe(lg[["action", "cut", "rate", "risk", "crave", "puff_trend", "night_share", "ttfc_min"]]
-                 .rename(columns={"rate": "personal rate (learned)", "crave": "derived craving", "puff_trend": "puff trend", "night_share": "night share", "ttfc_min": "time to first puff (min)"})
-                 .style.format({"cut": "{:.0%}", "personal rate (learned)": "{:.0%}", "risk": "{:.2f}", "derived craving": "{:.1f}", "puff trend": "{:+.0%}", "night share": "{:.3f}", "time to first puff (min)": "{:.0f}"}),
+    st.dataframe(lg[["action", "cut", "rate", "risk", "crave", "response_pressure", "response_streak", "puff_trend", "night_share", "ttfc_min"]]
+                 .rename(columns={"rate": "personal rate (learned)", "crave": "derived craving", "response_pressure": "response pressure", "response_streak": "high-response streak", "puff_trend": "puff trend", "night_share": "night share", "ttfc_min": "time to first puff (min)"})
+                 .style.format({"cut": "{:.0%}", "personal rate (learned)": "{:.0%}", "risk": "{:.2f}", "derived craving": "{:.1f}", "response pressure": "{:.2f}", "high-response streak": "{:.0f}", "puff trend": "{:+.0%}", "night share": "{:.3f}", "time to first puff (min)": "{:.0f}"}),
                  width="stretch")
-    st.caption("Every row is a decision the engine made and the measured features it made it from. No self-report in any column. Personal rate is shown per week whatever the decision period.")
+    st.caption("Every row is a decision the engine made and the measured features it made it from. Response pressure appears only in v0.2 as the real-data-calibrated compensation guard. Personal rate is shown per week whatever the decision period.")
 
 
 # ---------------- autoplay: advance one week per tick while playing ----------------
