@@ -1,0 +1,45 @@
+{
+  "engine_version": "0.2.0-data-calibrated",
+  "schema_version": 1,
+  "source": {
+    "dataset": "Dawkins et al. 2018 LSBU open data",
+    "doi": "10.18744/LSBU.002952",
+    "condition": "6 mg/ml versus 18 mg/ml, fixed-power condition",
+    "participants": 20,
+    "paired_puff_measurements": 19
+  },
+  "reference_dose_reduction": 0.666667,
+  "puff_count": {
+    "n": 19,
+    "median_ratio": 1.182906,
+    "p25_ratio": 1.0969,
+    "p75_ratio": 1.419411
+  },
+  "puff_duration": {
+    "n": 19,
+    "median_ratio": 1.261084,
+    "p25_ratio": 1.107219,
+    "p75_ratio": 1.426545
+  },
+  "total_puffing": {
+    "n": 19,
+    "median_ratio": 1.46798,
+    "p25_ratio": 1.337849,
+    "p75_ratio": 1.682223
+  },
+  "self_report": {
+    "urge_delta_median": 1.0,
+    "withdrawal_delta_median": 0.0
+  },
+  "policy": {
+    "high_pressure": 1.0,
+    "immediate_pressure": 3.0,
+    "calm_pressure": 0.35,
+    "description": "A pressure of 1.0 equals the study's upper-quartile total-puffing response after scaling for the preceding dose reduction. The engine slows after two consecutive high responses or one response at 3.0."
+  },
+  "limitations": [
+    "The study is small and does not contain relapse outcomes.",
+    "The response range is a runtime guardrail, not a clinical threshold or a treatment recommendation.",
+    "The engine still needs a prospective adult Wane pilot with timestamped sessions to fit outcome risk from real use."
+  ]
+}

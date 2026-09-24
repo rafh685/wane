@@ -13,9 +13,38 @@ the compounded weekly rate is the same whatever the period. That keeps compariso
 
 Only the risk score is a candidate for ML. The dose arithmetic stays rules, and monotonic.
 """
+import json
+import pathlib
+
 import numpy as np
 
 LOW_MG = 3.0        # below this, cuts are ABSOLUTE steps, not percentages (the way patch ladders end: 7 -> 0, not 7 -> 6.2 -> 5.4 ...)
+
+
+DEFAULT_RESPONSE_CALIBRATION = {
+    "reference_dose_reduction": 2 / 3,
+    "total_puffing": {"p75_ratio": 1.68},
+    "policy": {"high_pressure": 1.0, "immediate_pressure": 3.0, "calm_pressure": 0.35},
+}
+
+
+def load_response_calibration(path=None):
+    """Load the reproducible, real-data response calibration.
+
+    The calibration is deliberately small: it does not claim to predict relapse.
+    It only says how unusual a measured puff-duration response is for the size of
+    the preceding dose reduction. If the generated file is absent, the checked-in
+    defaults preserve the same conservative guardrail.
+    """
+    path = pathlib.Path(path or pathlib.Path(__file__).with_name("engine_calibration.json"))
+    try:
+        with path.open() as handle:
+            loaded = json.load(handle)
+        if loaded["reference_dose_reduction"] <= 0 or loaded["total_puffing"]["p75_ratio"] <= 1:
+            raise ValueError("invalid response calibration")
+        return loaded
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+        return DEFAULT_RESPONSE_CALIBRATION
 
 
 def apply_cut(dose, cut):
@@ -121,7 +150,7 @@ class AdaptiveTaper:
     UP_PER_WEEK, DOWN_PER_WEEK = 1.05, 0.75     # tolerated: a little faster; struggled: a lot slower
     MAX_WEEKLY, MIN_WEEKLY = 0.15, 0.03         # bounds on the learned weekly rate
 
-    def __init__(self, weekly_cut=0.12, period=7):
+    def __init__(self, weekly_cut=0.12, period=7, response_calibration=None):
         self.period = period
         self.base_cut = per_period_cut(weekly_cut, period)
         self.personal_cut = self.base_cut       # LEARNED per person: starts at the population rate
@@ -132,6 +161,8 @@ class AdaptiveTaper:
         self.log = []                           # what it decided and why, for the demo
         self.baseline = None                    # this person's own first-week reference (set at the first decision)
         self.calm_streak = 0                    # consecutive decisions with a demonstrably small response to the last cut
+        self.high_response_streak = 0           # consecutive high compensation responses after a cut
+        self.response_calibration = response_calibration or load_response_calibration()
 
     def weekly_rate(self):
         """The learned rate expressed per week, for display."""
@@ -143,6 +174,58 @@ class AdaptiveTaper:
         return risk_score(f)
     def crave(self, f):
         return derived_craving(f)
+
+    def response_pressure(self, f, dose, prev_window):
+        """How strong was this person's compensation for their *last* dose cut?
+
+        The observed rise in total puffing is scaled to the 18 -> 6 mg reduction
+        measured in the real paired study. A pressure of 1.0 is its upper-quartile
+        response, not a clinical threshold. No prior dose history means there is no
+        response evidence, so the method returns zero rather than inventing it.
+        """
+        if not prev_window:
+            return 0.0
+        previous_dose = float(prev_window[-1].get("dose", dose))
+        reduction = max(0.0, 1 - dose / max(previous_dose, 1e-6))
+        if reduction < 0.01:
+            return 0.0
+        observed_increase = max(0.0, f["intake_trend"])
+        reference_drop = self.response_calibration["reference_dose_reduction"]
+        reference_increase = self.response_calibration["total_puffing"]["p75_ratio"] - 1
+        equivalent_increase = observed_increase * reference_drop / reduction
+        return float(equivalent_increase / max(reference_increase, 1e-6))
+
+    def update_personal_rate(self, f, risk, crave, dose, prev_window, risk_brake, calm_risk):
+        """Update the per-person taper speed from measured response to the last cut.
+
+        High compensation is new evidence of strain even when the synthetic risk
+        score is quiet. To avoid treating weekly noise as strain, it must appear in
+        two consecutive windows unless the response is extreme. Conversely, the
+        engine speeds up only after two calm, low-compensation windows. This keeps
+        the rule adaptive without treating a 20-person study as a relapse model.
+        """
+        pressure = self.response_pressure(f, dose, prev_window)
+        policy = self.response_calibration.get("policy", DEFAULT_RESPONSE_CALIBRATION["policy"])
+        high_pressure = policy.get("high_pressure", 1.0)
+        immediate_pressure = policy.get("immediate_pressure", 3.0)
+        calm_pressure = policy.get("calm_pressure", 0.35)
+        self.high_response_streak = self.high_response_streak + 1 if pressure >= high_pressure else 0
+        high_response = pressure >= immediate_pressure or self.high_response_streak >= 2
+        tolerated = (
+            f["intake_trend"] < 0.05
+            and f["night_rel"] < 0.25
+            and f["ttfc_rel"] > -0.25
+            and pressure < calm_pressure
+            and risk < calm_risk
+            and crave < 4
+        )
+        self.calm_streak = self.calm_streak + 1 if tolerated else 0
+        if risk > risk_brake or crave > 6 or high_response:
+            self.personal_cut = max(self.min_cut, self.personal_cut * self.down)
+            self.calm_streak = 0
+        elif self.calm_streak >= 2:
+            self.personal_cut = min(self.max_cut, self.personal_cut * self.up)
+        return pressure
 
     def next_dose(self, dose, window, prev_window):
         if self.baseline is None:
@@ -156,14 +239,11 @@ class AdaptiveTaper:
         #     SLOW DOWN on any sign of trouble. SPEED UP only on positive evidence: the response to the last cut
         #     was demonstrably small, against this person's own baseline, for two decisions in a row.
         #     Absence of alarm is not evidence of coping (an unfamiliar person can look calm and be sinking).
-        tolerated = (f["intake_trend"] < 0.05 and f["night_rel"] < 0.25 and f["ttfc_rel"] > -0.25
-                     and risk < self.HALF * 0.6 and crave < 4)
-        self.calm_streak = self.calm_streak + 1 if tolerated else 0
-        if risk > self.HOLD * 0.8 or crave > 6:
-            self.personal_cut = max(self.min_cut, self.personal_cut * self.down)
-            self.calm_streak = 0
-        elif self.calm_streak >= 2:
-            self.personal_cut = min(self.max_cut, self.personal_cut * self.up)
+        pressure = self.update_personal_rate(
+            f, risk, crave, dose, prev_window,
+            risk_brake=self.HOLD * 0.8,
+            calm_risk=self.HALF * 0.6,
+        )
 
         # --- decision rule: risk -> action (never raise) ---
         if risk > self.HOLD or crave > 7:
@@ -180,7 +260,9 @@ class AdaptiveTaper:
         new = apply_cut(dose, cut)
         if new == 0.0 and dose > 0:
             action = action + " -> ZERO"
-        self.log.append(dict(day=day, risk=risk, crave=crave, action=action, cut=cut, rate=self.weekly_rate(), **f))
+        self.log.append(dict(day=day, risk=risk, crave=crave, response_pressure=pressure,
+                             response_streak=self.high_response_streak,
+                             action=action, cut=cut, rate=self.weekly_rate(), **f))
         return new
 
 
@@ -190,11 +272,11 @@ class FittedTaper(AdaptiveTaper):
     so its thresholds are much lower than the hand-set 0.6 / 0.3."""
     name = "Wane fitted engine"
 
-    def __init__(self, weekly_cut=0.12, period=7, weights=None):
-        super().__init__(weekly_cut, period)
+    def __init__(self, weekly_cut=0.12, period=7, weights=None, response_calibration=None):
+        super().__init__(weekly_cut, period, response_calibration=response_calibration)
         if weights is None:
-            import json, pathlib
-            weights = json.load(open(pathlib.Path(__file__).with_name("engine_weights.json")))
+            with pathlib.Path(__file__).with_name("engine_weights.json").open() as handle:
+                weights = json.load(handle)
         self.wts = weights
         self.BUDGET = weights.get("budget", 0.02)          # max predicted relapse risk per week we are willing to take
         self.CRAVE_HALF, self.CRAVE_HOLD = weights.get("crave_half", 4.5), weights.get("crave_hold", 5.5)
@@ -229,13 +311,11 @@ class FittedTaper(AdaptiveTaper):
         f = features(window, prev_window, dose=dose, baseline=self.baseline)
         risk, crave = self.risk(f), self.crave(f)
         day = window[-1]["day"]
-        tolerated = (f["intake_trend"] < 0.05 and f["night_rel"] < 0.25 and f["ttfc_rel"] > -0.25
-                     and risk < self.BUDGET * 0.5 and crave < 4)
-        self.calm_streak = self.calm_streak + 1 if tolerated else 0
-        if risk > self.BUDGET or crave > 6:
-            self.personal_cut = max(self.min_cut, self.personal_cut * self.down); self.calm_streak = 0
-        elif self.calm_streak >= 2:
-            self.personal_cut = min(self.max_cut, self.personal_cut * self.up)
+        pressure = self.update_personal_rate(
+            f, risk, crave, dose, prev_window,
+            risk_brake=self.BUDGET,
+            calm_risk=self.BUDGET * 0.5,
+        )
 
         full = self.personal_cut if len(prev_window) >= 7 else self.personal_cut / 2
         options = [(full, "CUT" if len(prev_window) >= 7 else "FIRST CUT (half)"), (full / 2, "HALF CUT"), (0.0, "HOLD")]
@@ -254,6 +334,7 @@ class FittedTaper(AdaptiveTaper):
             cut, action, new = full / 2, "HALF CUT (craving)", apply_cut(dose, full / 2)
         if new == 0.0 and dose > 0:
             action += " -> ZERO"
-        self.log.append(dict(day=day, risk=risk, crave=crave, action=action, cut=cut, rate=self.weekly_rate(),
-                             risk_next=self.risk_at(f, new), **f))
+        self.log.append(dict(day=day, risk=risk, crave=crave, response_pressure=pressure,
+                             response_streak=self.high_response_streak,
+                             action=action, cut=cut, rate=self.weekly_rate(), risk_next=self.risk_at(f, new), **f))
         return new

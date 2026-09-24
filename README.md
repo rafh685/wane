@@ -31,6 +31,8 @@ Numbers only: `.venv/bin/python simulate.py`. Refit the engine's weights: `.venv
 
 The behavioural model is calibrated against the one public dataset of real vapers under a nicotine cut: Dawkins et al. (2018), *'Real-world' compensatory behaviour with low nicotine concentration e-liquid*, Addiction 113(10), open data CC BY 4.0, DOI [10.18744/LSBU.002952](https://doi.org/10.18744/LSBU.002952). Twenty experienced vapers, one week each at 18 and 6 mg/ml with every puff logged by the device. It fixed the size of compensation (total puffing x1.47 for a 67 % cut, split between more puffs and longer puffs), the size of the craving response, and the fact that a single cut on its own does not make people relapse. What it cannot tell us, night puffs, time to first puff, weekend patterns and months of tapering, remains synthetic until a pilot.
 
+`fit_real_data.py` turns the paired 18-to-6 mg readings into `engine_calibration.json`. At runtime, both adaptive engines compare each person's measured compensation after their last cut with that response range. An unusually strong response slows the next taper rate; two calm responses are required before speeding up. This is a behavioural guardrail, not a relapse model. See [MODEL_CARD.md](MODEL_CARD.md) for the exact boundary and the GPT version used for the release.
+
 ## What the simulation says so far
 
 - A gentle ladder works for most people. Its main failure is not relapse but stalling: steps the user never applies. Removing the decision from the user, automatic delivery, is the single largest effect in the simulation.
