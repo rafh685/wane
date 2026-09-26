@@ -1,0 +1,429 @@
+{
+  "label": "SIMULATION ONLY: synthetic people, relative comparison between fast layers",
+  "people": 65,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "runs": 2925,
+  "scenario": {
+    "stable": {
+      "flat": {
+        "relapsed": 0.14871794871794872,
+        "success": 0.8512820512820514,
+        "mean_excess_w": -0.06715688282472992,
+        "peak_week_excess_w": 0.04482306233063157,
+        "puffs_ratio_first12w": 1.0122934881900056,
+        "dose_per_day_first12w": 0.5829684988937313,
+        "pred_err_first2w": NaN,
+        "pred_err_weeks7to10": NaN,
+        "pred_err_last4w": NaN
+      },
+      "codex_rules": {
+        "relapsed": 0.26666666666666666,
+        "success": 0.7333333333333333,
+        "mean_excess_w": -0.04486274302336669,
+        "peak_week_excess_w": 0.19595349794973094,
+        "puffs_ratio_first12w": 1.0292288551304958,
+        "dose_per_day_first12w": 0.1736878921254792,
+        "pred_err_first2w": NaN,
+        "pred_err_weeks7to10": NaN,
+        "pred_err_last4w": NaN,
+        "vs_flat_success": [
+          -0.11794871794871796,
+          -0.18461538461538463,
+          -0.05128205128205128
+        ],
+        "vs_flat_relapsed": [
+          0.11794871794871795,
+          0.05128205128205128,
+          0.1846153846153846
+        ]
+      },
+      "habit_only": {
+        "relapsed": 0.07692307692307693,
+        "success": 0.9230769230769231,
+        "mean_excess_w": -0.0804221181284683,
+        "peak_week_excess_w": 0.029939873956816028,
+        "puffs_ratio_first12w": 1.0044483676049902,
+        "dose_per_day_first12w": 0.5102471654398237,
+        "pred_err_first2w": NaN,
+        "pred_err_weeks7to10": NaN,
+        "pred_err_last4w": NaN,
+        "vs_flat_success": [
+          0.0717948717948718,
+          0.015384615384615385,
+          0.12820512820512822
+        ],
+        "vs_flat_relapsed": [
+          -0.07179487179487179,
+          -0.1282051282051282,
+          -0.015384615384615385
+        ]
+      },
+      "nn_frozen": {
+        "relapsed": 0.09743589743589744,
+        "success": 0.9025641025641027,
+        "mean_excess_w": -0.07995286841572327,
+        "peak_week_excess_w": 0.031079679508868793,
+        "puffs_ratio_first12w": 1.0051062841685972,
+        "dose_per_day_first12w": 0.5084254696079903,
+        "pred_err_first2w": 0.37817167425859244,
+        "pred_err_weeks7to10": 0.37186411820098714,
+        "pred_err_last4w": 0.38328213995248334,
+        "vs_flat_success": [
+          0.05128205128205129,
+          -1.708035422500241e-18,
+          0.10256410256410259
+        ],
+        "vs_flat_relapsed": [
+          -0.05128205128205129,
+          -0.10256410256410257,
+          0.0
+        ]
+      },
+      "nn_adaptive": {
+        "relapsed": 0.10256410256410256,
+        "success": 0.8974358974358974,
+        "mean_excess_w": -0.07878600176955355,
+        "peak_week_excess_w": 0.030339852423637608,
+        "puffs_ratio_first12w": 1.0060087093795593,
+        "dose_per_day_first12w": 0.5139101312017819,
+        "pred_err_first2w": 0.3973186691131727,
+        "pred_err_weeks7to10": 0.36445383942223836,
+        "pred_err_last4w": 0.3735645897112569,
+        "vs_flat_success": [
+          0.046153846153846156,
+          -0.010256410256410265,
+          0.1026923076923082
+        ],
+        "vs_flat_relapsed": [
+          -0.04615384615384616,
+          -0.10269230769230765,
+          0.010256410256410262
+        ],
+        "vs_frozen_success": [
+          -0.005128205128205124,
+          -0.05128205128205129,
+          0.04102564102564103
+        ]
+      },
+      "named": {
+        "Marta": {
+          "flat": 0.6666666666666666,
+          "codex_rules": 0.3333333333333333,
+          "habit_only": 1.0,
+          "nn_frozen": 0.6666666666666666,
+          "nn_adaptive": 1.0
+        },
+        "Diego": {
+          "flat": 0.6666666666666666,
+          "codex_rules": 0.3333333333333333,
+          "habit_only": 0.6666666666666666,
+          "nn_frozen": 0.6666666666666666,
+          "nn_adaptive": 1.0
+        },
+        "Lucía": {
+          "flat": 1.0,
+          "codex_rules": 0.6666666666666666,
+          "habit_only": 1.0,
+          "nn_frozen": 1.0,
+          "nn_adaptive": 0.6666666666666666
+        },
+        "Karim": {
+          "flat": 0.3333333333333333,
+          "codex_rules": 0.3333333333333333,
+          "habit_only": 1.0,
+          "nn_frozen": 1.0,
+          "nn_adaptive": 1.0
+        },
+        "Ana": {
+          "flat": 1.0,
+          "codex_rules": 0.3333333333333333,
+          "habit_only": 1.0,
+          "nn_frozen": 1.0,
+          "nn_adaptive": 1.0
+        }
+      }
+    },
+    "routine_change": {
+      "flat": {
+        "relapsed": 0.3128205128205129,
+        "success": 0.6871794871794873,
+        "mean_excess_w": -0.05994830554126338,
+        "peak_week_excess_w": 0.073966207166577,
+        "puffs_ratio_first12w": 1.0169765921161356,
+        "dose_per_day_first12w": 0.5978206319576387,
+        "pred_err_first2w": NaN,
+        "pred_err_weeks7to10": NaN,
+        "pred_err_last4w": NaN
+      },
+      "codex_rules": {
+        "relapsed": 0.30256410256410254,
+        "success": 0.6974358974358974,
+        "mean_excess_w": -0.043895086531077314,
+        "peak_week_excess_w": 0.19595349794973094,
+        "puffs_ratio_first12w": 1.0356420650864249,
+        "dose_per_day_first12w": 0.17527448195970094,
+        "pred_err_first2w": NaN,
+        "pred_err_weeks7to10": NaN,
+        "pred_err_last4w": NaN,
+        "vs_flat_success": [
+          0.01025641025641025,
+          -0.09230769230769231,
+          0.11282051282051282
+        ],
+        "vs_flat_relapsed": [
+          -0.010256410256410262,
+          -0.11282051282051282,
+          0.09230769230769231
+        ]
+      },
+      "habit_only": {
+        "relapsed": 0.21538461538461537,
+        "success": 0.7846153846153847,
+        "mean_excess_w": -0.07536309312528984,
+        "peak_week_excess_w": 0.05850402277150625,
+        "puffs_ratio_first12w": 1.0100250615342792,
+        "dose_per_day_first12w": 0.5137262938497853,
+        "pred_err_first2w": NaN,
+        "pred_err_weeks7to10": NaN,
+        "pred_err_last4w": NaN,
+        "vs_flat_success": [
+          0.09743589743589744,
+          0.02051282051282051,
+          0.16923076923076927
+        ],
+        "vs_flat_relapsed": [
+          -0.09743589743589744,
+          -0.16923076923076924,
+          -0.020512820512820516
+        ]
+      },
+      "nn_frozen": {
+        "relapsed": 0.23076923076923075,
+        "success": 0.7692307692307693,
+        "mean_excess_w": -0.0773304819473865,
+        "peak_week_excess_w": 0.05904369671497429,
+        "puffs_ratio_first12w": 1.0105635959296528,
+        "dose_per_day_first12w": 0.5102091035273224,
+        "pred_err_first2w": 0.37817167425859244,
+        "pred_err_weeks7to10": 0.7302373441809765,
+        "pred_err_last4w": 0.6892995130360112,
+        "vs_flat_success": [
+          0.08205128205128205,
+          0.020512820512820513,
+          0.14871794871794874
+        ],
+        "vs_flat_relapsed": [
+          -0.08205128205128205,
+          -0.14871794871794872,
+          -0.020512820512820513
+        ]
+      },
+      "nn_adaptive": {
+        "relapsed": 0.19487179487179487,
+        "success": 0.8051282051282052,
+        "mean_excess_w": -0.07609383006358304,
+        "peak_week_excess_w": 0.059426595113640915,
+        "puffs_ratio_first12w": 1.0111147170262273,
+        "dose_per_day_first12w": 0.5164437437457825,
+        "pred_err_first2w": 0.3973186691131727,
+        "pred_err_weeks7to10": 0.5293145070599903,
+        "pred_err_last4w": 0.5082199198201323,
+        "vs_flat_success": [
+          0.11794871794871796,
+          0.05128205128205129,
+          0.18461538461538465
+        ],
+        "vs_flat_relapsed": [
+          -0.11794871794871796,
+          -0.18461538461538463,
+          -0.05128205128205128
+        ],
+        "vs_frozen_success": [
+          0.0358974358974359,
+          -0.005128205128205129,
+          0.07705128205128253
+        ]
+      },
+      "named": {
+        "Marta": {
+          "flat": 0.6666666666666666,
+          "codex_rules": 0.3333333333333333,
+          "habit_only": 1.0,
+          "nn_frozen": 1.0,
+          "nn_adaptive": 1.0
+        },
+        "Diego": {
+          "flat": 0.3333333333333333,
+          "codex_rules": 0.6666666666666666,
+          "habit_only": 0.6666666666666666,
+          "nn_frozen": 1.0,
+          "nn_adaptive": 1.0
+        },
+        "Lucía": {
+          "flat": 0.0,
+          "codex_rules": 0.3333333333333333,
+          "habit_only": 0.0,
+          "nn_frozen": 0.0,
+          "nn_adaptive": 0.0
+        },
+        "Karim": {
+          "flat": 1.0,
+          "codex_rules": 0.3333333333333333,
+          "habit_only": 1.0,
+          "nn_frozen": 1.0,
+          "nn_adaptive": 1.0
+        },
+        "Ana": {
+          "flat": 0.6666666666666666,
+          "codex_rules": 0.0,
+          "habit_only": 1.0,
+          "nn_frozen": 1.0,
+          "nn_adaptive": 1.0
+        }
+      }
+    },
+    "model_mismatch": {
+      "flat": {
+        "relapsed": 0.1692307692307692,
+        "success": 0.8307692307692307,
+        "mean_excess_w": -0.050753152176084886,
+        "peak_week_excess_w": 0.05197115425164477,
+        "puffs_ratio_first12w": 1.018365672871418,
+        "dose_per_day_first12w": 0.5882292938293292,
+        "pred_err_first2w": NaN,
+        "pred_err_weeks7to10": NaN,
+        "pred_err_last4w": NaN
+      },
+      "codex_rules": {
+        "relapsed": 0.3025641025641026,
+        "success": 0.6974358974358974,
+        "mean_excess_w": -0.025565606063627795,
+        "peak_week_excess_w": 0.21540277374503983,
+        "puffs_ratio_first12w": 1.0382939756320846,
+        "dose_per_day_first12w": 0.17884105994357127,
+        "pred_err_first2w": NaN,
+        "pred_err_weeks7to10": NaN,
+        "pred_err_last4w": NaN,
+        "vs_flat_success": [
+          -0.13333333333333336,
+          -0.21538461538461542,
+          -0.051282051282051294
+        ],
+        "vs_flat_relapsed": [
+          0.13333333333333333,
+          0.05128205128205129,
+          0.2153846153846154
+        ]
+      },
+      "habit_only": {
+        "relapsed": 0.10256410256410256,
+        "success": 0.8974358974358975,
+        "mean_excess_w": -0.06538705547242987,
+        "peak_week_excess_w": 0.033696351933187735,
+        "puffs_ratio_first12w": 1.0114369447395442,
+        "dose_per_day_first12w": 0.5143790792961271,
+        "pred_err_first2w": NaN,
+        "pred_err_weeks7to10": NaN,
+        "pred_err_last4w": NaN,
+        "vs_flat_success": [
+          0.06666666666666668,
+          0.005128205128205126,
+          0.12820512820512825
+        ],
+        "vs_flat_relapsed": [
+          -0.06666666666666667,
+          -0.12820512820512822,
+          -0.0051282051282051265
+        ]
+      },
+      "nn_frozen": {
+        "relapsed": 0.10256410256410256,
+        "success": 0.8974358974358974,
+        "mean_excess_w": -0.06469846450756328,
+        "peak_week_excess_w": 0.03539119484404261,
+        "puffs_ratio_first12w": 1.0109125285431138,
+        "dose_per_day_first12w": 0.5113023580069163,
+        "pred_err_first2w": 0.3762159883567357,
+        "pred_err_weeks7to10": 0.37733998757819387,
+        "pred_err_last4w": 0.384278001993121,
+        "vs_flat_success": [
+          0.06666666666666668,
+          0.010256410256410258,
+          0.12320512820512869
+        ],
+        "vs_flat_relapsed": [
+          -0.06666666666666667,
+          -0.12320512820512816,
+          -0.010256410256410256
+        ]
+      },
+      "nn_adaptive": {
+        "relapsed": 0.11282051282051282,
+        "success": 0.8871794871794872,
+        "mean_excess_w": -0.06435177080282367,
+        "peak_week_excess_w": 0.03634418795209592,
+        "puffs_ratio_first12w": 1.010680335820068,
+        "dose_per_day_first12w": 0.5108509664694222,
+        "pred_err_first2w": 0.3970078633377918,
+        "pred_err_weeks7to10": 0.363621819086371,
+        "pred_err_last4w": 0.3701226418332744,
+        "vs_flat_success": [
+          0.056410256410256425,
+          -0.010256410256410255,
+          0.12307692307692307
+        ],
+        "vs_flat_relapsed": [
+          -0.05641025641025641,
+          -0.12307692307692306,
+          0.010256410256410255
+        ],
+        "vs_frozen_success": [
+          -0.010256410256410256,
+          -0.06153846153846154,
+          0.04102564102564103
+        ]
+      },
+      "named": {
+        "Marta": {
+          "flat": 0.6666666666666666,
+          "codex_rules": 0.0,
+          "habit_only": 1.0,
+          "nn_frozen": 0.6666666666666666,
+          "nn_adaptive": 1.0
+        },
+        "Diego": {
+          "flat": 0.3333333333333333,
+          "codex_rules": 0.6666666666666666,
+          "habit_only": 1.0,
+          "nn_frozen": 0.6666666666666666,
+          "nn_adaptive": 1.0
+        },
+        "Lucía": {
+          "flat": 0.6666666666666666,
+          "codex_rules": 0.6666666666666666,
+          "habit_only": 1.0,
+          "nn_frozen": 0.6666666666666666,
+          "nn_adaptive": 0.3333333333333333
+        },
+        "Karim": {
+          "flat": 0.3333333333333333,
+          "codex_rules": 0.6666666666666666,
+          "habit_only": 0.6666666666666666,
+          "nn_frozen": 1.0,
+          "nn_adaptive": 0.6666666666666666
+        },
+        "Ana": {
+          "flat": 1.0,
+          "codex_rules": 1.0,
+          "habit_only": 1.0,
+          "nn_frozen": 1.0,
+          "nn_adaptive": 1.0
+        }
+      }
+    }
+  }
+}
