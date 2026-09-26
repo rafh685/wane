@@ -1,0 +1,840 @@
+{
+  "label": "SIMULATION ONLY: synthetic people, relative comparison",
+  "people": 65,
+  "scenario": {
+    "stable": {
+      "table": {
+        "flat": {
+          "expected_risk": 0.15103744331278982,
+          "success": 0.8512820512820514,
+          "relapsed": 0.14871794871794872,
+          "mean_excess": -0.07768504395476351,
+          "peak_week_excess": 0.04717276115121919,
+          "weeks1_8_excess": 0.007541838171550336,
+          "budget_used": 1.0017529016723834,
+          "zero_dose_share": 0.0,
+          "max_dose": 1.0,
+          "max_dose_over_target": 1.0,
+          "puffs_ratio_first12w": 1.0157178874868709
+        },
+        "flat_matched": {
+          "expected_risk": 0.1446381492977475,
+          "success": 0.8820512820512821,
+          "relapsed": 0.11794871794871795,
+          "mean_excess": -0.08333577470635574,
+          "peak_week_excess": 0.04449729072998114,
+          "weeks1_8_excess": 0.0055616229953090925,
+          "budget_used": 0.8712002089386012,
+          "zero_dose_share": 0.0,
+          "max_dose": 0.87,
+          "max_dose_over_target": 0.8700000000000001,
+          "puffs_ratio_first12w": 1.0155942247236127
+        },
+        "codex_rules": {
+          "expected_risk": 0.2556513820255594,
+          "success": 0.7333333333333333,
+          "relapsed": 0.26666666666666666,
+          "mean_excess": -0.13122075288307672,
+          "peak_week_excess": 0.18634191978503734,
+          "weeks1_8_excess": -0.025936623918371992,
+          "budget_used": 0.2582247094529067,
+          "zero_dose_share": 0.0,
+          "max_dose": 0.8208661200171757,
+          "max_dose_over_target": 0.8249749775126564,
+          "puffs_ratio_first12w": 1.0096709739525214
+        },
+        "habit_v3": {
+          "expected_risk": 0.11038336657481633,
+          "success": 0.9230769230769231,
+          "relapsed": 0.07692307692307693,
+          "mean_excess": -0.08804044888491289,
+          "peak_week_excess": 0.029382514010000117,
+          "weeks1_8_excess": -0.006275256775847991,
+          "budget_used": 0.931938365652105,
+          "zero_dose_share": 0.013887341558907541,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0078217538326102
+        },
+        "nn_v3": {
+          "expected_risk": 0.11246225063297184,
+          "success": 0.8974358974358974,
+          "relapsed": 0.10256410256410256,
+          "mean_excess": -0.08731351773128648,
+          "peak_week_excess": 0.02948135105925379,
+          "weeks1_8_excess": -0.00514344747449938,
+          "budget_used": 0.9326238040152813,
+          "zero_dose_share": 3.8686220671172194e-05,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0088601108216688
+        },
+        "habit_v4": {
+          "expected_risk": 0.09422768353623968,
+          "success": 0.9179487179487179,
+          "relapsed": 0.08205128205128205,
+          "mean_excess": -0.09915120750152841,
+          "peak_week_excess": 0.018012338547412982,
+          "weeks1_8_excess": -0.02147110685892911,
+          "budget_used": 0.8810008914675109,
+          "zero_dose_share": 0.0010074545363049161,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0041022417710466
+        },
+        "nn_v4_frozen": {
+          "expected_risk": 0.09277423556987695,
+          "success": 0.9333333333333333,
+          "relapsed": 0.06666666666666667,
+          "mean_excess": -0.10036923562068667,
+          "peak_week_excess": 0.017514701562284976,
+          "weeks1_8_excess": -0.02205143589066663,
+          "budget_used": 0.8564508955951285,
+          "zero_dose_share": 0.0,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0043016069024
+        },
+        "nn_v4": {
+          "expected_risk": 0.094192738191895,
+          "success": 0.9282051282051282,
+          "relapsed": 0.07179487179487179,
+          "mean_excess": -0.09961578573554963,
+          "peak_week_excess": 0.019353003425848954,
+          "weeks1_8_excess": -0.021001113261344396,
+          "budget_used": 0.8654307395355763,
+          "zero_dose_share": 0.0,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0044298409379266
+        }
+      },
+      "pairs": {
+        "nn_v4 - flat": {
+          "expected_risk": {
+            "diff": -0.05684470512089483,
+            "lo": -0.07127026126310552,
+            "hi": -0.04246218814484428,
+            "better": 46,
+            "worse": 0,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.07692307692307693,
+            "lo": 0.02564102564102564,
+            "hi": 0.12820512820512825,
+            "better": 4,
+            "worse": 15,
+            "n": 65
+          }
+        },
+        "nn_v4 - flat_matched": {
+          "expected_risk": {
+            "diff": -0.05044541110585249,
+            "lo": -0.06350697176170302,
+            "hi": -0.03778512524416326,
+            "better": 47,
+            "worse": 0,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.046153846153846156,
+            "lo": -0.00512820512820513,
+            "hi": 0.09743589743589745,
+            "better": 7,
+            "worse": 14,
+            "n": 65
+          }
+        },
+        "nn_v4 - nn_v3": {
+          "expected_risk": {
+            "diff": -0.018269512441076843,
+            "lo": -0.024095812186684995,
+            "hi": -0.013063038499127006,
+            "better": 40,
+            "worse": 1,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.03076923076923077,
+            "lo": -0.015384615384615385,
+            "hi": 0.07692307692307693,
+            "better": 8,
+            "worse": 14,
+            "n": 65
+          }
+        },
+        "habit_v4 - habit_v3": {
+          "expected_risk": {
+            "diff": -0.016155683038576632,
+            "lo": -0.020880749383491413,
+            "hi": -0.01163893078083839,
+            "better": 38,
+            "worse": 1,
+            "n": 65
+          },
+          "success": {
+            "diff": -0.0051282051282051265,
+            "lo": -0.05641025641025642,
+            "hi": 0.04102564102564103,
+            "better": 11,
+            "worse": 11,
+            "n": 65
+          }
+        },
+        "nn_v4 - habit_v4": {
+          "expected_risk": {
+            "diff": -3.494534434469123e-05,
+            "lo": -0.002312423984001598,
+            "hi": 0.002006582187035771,
+            "better": 6,
+            "worse": 9,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.010256410256410255,
+            "lo": -0.025641025641025647,
+            "hi": 0.04615384615384616,
+            "better": 6,
+            "worse": 8,
+            "n": 65
+          }
+        },
+        "nn_v4 - nn_v4_frozen": {
+          "expected_risk": {
+            "diff": 0.0014185026220180517,
+            "lo": -0.00023837482239898977,
+            "hi": 0.003380765772161032,
+            "better": 2,
+            "worse": 8,
+            "n": 65
+          },
+          "success": {
+            "diff": -0.005128205128205129,
+            "lo": -0.046153846153846156,
+            "hi": 0.030769230769230774,
+            "better": 8,
+            "worse": 7,
+            "n": 65
+          }
+        },
+        "nn_v4 - codex_rules": {
+          "expected_risk": {
+            "diff": -0.16145864383366446,
+            "lo": -0.19024249681845326,
+            "hi": -0.1335659040345549,
+            "better": 60,
+            "worse": 0,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.1948717948717949,
+            "lo": 0.11794871794871797,
+            "hi": 0.27179487179487183,
+            "better": 4,
+            "worse": 28,
+            "n": 65
+          }
+        }
+      }
+    },
+    "routine_change": {
+      "table": {
+        "flat": {
+          "expected_risk": 0.26834430299013856,
+          "success": 0.6871794871794873,
+          "relapsed": 0.3128205128205129,
+          "mean_excess": -0.07786626495722464,
+          "peak_week_excess": 0.0819548513222528,
+          "weeks1_8_excess": 0.007241017724018664,
+          "budget_used": 1.0103850255837696,
+          "zero_dose_share": 0.0,
+          "max_dose": 1.0,
+          "max_dose_over_target": 1.0,
+          "puffs_ratio_first12w": 1.01932530719683
+        },
+        "flat_matched": {
+          "expected_risk": 0.25204256143229803,
+          "success": 0.6923076923076923,
+          "relapsed": 0.3076923076923077,
+          "mean_excess": -0.08358502249213119,
+          "peak_week_excess": 0.07576145176379077,
+          "weeks1_8_excess": 0.005019810519228854,
+          "budget_used": 0.8789722598076312,
+          "zero_dose_share": 0.0,
+          "max_dose": 0.87,
+          "max_dose_over_target": 0.8700000000000001,
+          "puffs_ratio_first12w": 1.0193145896262346
+        },
+        "codex_rules": {
+          "expected_risk": 0.2637805784365181,
+          "success": 0.6974358974358974,
+          "relapsed": 0.30256410256410254,
+          "mean_excess": -0.1310979779660827,
+          "peak_week_excess": 0.1864467098733971,
+          "weeks1_8_excess": -0.02576656855542398,
+          "budget_used": 0.2592802458231017,
+          "zero_dose_share": 0.0,
+          "max_dose": 0.8208661200171757,
+          "max_dose_over_target": 0.8666666666666667,
+          "puffs_ratio_first12w": 1.0110552338448544
+        },
+        "habit_v3": {
+          "expected_risk": 0.22075646938181345,
+          "success": 0.7846153846153847,
+          "relapsed": 0.21538461538461537,
+          "mean_excess": -0.090500022984413,
+          "peak_week_excess": 0.06306619255916726,
+          "weeks1_8_excess": -0.005893263101263266,
+          "budget_used": 0.892517655074263,
+          "zero_dose_share": 0.06438873412124316,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0119997653967758
+        },
+        "nn_v3": {
+          "expected_risk": 0.21950347161840228,
+          "success": 0.8051282051282052,
+          "relapsed": 0.19487179487179487,
+          "mean_excess": -0.08930165417191871,
+          "peak_week_excess": 0.062299097613282665,
+          "weeks1_8_excess": -0.005543916489924792,
+          "budget_used": 0.913674158421518,
+          "zero_dose_share": 2.87738703568164e-05,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.012420398561391
+        },
+        "habit_v4": {
+          "expected_risk": 0.20388963886318787,
+          "success": 0.7948717948717948,
+          "relapsed": 0.20512820512820515,
+          "mean_excess": -0.09943793390923143,
+          "peak_week_excess": 0.05150009132020266,
+          "weeks1_8_excess": -0.020166971579812645,
+          "budget_used": 0.852685362478241,
+          "zero_dose_share": 0.03483185032218838,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0085713868216284
+        },
+        "nn_v4_frozen": {
+          "expected_risk": 0.2013662655872996,
+          "success": 0.805128205128205,
+          "relapsed": 0.19487179487179487,
+          "mean_excess": -0.10071888497220596,
+          "peak_week_excess": 0.05112369010593586,
+          "weeks1_8_excess": -0.020642552397019336,
+          "budget_used": 0.824913241187617,
+          "zero_dose_share": 4.684057432046587e-05,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0090653478986211
+        },
+        "nn_v4": {
+          "expected_risk": 0.19951587086141284,
+          "success": 0.7999999999999999,
+          "relapsed": 0.19999999999999998,
+          "mean_excess": -0.10000239903369995,
+          "peak_week_excess": 0.051938993758182124,
+          "weeks1_8_excess": -0.02072453123692012,
+          "budget_used": 0.8558408302460071,
+          "zero_dose_share": 0.0,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.006717859539539
+        }
+      },
+      "pairs": {
+        "nn_v4 - flat": {
+          "expected_risk": {
+            "diff": -0.0688284321287257,
+            "lo": -0.08501651077963952,
+            "hi": -0.05251161414359853,
+            "better": 48,
+            "worse": 3,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.11282051282051284,
+            "lo": 0.041025641025641026,
+            "hi": 0.18461538461538463,
+            "better": 9,
+            "worse": 23,
+            "n": 65
+          }
+        },
+        "nn_v4 - flat_matched": {
+          "expected_risk": {
+            "diff": -0.052526690570885125,
+            "lo": -0.06709750651243164,
+            "hi": -0.03737227575657388,
+            "better": 46,
+            "worse": 3,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.10769230769230771,
+            "lo": 0.04102564102564102,
+            "hi": 0.17435897435897438,
+            "better": 9,
+            "worse": 22,
+            "n": 65
+          }
+        },
+        "nn_v4 - nn_v3": {
+          "expected_risk": {
+            "diff": -0.019987600756989438,
+            "lo": -0.025658194404770008,
+            "hi": -0.014931499767421003,
+            "better": 43,
+            "worse": 1,
+            "n": 65
+          },
+          "success": {
+            "diff": -0.005128205128205132,
+            "lo": -0.056410256410256425,
+            "hi": 0.046153846153846156,
+            "better": 13,
+            "worse": 10,
+            "n": 65
+          }
+        },
+        "habit_v4 - habit_v3": {
+          "expected_risk": {
+            "diff": -0.016866830518625586,
+            "lo": -0.02153171140095241,
+            "hi": -0.01257538009492288,
+            "better": 39,
+            "worse": 0,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.010256410256410258,
+            "lo": -0.05128205128205129,
+            "hi": 0.07692307692307693,
+            "better": 13,
+            "worse": 12,
+            "n": 65
+          }
+        },
+        "nn_v4 - habit_v4": {
+          "expected_risk": {
+            "diff": -0.004373768001775016,
+            "lo": -0.008750144004593752,
+            "hi": -0.0006936630047184283,
+            "better": 16,
+            "worse": 9,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.005128205128205125,
+            "lo": -0.0512820512820513,
+            "hi": 0.06666666666666665,
+            "better": 13,
+            "worse": 12,
+            "n": 65
+          }
+        },
+        "nn_v4 - nn_v4_frozen": {
+          "expected_risk": {
+            "diff": -0.0018503947258867285,
+            "lo": -0.004652194725846142,
+            "hi": 0.0008714794955223976,
+            "better": 14,
+            "worse": 5,
+            "n": 65
+          },
+          "success": {
+            "diff": -0.005128205128205131,
+            "lo": -0.05641025641025642,
+            "hi": 0.04615384615384615,
+            "better": 11,
+            "worse": 8,
+            "n": 65
+          }
+        },
+        "nn_v4 - codex_rules": {
+          "expected_risk": {
+            "diff": -0.06426470757510523,
+            "lo": -0.11781049971787656,
+            "hi": -0.006801226959481749,
+            "better": 49,
+            "worse": 11,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.10256410256410259,
+            "lo": -5.166807153063214e-18,
+            "hi": 0.2,
+            "better": 18,
+            "worse": 27,
+            "n": 65
+          }
+        }
+      }
+    },
+    "model_mismatch": {
+      "table": {
+        "flat": {
+          "expected_risk": 0.17428806125150217,
+          "success": 0.8307692307692308,
+          "relapsed": 0.1692307692307692,
+          "mean_excess": -0.06035049018768124,
+          "peak_week_excess": 0.05448644145440675,
+          "weeks1_8_excess": 0.016212971187638297,
+          "budget_used": 1.0089707662119867,
+          "zero_dose_share": 0.0,
+          "max_dose": 1.0,
+          "max_dose_over_target": 1.0,
+          "puffs_ratio_first12w": 1.0206080187594953
+        },
+        "flat_matched": {
+          "expected_risk": 0.17060487236265476,
+          "success": 0.8871794871794871,
+          "relapsed": 0.11282051282051282,
+          "mean_excess": -0.06542479113003259,
+          "peak_week_excess": 0.05482286560266722,
+          "weeks1_8_excess": 0.015378757729363245,
+          "budget_used": 0.8760618916818615,
+          "zero_dose_share": 0.0,
+          "max_dose": 0.87,
+          "max_dose_over_target": 0.8700000000000001,
+          "puffs_ratio_first12w": 1.0187473395342233
+        },
+        "codex_rules": {
+          "expected_risk": 0.29787240419197575,
+          "success": 0.6974358974358974,
+          "relapsed": 0.30256410256410254,
+          "mean_excess": -0.10885937359382024,
+          "peak_week_excess": 0.21120757884857222,
+          "weeks1_8_excess": -0.0038532191984747698,
+          "budget_used": 0.25972377196158214,
+          "zero_dose_share": 0.0,
+          "max_dose": 0.8208661200171762,
+          "max_dose_over_target": 0.8750694147723751,
+          "puffs_ratio_first12w": 1.0171862465519237
+        },
+        "habit_v3": {
+          "expected_risk": 0.12013823865720065,
+          "success": 0.8974358974358975,
+          "relapsed": 0.10256410256410256,
+          "mean_excess": -0.07131984295131483,
+          "peak_week_excess": 0.03437257789374842,
+          "weeks1_8_excess": 0.0015901979048665287,
+          "budget_used": 0.9314081142763956,
+          "zero_dose_share": 0.01358613804179674,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0106145460478142
+        },
+        "nn_v3": {
+          "expected_risk": 0.12726233170784076,
+          "success": 0.8871794871794871,
+          "relapsed": 0.11282051282051282,
+          "mean_excess": -0.07022445618724456,
+          "peak_week_excess": 0.03670773358255502,
+          "weeks1_8_excess": 0.0037435155341394456,
+          "budget_used": 0.9328369197618498,
+          "zero_dose_share": 2.8765984427169935e-05,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.012039016112922
+        },
+        "habit_v4": {
+          "expected_risk": 0.09942709464879135,
+          "success": 0.9076923076923077,
+          "relapsed": 0.09230769230769231,
+          "mean_excess": -0.0830964004896612,
+          "peak_week_excess": 0.02537405400305027,
+          "weeks1_8_excess": -0.014080322791065926,
+          "budget_used": 0.8812905682183637,
+          "zero_dose_share": 0.000985503389460849,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0058455513962499
+        },
+        "nn_v4_frozen": {
+          "expected_risk": 0.09946257700178514,
+          "success": 0.8871794871794871,
+          "relapsed": 0.11282051282051282,
+          "mean_excess": -0.08416848016892782,
+          "peak_week_excess": 0.02663440127882606,
+          "weeks1_8_excess": -0.013902144632041574,
+          "budget_used": 0.8563173967013916,
+          "zero_dose_share": 0.0,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0055943705891184
+        },
+        "nn_v4": {
+          "expected_risk": 0.10141646567521682,
+          "success": 0.8871794871794871,
+          "relapsed": 0.11282051282051282,
+          "mean_excess": -0.0833279676277072,
+          "peak_week_excess": 0.02626388304500661,
+          "weeks1_8_excess": -0.01314669964159745,
+          "budget_used": 0.8664401235516587,
+          "zero_dose_share": 0.0,
+          "max_dose": 1.0,
+          "max_dose_over_target": 2.0,
+          "puffs_ratio_first12w": 1.0050790184642902
+        }
+      },
+      "pairs": {
+        "nn_v4 - flat": {
+          "expected_risk": {
+            "diff": -0.07287159557628535,
+            "lo": -0.09148559535201108,
+            "hi": -0.054648307354396256,
+            "better": 47,
+            "worse": 0,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.056410256410256425,
+            "lo": -0.010256410256410263,
+            "hi": 0.1230769230769231,
+            "better": 11,
+            "worse": 22,
+            "n": 65
+          }
+        },
+        "nn_v4 - flat_matched": {
+          "expected_risk": {
+            "diff": -0.0691884066874379,
+            "lo": -0.08693240630190795,
+            "hi": -0.051722559667513636,
+            "better": 48,
+            "worse": 0,
+            "n": 65
+          },
+          "success": {
+            "diff": -1.708035422500241e-18,
+            "lo": -0.06153846153846154,
+            "hi": 0.06153846153846154,
+            "better": 12,
+            "worse": 13,
+            "n": 65
+          }
+        },
+        "nn_v4 - nn_v3": {
+          "expected_risk": {
+            "diff": -0.025845866032623958,
+            "lo": -0.03380083676066743,
+            "hi": -0.018566175573399443,
+            "better": 41,
+            "worse": 0,
+            "n": 65
+          },
+          "success": {
+            "diff": -5.124106267500723e-18,
+            "lo": -0.05641025641025642,
+            "hi": 0.05641025641025642,
+            "better": 10,
+            "worse": 10,
+            "n": 65
+          }
+        },
+        "habit_v4 - habit_v3": {
+          "expected_risk": {
+            "diff": -0.02071114400840929,
+            "lo": -0.027628938361098948,
+            "hi": -0.014610724076453467,
+            "better": 40,
+            "worse": 0,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.01025641025641026,
+            "lo": -0.04102564102564103,
+            "hi": 0.06153846153846154,
+            "better": 9,
+            "worse": 11,
+            "n": 65
+          }
+        },
+        "nn_v4 - habit_v4": {
+          "expected_risk": {
+            "diff": 0.0019893710264254727,
+            "lo": -3.152444964445146e-05,
+            "hi": 0.004302930775494986,
+            "better": 6,
+            "worse": 12,
+            "n": 65
+          },
+          "success": {
+            "diff": -0.020512820512820513,
+            "lo": -0.0717948717948718,
+            "hi": 0.03076923076923077,
+            "better": 10,
+            "worse": 7,
+            "n": 65
+          }
+        },
+        "nn_v4 - nn_v4_frozen": {
+          "expected_risk": {
+            "diff": 0.001953888673431686,
+            "lo": -0.0005709292218180319,
+            "hi": 0.004650824100150354,
+            "better": 8,
+            "worse": 11,
+            "n": 65
+          },
+          "success": {
+            "diff": 1.708035422500241e-18,
+            "lo": -0.046153846153846156,
+            "hi": 0.04615384615384616,
+            "better": 10,
+            "worse": 9,
+            "n": 65
+          }
+        },
+        "nn_v4 - codex_rules": {
+          "expected_risk": {
+            "diff": -0.1964559385167589,
+            "lo": -0.22740449787613445,
+            "hi": -0.16608203928442866,
+            "better": 63,
+            "worse": 1,
+            "n": 65
+          },
+          "success": {
+            "diff": 0.18974358974358976,
+            "lo": 0.10769230769230771,
+            "hi": 0.2717948717948719,
+            "better": 8,
+            "worse": 32,
+            "n": 65
+          }
+        }
+      }
+    }
+  },
+  "subgroups": {
+    "routine": {
+      "all_day": {
+        "n": 16,
+        "v4_minus_flat": -0.08787088245234359,
+        "v4_minus_v3": -0.02239203783095277,
+        "flat_risk": 0.22396849709998407
+      },
+      "early_shift": {
+        "n": 12,
+        "v4_minus_flat": -0.06640969997159475,
+        "v4_minus_v3": -0.015991968048690925,
+        "flat_risk": 0.24308190481419603
+      },
+      "evening": {
+        "n": 14,
+        "v4_minus_flat": -0.007560395294340739,
+        "v4_minus_v3": -0.0024663301738998477,
+        "flat_risk": 0.07454667686697036
+      },
+      "three_moments": {
+        "n": 15,
+        "v4_minus_flat": -0.07377518365260381,
+        "v4_minus_v3": -0.03257880943620444,
+        "flat_risk": 0.22928954909620775
+      },
+      "work_ban": {
+        "n": 8,
+        "v4_minus_flat": -0.11080984209435404,
+        "v4_minus_v3": -0.03943886218430273,
+        "flat_risk": 0.2349212882993994
+      }
+    },
+    "puffs/day": {
+      "high": {
+        "n": 22,
+        "v4_minus_flat": -0.04314329607257526,
+        "v4_minus_v3": -0.014416703859195983,
+        "flat_risk": 0.1531613268065547
+      },
+      "low": {
+        "n": 22,
+        "v4_minus_flat": -0.08547204049520662,
+        "v4_minus_v3": -0.029077855403923915,
+        "flat_risk": 0.2395045272629967
+      },
+      "mid": {
+        "n": 21,
+        "v4_minus_flat": -0.07010786381286158,
+        "v4_minus_v3": -0.020572265692523056,
+        "flat_risk": 0.20115224003885074
+      }
+    },
+    "compensation": {
+      "high": {
+        "n": 22,
+        "v4_minus_flat": -0.05354719987152878,
+        "v4_minus_v3": -0.019519933735448983,
+        "flat_risk": 0.20010623681837328
+      },
+      "low": {
+        "n": 22,
+        "v4_minus_flat": -0.07178774887083729,
+        "v4_minus_v3": -0.023788581453567815,
+        "flat_risk": 0.2190782142066446
+      },
+      "mid": {
+        "n": 21,
+        "v4_minus_flat": -0.07354446058234482,
+        "v4_minus_v3": -0.02076716900825011,
+        "flat_risk": 0.17337085275217148
+      }
+    },
+    "adaptation speed": {
+      "high": {
+        "n": 22,
+        "v4_minus_flat": -0.049587048925059204,
+        "v4_minus_v3": -0.01629031826071865,
+        "flat_risk": 0.17216052044544494
+      },
+      "low": {
+        "n": 22,
+        "v4_minus_flat": -0.10315799412156479,
+        "v4_minus_v3": -0.03499807656649445,
+        "flat_risk": 0.24182918512837903
+      },
+      "mid": {
+        "n": 21,
+        "v4_minus_flat": -0.04482912369216982,
+        "v4_minus_v3": -0.012407295101568275,
+        "flat_risk": 0.17881296703437466
+      }
+    },
+    "relapse threshold": {
+      "high": {
+        "n": 22,
+        "v4_minus_flat": -0.028633012341259256,
+        "v4_minus_v3": -0.00772270442933525,
+        "flat_risk": 0.12693728355722875
+      },
+      "low": {
+        "n": 22,
+        "v4_minus_flat": -0.11203360152112812,
+        "v4_minus_v3": -0.03794976732471412,
+        "flat_risk": 0.28204943230940765
+      },
+      "mid": {
+        "n": 21,
+        "v4_minus_flat": -0.05748271617089388,
+        "v4_minus_v3": -0.018290643082977898,
+        "flat_risk": 0.18405419434666645
+      }
+    }
+  },
+  "harms": [
+    {
+      "person": "P12-023",
+      "scenario": "routine_change",
+      "vs": "flat",
+      "v4": 0.8520258621432196,
+      "ref": 0.8011648213591537,
+      "kind": "all_day",
+      "puffs": 429.0,
+      "elasticity": 0.624
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+
+P12-030, 20 seeds, SIMULATION ONLY (flat_matched runs at 0.88 of the level)
+controller    exp.risk relapsed excess wk1-8 mean excess peak week  budget
+flat            0.0611     0.05      -0.0245     -0.1877    0.0076    0.99
+flat_matched    0.0611     0.00      -0.0350     -0.1973    0.0067    0.87
+hand_plan       0.0611     0.05      -0.0418     -0.2012    0.0021    0.88
+nn_v3           0.0611     0.00      -0.0334     -0.1940    0.0042    0.95
+nn_v4           0.0611     0.05      -0.0453     -0.2037    0.0006    0.88
+  hand_plan  - nn_v4        expected_risk +0.0000 [-0.0000, +0.0000]
+  hand_plan  - nn_v4        weeks1_8      +0.0035 [+0.0021, +0.0050]
+  hand_plan  - nn_v3        expected_risk -0.0000 [-0.0000, -0.0000]
+  hand_plan  - nn_v3        weeks1_8      -0.0084 [-0.0094, -0.0074]
+  nn_v4      - nn_v3        expected_risk -0.0000 [-0.0000, -0.0000]
+  nn_v4      - nn_v3        weeks1_8      -0.0119 [-0.0134, -0.0104]
+  hand_plan  - flat_matched expected_risk -0.0000 [-0.0000, -0.0000]
+  hand_plan  - flat_matched weeks1_8      -0.0068 [-0.0079, -0.0055]
+  nn_v4      - flat         expected_risk -0.0000 [-0.0000, -0.0000]
+  nn_v4      - flat         weeks1_8      -0.0209 [-0.0228, -0.0191]
+
+P12-027, 20 seeds, SIMULATION ONLY (flat_matched runs at 0.85 of the level)
+controller    exp.risk relapsed excess wk1-8 mean excess peak week  budget
+flat            0.3923     0.35      +0.0151     -0.0784    0.0843    1.00
+flat_matched    0.3632     0.25      +0.0115     -0.0854    0.0849    0.85
+hand_plan       0.2609     0.20      -0.0143     -0.1004    0.0565    0.85
+nn_v3           0.2884     0.25      -0.0070     -0.0931    0.0602    0.89
+nn_v4           0.2375     0.15      -0.0218     -0.1047    0.0485    0.82
+  hand_plan  - nn_v4        expected_risk +0.0234 [+0.0157, +0.0311]
+  hand_plan  - nn_v4        weeks1_8      +0.0075 [+0.0055, +0.0095]
+  hand_plan  - nn_v3        expected_risk -0.0275 [-0.0378, -0.0179]
+  hand_plan  - nn_v3        weeks1_8      -0.0073 [-0.0086, -0.0059]
+  nn_v4      - nn_v3        expected_risk -0.0509 [-0.0640, -0.0380]
+  nn_v4      - nn_v3        weeks1_8      -0.0148 [-0.0169, -0.0126]
+  hand_plan  - flat_matched expected_risk -0.1023 [-0.1260, -0.0799]
+  hand_plan  - flat_matched weeks1_8      -0.0257 [-0.0279, -0.0237]
+  nn_v4      - flat         expected_risk -0.1548 [-0.1876, -0.1216]
+  nn_v4      - flat         weeks1_8      -0.0368 [-0.0404, -0.0335]

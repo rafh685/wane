@@ -85,7 +85,7 @@ def minute_step(person, n_min=1):
 
 
 def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, seed=0, record=None, routine_change=None,
-             physiology=None):
+             physiology=None, stop_at_relapse=True):
     """Run one person with one controller. Returns a result dict; per-puff rows go to `record` if given.
 
     make_controller(): a fresh controller with begin(baseline), start_day(k, u, weekend), dose(t_h), observe(t_h, dur_s, dose)
@@ -93,6 +93,8 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
     routine_change: (taper_day, other_profile) to swap in another person's routine and sleep times mid-taper
                     (new job, new term): the device's baseline habit goes stale and has to be relearned
     physiology: {"half_life_h": ..., "dur_exp": ...} to make the hidden person differ from what controllers assume
+    stop_at_relapse=False keeps simulating after the first relapse draw (recorded as usual), so the full path's
+    expected relapse risk, 1 - exp(-sum of daily hazards), can be compared without outcome noise
     """
     rng = np.random.default_rng(seed)
     person = Person(profile, rng, **(physiology or {}))
@@ -104,7 +106,7 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
     day_w, day_awake_min = 0.0, 0
     k = 0
     u = 1.0
-    out = dict(name=profile.name, relapsed=False, relapse_day=None, zero_day=None, days=[])
+    out = dict(name=profile.name, relapsed=False, relapse_day=None, zero_day=None, days=[], cum_hazard=0.0)
     day_puffs, day_delivered, day_dose = 0, 0.0, 0.0
     next_boundary = minute + 1440
 
@@ -181,9 +183,12 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
                 excess_hist.append(mean_w - person.baseline_w[(k - 1) % 7])     # against the same weekday at baseline
                 excess = float(np.mean(excess_hist[-3:]))
                 hazard = 0.0003 + 0.03 / (1 + math.exp(-(excess - person.theta) / 0.015))
-                if rng.random() < hazard:
+                out["cum_hazard"] += hazard
+                out["days"][-1]["hazard"] = hazard
+                if rng.random() < hazard and not out["relapsed"]:
                     out["relapsed"], out["relapse_day"] = True, k - 1 - WARMUP_DAYS
-                    break
+                    if stop_at_relapse:
+                        break
             if ctrl_started and k < total_days:
                 last = out["days"][-1]
                 u = slow.level(k - WARMUP_DAYS, last["puffs"])
@@ -191,6 +196,7 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
                     out["zero_day"] = k - WARMUP_DAYS
                 weekend = ((k + 0) % 7) in WEEKEND            # device day k starts on clock day k
                 ctrl.start_day(k, u, weekend)
+    out["expected_risk"] = 1 - math.exp(-out["cum_hazard"])
     out["baseline_w"] = person.baseline_w
     out["baseline_puffs"] = float(np.mean([d["puffs"] for d in out["days"][:WARMUP_DAYS]]))
     return out

@@ -245,29 +245,106 @@ class CodexRules:
         pass
 
 
+V3 = dict(pk=True, front=0.0, relief_boost=1.0, pregap_cut=1.0)            # 26 Sept first version
+V4 = dict(pk=False, front=0.5, relief_boost=2.0, pregap_cut=0.2)           # chosen on development population C, 26 Sept
+# tune_fast_layer.py: best of 54 + 18 configs on 40 dev people (expected risk 0.082 vs v3 0.094). relief_boost 2.0 and
+# 2.5 tie, the milder one is kept. pregap_cut kept the grid's lowest value, 0.2, as a product floor: lower would
+# make the last puffs before bed nearly empty, which a real user notices, and would push the simulator to an extreme.
+
+
+def bout_positions(times, split_h=5 / 60, relief_gap_h=3.0):
+    """(position in bout, is this bout the first after a long gap) for each puff, bouts split at 5 min."""
+    out, pos, relief, last = [], 0, True, None
+    for t in times:
+        if last is None or t - last > split_h:
+            pos, relief = 0, last is None or t - last >= relief_gap_h
+        else:
+            pos += 1
+        out.append((pos, relief))
+        last = t
+    return out
+
+
+def gap_starts(times, day_start=DAY_START_H):
+    """For each device day, when the day's longest gap began, in hours after the day's start (05:00 = 0).
+    Only gaps that have already ended count. Returns {device day: hours after day start}."""
+    starts = {}
+    for a, b in zip(times, times[1:]):
+        k = math.floor((a - day_start) / 24)
+        if k not in starts or b - a > starts[k][0]:
+            starts[k] = (b - a, (a - day_start) % 24)
+    return {k: v[1] for k, v in starts.items()}
+
+
 class OnTheSpot:
     """The fast layer. demand='nn' uses the network (frozen base + adaptive head); demand='habit' uses only the
-    person's baseline habit histogram, to measure what the network adds. adapt=False freezes the head too."""
+    person's baseline habit histogram, to measure what the network adds. adapt=False freezes the head too.
+
+    shape: how the day's budget is spread across puffs. All of it is learned per person from device data.
+      pk            more nicotine where the device's own nicotine estimate sits below its tolerance proxy
+      front         front-load every bout: the first ~30 % of a bout's usual length get up to (1 + front),
+                    the rest (1 - 0.4 front). Bout length is learned from the baseline weeks
+      relief_boost  the first 5 puffs of the first bout after >= 3 h without a puff get this weight (withdrawal relief)
+      pregap_cut    puffs in the 2 h before this person's usual long daily gap starts (and any later) get this weight:
+                    nicotine taken just before many hours without a puff is gone before the next puff. The gap start
+                    is relearned every day from the last 5 days of the same day type, so a new routine is followed
+    V3 = the first version (pk only). V4 = the three learned rules with pk off, chosen on development population C
+    by experiments/tune_fast_layer.py (see docs/fast_layer_v4.md)."""
 
     RELIEF_LO, RELIEF_HI = 0.6, 1.4          # dose multiplier from no relief need to full relief need
     CEILING_X = 2.0                          # at most 2x today's target per puff
     STEP_X = 0.5                             # inside a bout (< 30 min), change by at most 0.5x target per puff
+    PREGAP_H = 2.0
+    RELIEF_N = 5
 
-    def __init__(self, demand="nn", adapt=True, net=None):
+    def __init__(self, demand="nn", adapt=True, net=None, shape=None, name=None):
         self.demand, self.adapt = demand, adapt
+        self.shape = dict(V3 if shape is None else shape)
         self.net = net if net is not None or demand != "nn" else BaseNet.load()
-        self.name = {"habit": "on the spot, habit only (no NN)"}.get(demand) or (
+        self.name = name or {"habit": "on the spot, habit only (no NN)"}.get(demand) or (
             "NN frozen base + adaptive head" if adapt else "NN fully frozen")
 
     def begin(self, baseline):
         self.state = DeviceState(baseline_with_level(baseline))
+        times = []
         for t, dur in baseline.get("puffs", []):                  # the device saw the baseline weeks at full strength
             self.state.observe(t, dur, 1.0)
+            times.append(t)
         self.head = AdaptiveHead(self.net.head) if self.net is not None else None
         self.pending = []
         self.last_dose, self.last_t = None, None
         self.m_mean = 1.0
         self.day_err = []          # mean |predicted - real| per day, log scale, before that night's update
+        # --- learned per person: usual bout length, and when the long daily gap usually starts
+        sizes, cur = [], 0
+        for pos, _ in bout_positions(times):
+            if pos == 0 and cur:
+                sizes.append(cur)
+            cur = pos + 1
+        self.front_k = max(1, round(0.3 * float(np.median(sizes)))) if sizes else 1
+        self.gap_hist = {"wd": [], "we": []}
+        gs = gap_starts(times)
+        for k in sorted(gs)[:-1]:                                   # the last baseline day's gap may not have ended
+            self.gap_hist["we" if k % 7 in WEEKEND else "wd"].append(gs[k])
+        self.gap_seen = max(gs) - 1 if gs else -1
+        self.pos, self.relief_bout = 0, True
+
+    def _learn_gap(self, k):
+        """At the start of day k, add the gap start of day k - 2 (its longest gap has surely ended by now)."""
+        d = k - 2
+        if d <= self.gap_seen:
+            return
+        times = self.state.times
+        lo = bisect.bisect_left(times, d * 24 + DAY_START_H)
+        hi = bisect.bisect_left(times, (d + 2) * 24 + DAY_START_H)
+        gs = gap_starts(times[lo:hi])
+        if d in gs:
+            self.gap_hist["we" if d % 7 in WEEKEND else "wd"].append(gs[d])
+        self.gap_seen = d
+
+    def expected_gap_start(self):
+        hist = self.gap_hist["we" if self.state.weekend else "wd"][-5:]
+        return float(np.median(hist)) if hist else None
 
     def start_day(self, k, u, weekend):
         if self.head is not None and self.pending:
@@ -278,6 +355,8 @@ class OnTheSpot:
                     self.head.update(h, math.log1p(n - i))       # the real answer: puffs from then to day end
         self.pending = []
         self.state.start_day(k, u, weekend)
+        self._learn_gap(k)
+        self.gap_today = self.expected_gap_start()
 
     def predicted_rest(self, t, x):
         if self.demand == "nn":
@@ -291,16 +370,34 @@ class OnTheSpot:
             n = self.state.habit(t)[1]                            # fallback: the person's own habit
         return min(max(n, 1.0), 3000.0)
 
+    def shape_weight(self, t):
+        sh, s = self.shape, self.state
+        last = s.times[-1] if s.times else None
+        if last is None or t - last > 5 / 60:
+            self.pos, self.relief_bout = 0, last is None or t - last >= 3.0
+        else:
+            self.pos += 1
+        m = self.RELIEF_LO + (self.RELIEF_HI - self.RELIEF_LO) * s.relief(t) if sh["pk"] else 1.0
+        if self.relief_bout and sh["relief_boost"] != 1.0:
+            m *= sh["relief_boost"] if self.pos < self.RELIEF_N else 1.0
+        elif sh["front"]:
+            k, a = self.front_k, sh["front"]
+            m *= 1 + a * (1 - self.pos / k) if self.pos < k else 1 - 0.4 * a
+        g = self.gap_today
+        if sh["pregap_cut"] != 1.0 and g is not None and (t - DAY_START_H) % 24 >= g - self.PREGAP_H:
+            m *= sh["pregap_cut"]
+        return m
+
     def dose(self, t):
         s = self.state
         s.advance(t)
+        m = self.shape_weight(t)                              # always called, so bout position stays in step
         remaining = max(0.0, s.budget - s.used)
         if remaining <= 0 or s.u <= 0:
             return 0.0
         x = s.features(t)
         n_rest = self.predicted_rest(t, x)
-        m = self.RELIEF_LO + (self.RELIEF_HI - self.RELIEF_LO) * s.relief(t)
-        self.m_mean += 0.005 * (m - self.m_mean)             # running mean, so relief reshapes but does not shrink the day
+        self.m_mean += 0.005 * (m - self.m_mean)             # running mean, so shaping reshapes but does not shrink the day
         d = remaining / n_rest * m / self.m_mean
         # --- safety layer: fixed, the network cannot override it
         d = min(d, 1.0, self.CEILING_X * s.u, remaining)
