@@ -126,5 +126,25 @@ class V4Shaping(unittest.TestCase):
         self.assertAlmostEqual(gap_starts(times)[1], 23 - 5)
 
 
+class DrawLengthOptions(unittest.TestCase):
+    def test_delivered_accounting_drains_the_budget_faster_on_long_draws(self):
+        used = {}
+        for dur in (2.1, 6.0):
+            c = OnTheSpot("habit", shape=V4, accounting="delivered")
+            c.begin(dict(BASELINE, puffs=[(5 + i * 0.1, 2.1) for i in range(50)]))
+            c.start_day(0, 0.8, False)
+            for i in range(20):
+                t = 10 + i * 0.2
+                c.observe(t, dur, c.dose(t))
+            used[dur] = c.state.used / c.state.budget
+        self.assertGreater(used[6.0], used[2.1])
+
+    def test_delivery_cap_is_set_from_the_persons_usual_draw(self):
+        c = OnTheSpot("habit", shape=V4, cap_x=1.5)
+        c.begin(BASELINE)
+        self.assertAlmostEqual(c.delivery_cap_s, 1.5 * BASELINE["dur"])
+        self.assertAlmostEqual(c.state.draw_factor(10.0), c.state.draw_factor(1.5 * BASELINE["dur"]))
+
+
 if __name__ == "__main__":
     unittest.main()

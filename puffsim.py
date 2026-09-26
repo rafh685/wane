@@ -39,13 +39,17 @@ S_FLOOR = 0.3         # below this tolerance, withdrawal fades out instead of st
 class Person:
     """Hidden physiology built from a profiles.Profile (routine, cues, elasticity, craving decay, threshold)."""
 
-    def __init__(self, profile, rng, half_life_h=HALF_LIFE_H, dur_exp=DUR_EXP):
+    def __init__(self, profile, rng, half_life_h=HALF_LIFE_H, dur_exp=DUR_EXP, dur_share=0.4, irregular=False):
         p = profile
         self.dur_exp = dur_exp
         self.p = p
         e = float(np.clip(p.elasticity, 0.05, 0.85))
         a = e / (1 - e)                                  # steady state: puff rise = e * dose drop
-        self.rate_gain, self.dur_gain = 0.6 * a, 0.4 * a
+        # how compensation splits between more bouts and longer draws. 0.4 was used for v3/v4; LSBU's
+        # measured split (profiles.COMP_DUR_SHARE) is 0.57 on duration, used for the difficult-people tests
+        self.rate_gain, self.dur_gain = (1 - dur_share) * a, dur_share * a
+        self.irregular = irregular                       # day-to-day swings in how much the person vapes (profile.noise)
+        self._day_mult = {}
         self.tau_min = float(np.clip(1 / p.craving_decay, 3, 14)) * 1440
         self.half_life_h = half_life_h * float(np.exp(rng.normal(0, 0.2)))
         self.decay = math.exp(-math.log(2) / (self.half_life_h * 60))
@@ -74,6 +78,13 @@ class Person:
             self._rates[dow] = ([float(x) for x in r], [bool(x) for x in awake])
         return self._rates[dow]
 
+    def day_multiplier(self, clock_day, rng):
+        if not self.irregular:
+            return 1.0
+        if clock_day not in self._day_mult:
+            self._day_mult[clock_day] = float(rng.lognormal(-0.5 * self.p.noise ** 2, self.p.noise))
+        return self._day_mult[clock_day]
+
     def withdrawal(self):
         return max(0.0, self.S - self.C) / (self.S + S_FLOOR)
 
@@ -92,12 +103,17 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
     slow: a SlowSchedule; gives the per-puff target level u for each device day (same for every controller)
     routine_change: (taper_day, other_profile) to swap in another person's routine and sleep times mid-taper
                     (new job, new term): the device's baseline habit goes stale and has to be relearned
-    physiology: {"half_life_h": ..., "dur_exp": ...} to make the hidden person differ from what controllers assume
+    physiology: {"half_life_h": ..., "dur_exp": ..., "dur_share": ..., "irregular": ...} to make the hidden person
+                differ from what controllers assume, compensate more through longer draws, or vary day to day
+    A controller may set `delivery_cap_s` (after begin): the device stops adding nicotine after that many seconds
+    of a draw, so a longer draw gives flavour only (a hardware option; its implementation stays private).
     stop_at_relapse=False keeps simulating after the first relapse draw (recorded as usual), so the full path's
     expected relapse risk, 1 - exp(-sum of daily hazards), can be compared without outcome noise
     """
     rng = np.random.default_rng(seed)
+    day_rng = np.random.default_rng(seed + 7919)          # separate stream, so irregular days leave the rest unchanged
     person = Person(profile, rng, **(physiology or {}))
+    cap = None
     ctrl = make_controller()
     log = BaselineLog()
     total_days = WARMUP_DAYS + taper_days + follow_days
@@ -128,7 +144,7 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
         if awake[h]:
             day_w += W
             day_awake_min += 1
-            lam = rates[h] * (1 + person.rate_gain * W) / 60
+            lam = rates[h] * (1 + person.rate_gain * W) / 60 * person.day_multiplier(clock_day, day_rng)
         else:
             lam = 0.03 * W * W / 60                   # night waking from withdrawal (assumption)
         if rng.random() < lam:
@@ -145,7 +161,8 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
                     if not math.isfinite(d) or d < 0:
                         raise ValueError(f"{getattr(ctrl, 'name', ctrl)} returned an invalid dose {d}")
                 dur = float(np.clip(person.dur0 * (1 + person.dur_gain * W) * rng.lognormal(0, 0.3), 0.5, 8.0))
-                delivered = d * (dur / person.dur0) ** person.dur_exp
+                eff = min(dur, cap) if (cap and k >= WARMUP_DAYS) else dur
+                delivered = d * (eff / person.dur0) ** person.dur_exp
                 person.C += delivered * person.kappa
                 if k < WARMUP_DAYS:
                     log.observe(t, dur, d)
@@ -172,6 +189,7 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
                 excess_hist = []
                 ctrl.begin(log.summary())
                 slow.begin(log.summary())
+                cap = getattr(ctrl, "delivery_cap_s", None)
                 ctrl_started = True
             if routine_change and k == WARMUP_DAYS + routine_change[0]:
                 q = routine_change[1]

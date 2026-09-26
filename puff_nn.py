@@ -58,6 +58,19 @@ class DeviceState:
         self.used = 0.0
         self.weekend = False
         self.c_base = baseline.get("c_base", 1.0)
+        self.cap = None                   # seconds; the device stops adding nicotine after this much of a draw
+        self.accounting = "dose"          # "dose": budget counts dose settings; "delivered": dose x draw-length factor
+        self.budget_scale = 1.0
+
+    def draw_factor(self, dur):
+        """Nicotine delivered per unit of dose for a draw of this length, relative to this person's usual draw."""
+        eff = min(dur, self.cap) if self.cap else dur
+        return (eff / self.b["dur"]) ** 0.7
+
+    def recent_factor(self):
+        if self.accounting != "delivered" or not self.durs:
+            return 1.0
+        return float(np.mean([self.draw_factor(d) for d in self.durs]))
 
     # --- the device's own nicotine estimate: its doses, the measured puff length, a population half-life
     def level_at(self, t):
@@ -76,17 +89,18 @@ class DeviceState:
     def start_day(self, k, u, weekend):
         self.day, self.u, self.weekend = k, u, weekend
         per_day = self.b["puffs_we"] if weekend else self.b["puffs_wd"]
-        self.budget = u * per_day
+        self.budget = u * per_day * self.budget_scale
         self.used = 0.0
         self.day_times = []
 
     def observe(self, t, dur, dose):
         self.advance(t)
-        self.c += dose * (dur / self.b["dur"]) ** 0.7
+        f = self.draw_factor(dur)
+        self.c += dose * f
         self.times.append(t)
         self.durs.append(dur)
         self.day_times.append(t)
-        self.used += dose
+        self.used += dose * f if self.accounting == "delivered" else dose
 
     def habit(self, t):
         hist = self.b["hourly"]["we" if self.weekend else "wd"]
@@ -289,7 +303,11 @@ class OnTheSpot:
                     nicotine taken just before many hours without a puff is gone before the next puff. The gap start
                     is relearned every day from the last 5 days of the same day type, so a new routine is followed
     V3 = the first version (pk only). V4 = the three learned rules with pk off, chosen on development population C
-    by experiments/tune_fast_layer.py (see docs/fast_layer_v4.md)."""
+    by experiments/tune_fast_layer.py (see docs/fast_layer_v4.md).
+
+    accounting="delivered" (budget counts dose x draw-length factor) and cap_x (no nicotine after cap_x times the
+    person's usual draw) close the long-draw leak. Both made difficult people worse in the simulator, so both are
+    off by default; they stay as switches for the pilot (docs/fast_layer_v4_difficult_people.md)."""
 
     RELIEF_LO, RELIEF_HI = 0.6, 1.4          # dose multiplier from no relief need to full relief need
     CEILING_X = 2.0                          # at most 2x today's target per puff
@@ -297,8 +315,9 @@ class OnTheSpot:
     PREGAP_H = 2.0
     RELIEF_N = 5
 
-    def __init__(self, demand="nn", adapt=True, net=None, shape=None, name=None):
+    def __init__(self, demand="nn", adapt=True, net=None, shape=None, name=None, accounting="dose", cap_x=None):
         self.demand, self.adapt = demand, adapt
+        self.accounting, self.cap_x = accounting, cap_x
         self.shape = dict(V3 if shape is None else shape)
         self.net = net if net is not None or demand != "nn" else BaseNet.load()
         self.name = name or {"habit": "on the spot, habit only (no NN)"}.get(demand) or (
@@ -310,6 +329,14 @@ class OnTheSpot:
         for t, dur in baseline.get("puffs", []):                  # the device saw the baseline weeks at full strength
             self.state.observe(t, dur, 1.0)
             times.append(t)
+        # --- draw length: budget in delivered nicotine and/or a per-draw delivery cap (both off in v3/v4)
+        if self.cap_x:
+            self.delivery_cap_s = self.cap_x * baseline["dur"]
+            self.state.cap = self.delivery_cap_s
+        if self.accounting == "delivered":
+            self.state.accounting = "delivered"
+            durs = [dur for _, dur in baseline.get("puffs", [])]
+            self.state.budget_scale = float(np.mean([self.state.draw_factor(d) for d in durs])) if durs else 1.0
         self.head = AdaptiveHead(self.net.head) if self.net is not None else None
         self.pending = []
         self.last_dose, self.last_t = None, None
@@ -374,7 +401,7 @@ class OnTheSpot:
         sh, s = self.shape, self.state
         last = s.times[-1] if s.times else None
         if last is None or t - last > 5 / 60:
-            self.pos, self.relief_bout = 0, last is None or t - last >= 3.0
+            self.pos, self.relief_bout = 0, last is None or t - last >= sh.get("relief_gap_h", 3.0)
         else:
             self.pos += 1
         m = self.RELIEF_LO + (self.RELIEF_HI - self.RELIEF_LO) * s.relief(t) if sh["pk"] else 1.0
@@ -384,7 +411,7 @@ class OnTheSpot:
             k, a = self.front_k, sh["front"]
             m *= 1 + a * (1 - self.pos / k) if self.pos < k else 1 - 0.4 * a
         g = self.gap_today
-        if sh["pregap_cut"] != 1.0 and g is not None and (t - DAY_START_H) % 24 >= g - self.PREGAP_H:
+        if sh["pregap_cut"] != 1.0 and g is not None and (t - DAY_START_H) % 24 >= g - sh.get("pregap_h", self.PREGAP_H):
             m *= sh["pregap_cut"]
         return m
 
@@ -398,7 +425,7 @@ class OnTheSpot:
         x = s.features(t)
         n_rest = self.predicted_rest(t, x)
         self.m_mean += 0.005 * (m - self.m_mean)             # running mean, so shaping reshapes but does not shrink the day
-        d = remaining / n_rest * m / self.m_mean
+        d = remaining / n_rest * m / self.m_mean / s.recent_factor()     # budget units -> dose units
         # --- safety layer: fixed, the network cannot override it
         d = min(d, 1.0, self.CEILING_X * s.u, remaining)
         if self.last_t is not None and t - self.last_t < 0.5 and self.last_dose is not None:
