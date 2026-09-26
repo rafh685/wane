@@ -1,6 +1,6 @@
 """Difficult people with irregular habits, for the fast layer. SIMULATION ONLY.
 
-Rafael (27 Sept 2026): tune and judge the engine on difficult people with irregular habits, like Lucía, not on
+Rafael (26 Sept 2026): tune and judge the engine on difficult people with irregular habits, like Lucía, not on
 people with a stable routine. So:
   - habits: every person's daily amount swings from day to day (their profile noise, x1.5 here), and compensation
     splits 57 % into longer draws, 43 % into more puffs (the LSBU split already in profiles.py)

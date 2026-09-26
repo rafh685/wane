@@ -1,6 +1,6 @@
 # Fast layer v4 on difficult people, and the draw-length fixes
 
-Status: simulation, 27 Sept 2026, branch `claude/per-puff-nn`. Relative comparisons on synthetic people only.
+Status: simulation, 26 Sept 2026, branch `claude/per-puff-nn`. Relative comparisons on synthetic people only.
 
 ## The brief (Rafael)
 1. Draw length: long draws deliver more nicotine than the dose the device sets, and the daily budget did not
