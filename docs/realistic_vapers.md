@@ -44,8 +44,8 @@ then).
 | Check: PATH former vapers back within a year | 0.31 to 0.38 | 0.70 within 12 weeks of reaching zero, much harsher |
 
 The fit says: while nicotine is still in the plan people slip much less (odds x0.26), but slips snowball as much;
-once the plan reaches zero, about 70 % of those who got there relapse within 12 weeks, like the post-quit-day
-relapse in trials. PATH's natural vape quitters relapse far less; they are self-selected, so this tension stays open.
+once the plan reaches zero that protection ends, and relapse comes fast, like the post-quit-day relapse in trials
+(the per-person average of relapse within 12 weeks of reaching zero is 0.70 in the calibration group). PATH's natural vape quitters relapse far less; they are self-selected, so this tension stays open.
 
 Two bugs found and fixed on the way:
 - A person's slip tendency was drawn from the run's seed, not the person, so a batch sharing one seed gave everyone
@@ -56,19 +56,22 @@ Two bugs found and fixed on the way:
 ## Results on untouched people (`experiments/relapse_v2_eval.py`, 3 seeds)
 Relapse out of 100 over the taper plus 12 weeks at zero (difficult = hardest quarter by relapse during the taper):
 
-| | General (65) | during taper | after reaching zero | Difficult (52) |
-|---|---|---|---|---|
-| Stop at once, no help | 86.8 | | 86.8 | 99.9 |
-| Weaker bottle, 12 % a week | 73.3 | 42.7 | 64.8 | 99.1 |
-| v3 | 72.1 | 42.9 | 62.4 | 98.9 |
-| v4 | 71.6 | 42.3 | 61.8 | 98.8 |
+| | General (65): relapse | of which during the taper | after reaching zero | still off | Difficult (52): relapse |
+|---|---|---|---|---|---|
+| Stop at once, no help | 86.8 | | 86.8 | 13.2 | 99.9 |
+| Weaker bottle, 12 % a week | 73.3 | 42.7 | 30.6 | 26.7 | 99.1 |
+| v3 | 72.1 | 42.9 | 29.2 | 27.9 | 98.9 |
+| v4 | 71.6 | 42.3 | 29.3 | 28.4 | 98.8 |
+
+As a funnel with v4: of 100 people, 42 relapse during the taper, 58 reach zero, 29 of those relapse within 12
+weeks (about half), 28 are still off.
 
 - v4 vs weaker bottle: -1.66 per 100 [-2.12, -1.22] general, better for 35 of 65, worse for none; difficult -0.32.
 - Taper vs stopping at once: -13.5 per 100 general.
 - Lucía 98.4 with v4 (98.9 weaker bottle); Karim 77.3 (80.4).
 
 ## What it means
-1. The largest risk sits at the end: about two thirds of people who reach zero relapse within three months. The
+1. The largest risk sits at the end: about half of the people who reach zero relapse within three months. The
    next engine work should target the last steps and the weeks after zero (slower tail, a long low-dose phase,
    support around zero), not per-puff shaping, which adds about 1.7 in 100.
 2. The hardest quarter relapses almost regardless of dose timing in this model. Whether that is real or an effect
