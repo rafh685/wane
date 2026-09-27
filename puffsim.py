@@ -50,11 +50,12 @@ class Person:
         self.rate_gain, self.dur_gain = (1 - dur_share) * a, dur_share * a
         self.irregular = irregular                       # day-to-day swings in how much the person vapes (profile.noise)
         self._day_mult = {}
-        # slow clock (relapse model v2): receptor-level adaptation, tau about 30 d (range 7 to 50 d), from PET studies
-        # of beta2* receptor normalisation after cessation (Cosgrove 2009, Mamede 2007; research report). The gap
-        # between this slow adaptation and fast tolerance S is the long craving tail after a reduction.
-        # drawn from its own stream so adding it left every earlier result bit-identical
-        self.tau_r_min = float(np.clip(30 * np.exp((slow_rng or np.random.default_rng(0)).normal(0, 0.35)), 7, 50)) * 1440
+        # slow clock (relapse model v2): the long craving tail after a reduction. Urge strength among verified
+        # abstainers falls exponentially with a half-life of about 19 weeks (Ussher et al. 2013, n = 452, 52 weeks),
+        # so tau is about 190 d per person (lognormal spread, clipped 100 to 400 d). Receptor imaging normalises
+        # faster (6 to 12 weeks, Cosgrove 2009), but craving, which drives relapse, follows the slower curve.
+        # Drawn from its own stream so adding it left every earlier result bit-identical.
+        self.tau_r_min = float(np.clip(190 * np.exp((slow_rng or np.random.default_rng(0)).normal(0, 0.35)), 100, 400)) * 1440
         self.tau_min = float(np.clip(1 / p.craving_decay, 3, 14)) * 1440
         self.half_life_h = half_life_h * float(np.exp(rng.normal(0, 0.2)))
         self.decay = math.exp(-math.log(2) / (self.half_life_h * 60))

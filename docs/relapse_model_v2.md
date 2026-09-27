@@ -1,5 +1,67 @@
 # Relapse model v2, and the interview judged on it
 
+## Update, 27 Sept evening: new data from Codex (PATH, Hughes 2004, Ussher 2013)
+Codex downloaded PATH Waves 1, 2 and 4 and two papers (`docs/path_data_handoff_for_claude.md` in the main
+checkout). What changed, and what it showed:
+
+**Slow craving clock.** Ussher et al. 2013 (452 quitters with behavioural support, no medication, CO-verified,
+52 weeks): among abstainers, strong urges fall from 66 % (week 1) to 45 % (week 4), 13 % (week 26) and 0 % (week
+52); urge strength falls from about 2.8 to 1.0 to 0.45 on a 0 to 5 scale, an exponential with a half-life of
+about 19 weeks. The slow clock was 30 days (from receptor imaging); it is now about 190 days per person (100 to
+400). Survival in that study: 44 % week 1, 29 % week 4, 13 % week 26, 8 % week 52.
+
+**Recalibration** (`calibrate_relapse.py`, abrupt unaided quit, 60 people):
+
+| Check | Published | Model |
+|---|---|---|
+| Survival 14 days (target, Herd 2009 fit) | 0.36 | 0.34 |
+| Survival 30 days (target) | 0.28 | 0.24 |
+| Survival 180 days (target) | 0.16 | 0.19 |
+| Urge at 26 weeks / week 1 (target, Ussher 2013) | 0.36 | 0.36 |
+| Lapses before relapse (check, Kirchner 2012) | about 5 | 5.0 |
+| Survival 90 days (check, Hughes 2004 range) | 0.10 to 0.20 | 0.20 |
+| **Survival 7 days (check, Hughes 2004 range)** | **0.24 to 0.51** | **0.64, fails** |
+
+The 7-day miss is structural: relapse is defined as 5 lapse days within 14, so nobody can relapse before day 5,
+while most real quitters relapse within 8 days. It matters for abrupt quits, little for a gradual taper.
+Calibrated: baseline lapse logit -4.1, one standardised unit of craving = 6 times the person's 3-day baseline
+SD, slow-craving weight 0.5.
+
+**PATH, real US adult vapers 2013 to 2015** (`experiments/path_vapers.py`, Wave 1 weights with 100 Fay replicates;
+transitions use Wave 1 weights among people re-interviewed, so attrition is not corrected):
+- time to first vape, daily vapers: within 5 min 19.8 % [16.3, 23.4], 6 to 30 min 37.2 %, 31 to 60 min 22.8 %,
+  after 60 min 20.2 % (n = 627). The interview simulation now uses these shares (was 15 / 50 / 20 / 15).
+- stopped a year later: all current vapers 31.4 % [28.1, 34.7] (n = 1,259); daily 18.2 % [13.8, 22.5]; some days
+  41.6 %; exclusive vapers 25.7 %; dual users 34.9 %.
+- **time to first vape does not clearly predict stopping** among daily vapers: within 5 min 23.3 %, 6 to 30 min
+  10.9 %, 31 to 60 min 15.7 %, after 60 min 25.7 %; odds of stopping, after vs within 30 min, 1.43 [0.87, 2.34].
+  The interview assumed a strong link (correlation 0.55, borrowed from smokers). For vapers that is not supported.
+- former vapers back a year later: 26.8 % [22.7, 30.9] (n = 505); by time since quitting: under 1 month 38 % (n =
+  27), 1 to 6 months 31.5 %, 6 to 12 months 25.9 %, over 1 year 22.5 %. Smokers (Herd 2009): 42 % for 1 to 6
+  months, 22 % for 6 to 12 months, 5 to 17 % beyond a year. Vapers relapse less early, more late (PATH counts any
+  past-30-day use as back).
+- Wave 2 to Wave 4 (about 2 years, unweighted): 47.2 % of current vapers stopped, 21.2 % of former vapers back.
+
+**Validation rerun on the recalibrated model** (`experiments/relapse_v2_eval.py`, 117 untouched people x 3 seeds):
+
+| | Difficult | General |
+|---|---|---|
+| Abrupt quit, no support | 0.795 | 0.756 |
+| Weaker bottle, 12 % a week | 0.651 | 0.520 |
+| v3 | 0.645 | 0.513 |
+| v4 | 0.642 | 0.508 |
+
+- v4 vs weaker bottle: -0.0091 [-0.0115, -0.0071] difficult (better for 30 of 52, worse for none), -0.0127
+  [-0.0158, -0.0100] general (better for 49 of 65, worse for none).
+- **New mismatch:** a plain taper now succeeds for 48 % of the general group and 35 % of difficult people. Trials
+  find gradual reduction no better than abrupt quitting with support (RR 1.01, 22 trials), with about 15 to 22 %
+  abstinent at 6 months. The model's taper phase is too kind. Next calibration step: fit the taper-phase lapse
+  parameters (contagion with nicotine available) to those trials and to the gradual arm of Hatsukami 2018.
+- The interview results below were produced before this recalibration and before the PATH finding; they need a
+  rerun with a weaker time-to-first-vape link.
+
+## Earlier results (first calibration)
+
 Status: simulation, 27 Sept 2026, branch `claude/relapse-model` (from `claude/interview-priors`). Synthetic people
 only; every number compares versions with each other.
 

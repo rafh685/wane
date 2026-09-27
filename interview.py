@@ -61,7 +61,8 @@ def true_difficulty(p):
 
 
 LINK = dict(ttfv=0.55, night=0.4, history=0.4, mood=0.2)          # correlation of each answer with difficulty
-SHARES = dict(ttfv=[0.15, 0.50, 0.20, 0.15],                      # within 5 / 6-30 / 31-60 / after 60 (PATH)
+SHARES = dict(ttfv=[0.20, 0.37, 0.23, 0.20],                      # within 5 / 6-30 / 31-60 / after 60: PATH Wave 1 daily
+                                                                  # vapers, weighted (experiments/path_vapers.py)
               night=[0.85, 0.06, 0.05, 0.04],                     # never / rarely / some / most (7-10 % wake)
               history=[0.35, 0.25, 0.25, 0.15],                   # never / lasted / back in a week / several (assumed)
               mood=[0.70, 0.30])                                  # no / yes

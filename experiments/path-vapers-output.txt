@@ -1,0 +1,28 @@
+Wave 1 daily vapers, time to first vape after waking (weighted share):
+  within 5 min  0.198 [0.163, 0.234]  (n = 627, events = 122, unweighted 0.195)
+  6 to 30 min   0.372 [0.328, 0.415]  (n = 627, events = 233, unweighted 0.372)
+  31 to 60 min  0.228 [0.191, 0.265]  (n = 627, events = 145, unweighted 0.231)
+  after 60 min  0.202 [0.170, 0.235]  (n = 627, events = 127, unweighted 0.203)
+
+Wave 1 current vapers who had stopped by Wave 2 (about 1 year):
+  all current vapers                       0.314 [0.281, 0.347]  (n = 1259, events = 403, unweighted 0.320)
+  daily vapers                             0.182 [0.138, 0.225]  (n = 522, events = 98, unweighted 0.188)
+  some-days vapers                         0.416 [0.373, 0.459]  (n = 737, events = 305, unweighted 0.414)
+  exclusive vapers (not smoking)           0.257 [0.212, 0.302]  (n = 469, events = 127, unweighted 0.271)
+  dual users (also smoking)                0.349 [0.307, 0.391]  (n = 790, events = 276, unweighted 0.349)
+  daily vapers, first vape within 5 min    0.233 [0.145, 0.322]  (n = 102, events = 24, unweighted 0.235)
+  daily vapers, first vape 6 to 30 min     0.109 [0.059, 0.159]  (n = 185, events = 21, unweighted 0.114)
+  daily vapers, first vape 31 to 60 min    0.157 [0.078, 0.236]  (n = 124, events = 22, unweighted 0.177)
+  daily vapers, first vape after 60 min    0.257 [0.159, 0.355]  (n = 107, events = 28, unweighted 0.262)
+
+Wave 1 former vapers who were vaping again by Wave 2:
+  all former vapers              0.268 [0.227, 0.309]  (n = 505, events = 138, unweighted 0.273)
+  quit < 30 days                 0.380 [0.170, 0.590]  (n = 27, events = 10, unweighted 0.370)
+  quit 30 to 182 days            0.315 [0.240, 0.389]  (n = 188, events = 59, unweighted 0.314)
+  quit 183 to 365 days           0.259 [0.153, 0.364]  (n = 61, events = 16, unweighted 0.262)
+  quit > 1 year                  0.225 [0.164, 0.286]  (n = 227, events = 52, unweighted 0.229)
+  days since quit unknown        0.458 [0.000, 1.000]  (n = 2, events = 1, unweighted 0.500)
+
+Daily vapers: odds of having stopped by Wave 2, first vape after 30 min vs within 30 min: OR 1.43 [0.87, 2.34] (n 287 early, 231 late)
+Wave 2 -> Wave 4 (about 2 years, unweighted) current_stopped: 667 of 1414 = 0.472
+Wave 2 -> Wave 4 (about 2 years, unweighted) former_back: 221 of 1041 = 0.212

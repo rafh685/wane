@@ -1,0 +1,181 @@
+{
+ "source": "PATH Study ICPSR 36498 v25 public use, Waves 1, 2, 4; aggregate estimates only",
+ "note": "Wave 1 weights with Fay BRR (100 replicates, rho 0.3); transitions ignore attrition",
+ "results": {
+  "ttfv_daily_w1": {
+   "within 5 min": {
+    "estimate": 0.19837763466421982,
+    "lo": 0.16294427905501066,
+    "hi": 0.23381099027342897,
+    "n": 627,
+    "events": 122,
+    "unweighted": 0.19457735247208932
+   },
+   "6 to 30 min": {
+    "estimate": 0.3715485591393164,
+    "lo": 0.32793998853864753,
+    "hi": 0.41515712973998525,
+    "n": 627,
+    "events": 233,
+    "unweighted": 0.37161084529505584
+   },
+   "31 to 60 min": {
+    "estimate": 0.22774837632318828,
+    "lo": 0.1908166587002036,
+    "hi": 0.264680093946173,
+    "n": 627,
+    "events": 145,
+    "unweighted": 0.23125996810207336
+   },
+   "after 60 min": {
+    "estimate": 0.20232542987327568,
+    "lo": 0.1699714647361053,
+    "hi": 0.23467939501044605,
+    "n": 627,
+    "events": 127,
+    "unweighted": 0.2025518341307815
+   }
+  },
+  "stopped_by_w2": {
+   "all current vapers": {
+    "estimate": 0.31415401067299686,
+    "lo": 0.2812728608183339,
+    "hi": 0.3470351605276598,
+    "n": 1259,
+    "events": 403,
+    "unweighted": 0.3200953137410643
+   },
+   "daily vapers": {
+    "estimate": 0.18153676579073183,
+    "lo": 0.13794706652312888,
+    "hi": 0.22512646505833478,
+    "n": 522,
+    "events": 98,
+    "unweighted": 0.18773946360153257
+   },
+   "some-days vapers": {
+    "estimate": 0.41607128668561805,
+    "lo": 0.37321720789290647,
+    "hi": 0.4589253654783296,
+    "n": 737,
+    "events": 305,
+    "unweighted": 0.41383989145183175
+   },
+   "exclusive vapers (not smoking)": {
+    "estimate": 0.2569089710540831,
+    "lo": 0.21229266832613325,
+    "hi": 0.301525273782033,
+    "n": 469,
+    "events": 127,
+    "unweighted": 0.27078891257995735
+   },
+   "dual users (also smoking)": {
+    "estimate": 0.34903010476407337,
+    "lo": 0.3074128776112781,
+    "hi": 0.3906473319168686,
+    "n": 790,
+    "events": 276,
+    "unweighted": 0.3493670886075949
+   },
+   "daily vapers, first vape within 5 min": {
+    "estimate": 0.23341591879451076,
+    "lo": 0.1452956725422607,
+    "hi": 0.32153616504676086,
+    "n": 102,
+    "events": 24,
+    "unweighted": 0.23529411764705882
+   },
+   "daily vapers, first vape 6 to 30 min": {
+    "estimate": 0.10885974847418961,
+    "lo": 0.059005431075021604,
+    "hi": 0.15871406587335762,
+    "n": 185,
+    "events": 21,
+    "unweighted": 0.11351351351351352
+   },
+   "daily vapers, first vape 31 to 60 min": {
+    "estimate": 0.1572721704699686,
+    "lo": 0.0782506534827285,
+    "hi": 0.23629368745720872,
+    "n": 124,
+    "events": 22,
+    "unweighted": 0.1774193548387097
+   },
+   "daily vapers, first vape after 60 min": {
+    "estimate": 0.25728901945296184,
+    "lo": 0.1592701924050376,
+    "hi": 0.3553078465008861,
+    "n": 107,
+    "events": 28,
+    "unweighted": 0.2616822429906542
+   }
+  },
+  "back_by_w2": {
+   "all former vapers": {
+    "estimate": 0.26833842264556046,
+    "lo": 0.2273328408893934,
+    "hi": 0.3093440044017275,
+    "n": 505,
+    "events": 138,
+    "unweighted": 0.2732673267326733
+   },
+   "quit < 30 days": {
+    "estimate": 0.3797887549795925,
+    "lo": 0.16961229661979232,
+    "hi": 0.5899652133393927,
+    "n": 27,
+    "events": 10,
+    "unweighted": 0.37037037037037035
+   },
+   "quit 30 to 182 days": {
+    "estimate": 0.31455586237123945,
+    "lo": 0.24004033068029695,
+    "hi": 0.38907139406218194,
+    "n": 188,
+    "events": 59,
+    "unweighted": 0.31382978723404253
+   },
+   "quit 183 to 365 days": {
+    "estimate": 0.25867006808984416,
+    "lo": 0.15334353062642664,
+    "hi": 0.3639966055532617,
+    "n": 61,
+    "events": 16,
+    "unweighted": 0.26229508196721313
+   },
+   "quit > 1 year": {
+    "estimate": 0.22502494209660556,
+    "lo": 0.16446254725456833,
+    "hi": 0.2855873369386428,
+    "n": 227,
+    "events": 52,
+    "unweighted": 0.2290748898678414
+   },
+   "days since quit unknown": {
+    "estimate": 0.4578681504447534,
+    "lo": 0.0,
+    "hi": 1.0,
+    "n": 2,
+    "events": 1,
+    "unweighted": 0.5
+   }
+  },
+  "or_stop_late_vs_early_first_vape": {
+   "estimate": 1.4251225019800196,
+   "lo": 0.8690389486443201,
+   "hi": 2.337034662046001,
+   "n_early": 287,
+   "n_late": 231
+  },
+  "w2_to_w4_unweighted": {
+   "current_stopped": {
+    "n": 1414,
+    "events": 667
+   },
+   "former_back": {
+    "n": 1041,
+    "events": 221
+   }
+  }
+ }
+}
