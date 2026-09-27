@@ -4,7 +4,8 @@ Rafael (26 Sept 2026): tune and judge the engine on difficult people with irregu
 people with a stable routine. So:
   - habits: every person's daily amount swings from day to day (their profile noise, x1.5 here), and compensation
     splits 57 % into longer draws, 43 % into more puffs (the LSBU split already in profiles.py)
-  - pool: 200 synthetic people per set; "difficult" = the top quarter by expected relapse risk on the flat taper,
+  - pool: 200 synthetic people per set; "difficult" = the top quarter by relapse risk on the flat taper (since 27 Sept
+    evening: relapse by week 20 of the taper under relapse model v2, since full-window risk saturates),
     measured with selection seeds (900, 901) that are never used for evaluation, so picking people who were
     merely unlucky cannot flatter the other controllers
   - development set: pool seed 41 (used to choose fixes and settings)
@@ -25,6 +26,7 @@ from population import sample_profile                  # noqa: E402
 from profiles import PROFILES                           # noqa: E402
 from puff_nn import Flat                                # noqa: E402
 from puffsim import SlowSchedule, simulate              # noqa: E402
+from relapse import evaluate                            # noqa: E402
 
 HARD = dict(dur_share=0.57, irregular=True)
 POOL_N, SELECT_SEEDS, TOP = 200, (900, 901), 0.25
@@ -47,8 +49,13 @@ def named():
 def flat_risk(args):
     seed, i = args
     p = pool(seed)[i]
-    return i, float(np.mean([simulate(p, Flat, SlowSchedule(), seed=s, physiology=HARD, stop_at_relapse=False)["expected_risk"]
-                             for s in SELECT_SEEDS]))
+    # 27 Sept evening: selected on relapse model v2 with realistic vapers (burn-in 28 days)
+    risks = []
+    for s in SELECT_SEEDS:
+        r = simulate(p, Flat, SlowSchedule(), seed=s, physiology=HARD, stop_at_relapse=False, burn_in_days=28,
+                     taper_days=168, follow_days=84)
+        risks.append(1 - evaluate(r, p, seed=s, n_mc=300)["survival_140"])     # relapse by week 20, during the taper
+    return i, float(np.mean(risks))
 
 
 def load(which):

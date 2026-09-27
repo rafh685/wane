@@ -7,6 +7,8 @@ from a few templates so the population has office workers, evening-only vapers, 
 import numpy as np
 from profiles import Profile, Cue, _slots
 
+REALISTIC_WEEKENDS = True       # realistic weekends and puffs per day; False reproduces the populations used before 27 Sept
+
 ROUTINES = {
     "all_day":  (_slots((7, 9, 3), (9, 13, 1.5), (13, 14, 3), (14, 18, 1.5), (18, 24, 3)), _slots((9, 12, 2), (12, 20, 2), (20, 25, 3))),
     "evening":  (_slots((19, 26, 3)), _slots((14, 20, 1), (20, 28, 4))),
@@ -31,7 +33,10 @@ def sample_profile(rng, name):
         cues.append(Cue((int(rng.integers(0, 5)),), 8, 18, rng.uniform(0.5, 1.5)))
     return Profile(
         name, f"synthetic {kind}",
-        puffs_per_day=float(np.exp(rng.uniform(np.log(50), np.log(450)))),   # LSBU device counts: median ~290, range ~110-590
+        # puffs per day: log-normal, median about 200, sd(ln) 0.7 (device logs: Dautzenberg median 132, Gao about 250,
+        # Kosmider 156, LSBU 292; research report). One draw either way, so all other traits are unchanged.
+        puffs_per_day=float(np.clip(np.exp(rng.normal(np.log(200), 0.7)), 25, 800)) if REALISTIC_WEEKENDS
+        else float(np.exp(rng.uniform(np.log(50), np.log(450)))),   # LSBU device counts: median ~290, range ~110-590
         elasticity=float(np.clip(rng.normal(0.47, 0.25), 0.0, 1.15)),        # LSBU implied elasticity: median 0.47, IQR 0.34-0.68, max 1.15
         craving_sensitivity=float(rng.uniform(2.0, 8.0)),
         craving_decay=float(rng.uniform(0.08, 0.25)),
@@ -39,7 +44,9 @@ def sample_profile(rng, name):
         noise=float(rng.uniform(0.08, 0.25)),
         wake={"wd": WAKE[kind][0], "we": WAKE[kind][1]}, bed={"wd": BED[kind][0], "we": BED[kind][1]},
         weekday_routine=wd, weekend_routine=we,
-        weekend_factor=float(rng.uniform(1.0, 2.2)),
+        # weekends: vapers puff slightly LESS on weekend days (Dautzenberg 2015: -4.6 %; Lee 2018: 57 vs 77 puffs),
+        # not 1.0 to 2.2 times more as first assumed. One draw either way, so all other traits are unchanged.
+        weekend_factor=float(np.clip(rng.normal(0.9, 0.12), 0.65, 1.2)) if REALISTIC_WEEKENDS else float(rng.uniform(1.0, 2.2)),
         cues=cues,
         tonic_gain=float(rng.uniform(0.9, 3.0)),
     )

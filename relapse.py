@@ -21,13 +21,21 @@ without re-simulating:
   relapse   5 lapse days within 14 days: daily use resumes after a median of about 5 lapses over about 13 days
             (Kirchner, Shiffman and Wileyto 2012)
   risk      the lapse process is replayed n_mc times on the same physiology: expected risk = share relapsed
-Calibrated (calibrate_relapse.py): alpha_mean, kappa, lam_r, so an abrupt unaided quit reproduces the published
-population relapse curve: survival 0.36 at 14 days, 0.28 at 30, 0.16 at 180 (fit to Herd, Borland and Hyland
-2009; Garvey 1992: 62 % relapsed by 2 weeks).
+Calibrated jointly (calibrate_relapse.py, 27 Sept evening): alpha_mean, kappa, lam_r, taper_shift and
+contagion_avail, so that
+  an abrupt unaided quit reproduces the published relapse curve: survival 0.36 at 14 days, 0.28 at 30, 0.16 at 180
+  (fit to Herd, Borland and Hyland 2009; Garvey 1992), and the craving tail of Ussher 2013 (0.36 at 26 weeks), and
+  a plain 12 %/week taper matches the trials: about 0.22 still off 12 weeks after reaching zero (gradual reduction
+  no better than abrupt quitting with support, RR 1.01, Lindson 2019; 15.5 % abstinent at 6 months in the gradual arm
+  of Lindson-Hawley 2016; 13 to 20 % in vaping-cessation trials), and about 0.57 still on plan at week 20 (gradual
+  arm of Hatsukami 2018, compliance counting dropouts).
+Checks, not fitted: Hughes 2004 ranges at 7 and 90 days, lapses before relapse (Kirchner 2012), and PATH's return
+rate among former vapers.
 """
 import json
 import math
 import pathlib
+import zlib
 from dataclasses import asdict, dataclass
 
 import numpy as np
@@ -48,6 +56,7 @@ class RelapseParams:
     alcohol: float = math.log(3.0)
     stress: float = math.log(1.5)
     contagion_avail: float = 0.5
+    taper_shift: float = 0.0              # logit added on days nicotine is still in the plan (taper phase, calibrated)
     contagion_none: float = 1.2
     contagion_half_life: float = 5.0
     relapse_lapses: int = 5
@@ -60,9 +69,11 @@ class RelapseParams:
         return cls()
 
 
-def person_alpha(profile, params, seed):
+def person_alpha(profile, params, seed=None):
+    """A person's baseline tendency to slip: a fixed personal trait. Fixed 27 Sept: it used to be drawn from the
+    run's seed, so a batch run with one shared seed gave everyone the same random offset."""
     z_thr = (profile.relapse_threshold - 7.0) / 0.866            # threshold ~ U(5.5, 8.5) in population.py
-    rng = np.random.default_rng(seed + 31337)
+    rng = np.random.default_rng(zlib.crc32(profile.name.encode()) + 31337)
     return params.alpha_mean - params.alpha_thr * z_thr + params.alpha_sd * rng.normal()
 
 
@@ -83,6 +94,8 @@ def daily_logits(result, profile, params, seed):
         d = days[i]
         lg = alpha + params.beta * z3[i] / params.kappa
         lg += params.alcohol * d.get("alcohol", False) + params.stress * d.get("stress", False)
+        if d["u"] > 0:
+            lg += params.taper_shift
         out_logit.append(lg)
         avail.append(d["u"] > 0)
     return np.array(out_logit), np.array(avail, dtype=bool)
@@ -118,8 +131,12 @@ def evaluate(result, profile, params=None, seed=0, n_mc=1000):
     logits, avail = daily_logits(result, profile, params, seed)
     relapsed, day, lapses = replay(logits, avail, params, n_mc=n_mc, seed=seed)
     out = dict(expected_risk=float(relapsed.mean()))
-    for t in (14, 30, 90, 180):
+    for t in (14, 30, 90, 140, 180):
         out[f"survival_{t}"] = float(1 - np.mean(relapsed & (day < t))) if t <= len(logits) else float("nan")
+    zero = next((j for j, d in enumerate(result["days"][WARMUP_DAYS:]) if d["u"] == 0), None)
+    out["relapse_before_zero"] = float(np.mean(relapsed & (day < zero))) if zero is not None else float(relapsed.mean())
+    out["reached_zero_then_relapsed"] = (float(np.mean((relapsed & (day >= zero))[~(relapsed & (day < zero))]))
+                                         if zero is not None and (~(relapsed & (day < zero))).any() else float("nan"))
     out["median_relapse_day"] = float(np.median(day[relapsed])) if relapsed.any() else float("nan")
     out["lapses_before_relapse"] = float(np.median(lapses[relapsed])) if relapsed.any() else float("nan")
     return out

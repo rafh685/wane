@@ -1,19 +1,19 @@
-             group       risk v2 surv 14d surv 90d surv 180d  risk v1
-abrupt quit  difficult     0.795    0.511    0.256     0.219    0.485
-flat 12%     difficult     0.651    0.977    0.691     0.474    0.323
-v3           difficult     0.645    0.974    0.700     0.483    0.214
-v4           difficult     0.642    0.975    0.707     0.490    0.173
-abrupt quit  general       0.756    0.439    0.280     0.253    0.429
-flat 12%     general       0.520    0.990    0.768     0.584    0.156
-v3           general       0.513    0.990    0.777     0.593    0.119
-v4           general       0.508    0.990    0.785     0.602    0.102
-  v4       - flat 12%     difficult  -0.0091 [-0.0115, -0.0071] better 30 worse 0 of 52
-  v4       - flat 12%     general    -0.0127 [-0.0158, -0.0100] better 49 worse 0 of 65
-  v4       - v3           difficult  -0.0037 [-0.0048, -0.0027] better 14 worse 0 of 52
-  v4       - v3           general    -0.0057 [-0.0072, -0.0045] better 27 worse 0 of 65
-  flat 12% - abrupt quit  difficult  -0.1443 [-0.1705, -0.1188] better 47 worse 0 of 52
-  flat 12% - abrupt quit  general    -0.2356 [-0.2814, -0.1954] better 62 worse 0 of 65
-  v4       - abrupt quit  difficult  -0.1534 [-0.1816, -0.1266] better 47 worse 0 of 52
-  v4       - abrupt quit  general    -0.2483 [-0.2939, -0.2072] better 62 worse 0 of 65
-  Lucía: abrupt quit 1.000  flat 12% 0.918  v3 0.915  v4 0.912
-  Karim: abrupt quit 0.784  flat 12% 0.653  v3 0.650  v4 0.647
+             group       relapse before 0  after 0 surv 14d surv 90d surv 180d
+abrupt quit  difficult     0.999    0.000    0.999    0.112    0.004     0.001
+flat 12%     difficult     0.991    0.918    0.975    0.862    0.205     0.039
+v3           difficult     0.989    0.918    0.962    0.846    0.180     0.042
+v4           difficult     0.988    0.916    0.960    0.845    0.182     0.044
+abrupt quit  general       0.868    0.000    0.868    0.415    0.172     0.142
+flat 12%     general       0.733    0.427    0.648    0.964    0.683     0.443
+v3           general       0.721    0.429    0.624    0.959    0.664     0.453
+v4           general       0.716    0.423    0.618    0.959    0.664     0.460
+  v4       - flat 12%     difficult  -0.0032 [-0.0067, -0.0004] better 5 worse 0 of 52
+  v4       - flat 12%     general    -0.0166 [-0.0212, -0.0122] better 35 worse 0 of 65
+  v4       - v3           difficult  -0.0008 [-0.0017, -0.0001] better 4 worse 0 of 52
+  v4       - v3           general    -0.0048 [-0.0063, -0.0034] better 23 worse 0 of 65
+  flat 12% - abrupt quit  difficult  -0.0082 [-0.0204, -0.0007] better 5 worse 0 of 52
+  flat 12% - abrupt quit  general    -0.1350 [-0.1766, -0.0964] better 40 worse 0 of 65
+  v4       - abrupt quit  difficult  -0.0114 [-0.0257, -0.0011] better 5 worse 0 of 52
+  v4       - abrupt quit  general    -0.1516 [-0.1959, -0.1097] better 41 worse 0 of 65
+  Lucía: abrupt quit 1.000  flat 12% 0.989  v3 0.985  v4 0.984
+  Karim: abrupt quit 0.984  flat 12% 0.804  v3 0.783  v4 0.773

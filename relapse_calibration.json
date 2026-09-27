@@ -1,41 +1,52 @@
 {
  "params": {
   "beta": 0.64,
-  "alpha_mean": -4.1,
+  "alpha_mean": -3.2063273768714766,
   "alpha_sd": 0.8,
   "alpha_thr": 0.5,
-  "kappa": 6.0,
-  "lam_r": 0.5,
+  "kappa": 5.216201829878464,
+  "lam_r": 0.7386518974064473,
   "alcohol": 1.0986122886681098,
   "stress": 0.4054651081081644,
-  "contagion_avail": 0.5,
+  "contagion_avail": 1.4602926543885522,
+  "taper_shift": -1.3391153631541035,
   "contagion_none": 1.2,
   "contagion_half_life": 5.0,
   "relapse_lapses": 5,
   "relapse_window": 14
  },
  "report": {
-  "target": {
-   "14": 0.36,
-   "30": 0.28,
-   "180": 0.16
+  "targets": {
+   "abrupt": {
+    "14": 0.36,
+    "30": 0.28,
+    "180": 0.16
+   },
+   "craving_ratio": 0.36,
+   "taper_success": 0.22,
+   "taper_week20": 0.57
   },
-  "craving_ratio_target": 0.36,
   "checks": {
-   "hughes_2004_s7": "0.24 to 0.51",
-   "hughes_2004_s90": "0.10 to 0.20"
+   "hughes_2004_S7": "0.24 to 0.51",
+   "hughes_2004_S90": "0.10 to 0.20",
+   "kirchner_2012_lapses": "about 5",
+   "path_former_vapers_back_within_year": "0.38 if quit < 1 month, 0.31 if 1 to 6 months"
   },
   "fitted": {
-   "14": 0.3376166666666666,
-   "30": 0.24081666666666665,
-   "180": 0.18839999999999998,
-   "7": 0.6438833333333335,
-   "90": 0.20283333333333334,
-   "craving_ratio": 0.363838790234516
+   "abrupt_S7": 0.7995166666666668,
+   "abrupt_S14": 0.4270333333333333,
+   "abrupt_S30": 0.26965,
+   "abrupt_S90": 0.18785000000000002,
+   "abrupt_S180": 0.1526666666666667,
+   "craving_ratio": 0.4836859875580036,
+   "lapses_before_relapse": 5.0,
+   "taper_success": 0.26755,
+   "taper_week20": 0.57955,
+   "post_zero_relapse_12wk": 0.6946096125063637
   },
-  "loss": 0.09046074701816509,
-  "lapses_before_relapse": 5.0,
+  "loss": 0.3074478018702839,
   "people": 60,
-  "population_seed": 61
+  "population_seed": 61,
+  "realism": true
  }
 }

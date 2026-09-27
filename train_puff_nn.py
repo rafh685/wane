@@ -64,7 +64,8 @@ def collect(args):
     i, profile = args
     ex = Explorer(1000 + i)
     ex._habit_rest = {}
-    simulate(profile, lambda: ex, SlowSchedule(adaptive=bool(i % 2)), taper_days=154, follow_days=0, seed=500 + i)
+    simulate(profile, lambda: ex, SlowSchedule(adaptive=bool(i % 2)), taper_days=154, follow_days=0, seed=500 + i,
+             burn_in_days=28)
     return i, ex.rows
 
 

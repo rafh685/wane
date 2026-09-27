@@ -35,33 +35,75 @@ DUR_EXP = 0.7         # delivery grows sub-linearly with puff duration (assumpti
 WARMUP_DAYS = 21      # baseline weeks at full strength, used by every controller to learn the person
 S_FLOOR = 0.3         # below this tolerance, withdrawal fades out instead of staying relative (assumption)
 
+# ---- realistic vapers (27 Sept 2026), from the research report and Codex's evidence review. REALISM = False
+#      reproduces every earlier result exactly (the constants above).
+REALISM = True
+R_HALF_LIFE_SD = 0.30     # between-person spread of nicotine half-life: vaper SDs 29 to 35 % of the mean (St Helen
+                          # 2016, 2020); CYP2A6 and sex give at least a threefold span (Benowitz 2006, 2016)
+R_DUR_EXP = 1.2           # nicotine yield vs puff length: machine yields at 2, 4, 8 s give slopes 1.14 to 1.36
+                          # (Talih 2015, our fit); the old 0.7 was the wrong direction
+R_DUR_POD, R_DUR_TANK = 2.2, 3.2   # median puff length: pods 2.2 s (Dowd 2023), refillable 3.1 to 3.4 s (adults)
+R_DUR_SD = 0.47           # puff-to-puff variation, CV about 0.5 (Dautzenberg 2015)
+R_IPI_S, R_IPI_SD = 13.0, 0.7      # gap between puffs inside a bout: median 13 s, mean 16.6 s (Dautzenberg 2015)
+R_P_SINGLE = 0.42         # 37 to 47 % of bouts are a single puff (60 s rule; Dautzenberg, Dowd)
+R_BOUT_MEAN = 4.0         # mean puffs per bout: 4.0 refillable, 2.4 pods (60 s rule)
+R_SESSION_CONT = 0.6      # a bout is followed by another within 1 to 5 min with this chance: sessions of about 10
+                          # puffs, about 15 a day (Kosmider 2018: 10.2 puffs per session, 15.3 sessions)
+R_NOISE_SCALE = 2.0       # day-to-day swings: profile noise 0.08 to 0.25 -> CV 0.16 to 0.5, median about 0.33
+                          # (Dautzenberg 59 % within-person variance; Gao 2023 CVs 0 to 160 %)
+R_NIGHT_WAKERS = 0.065    # base share; x exp(0.6 z) for harder people gives about 8 %: 7.1 to 9.5 % of adult vapers (Du 2019)
+R_NIGHT_PER_NIGHT = 0.57  # wakers vape on about 4 nights a week (Du 2019, derived); more with withdrawal
+R_EPS_MEAN, R_EPS_SD = 0.36, 0.15  # lasting compensation: puffing x (dose ratio)^-eps; LSBU 3x cut gives total puff
+                          # time x1.50 (Dawkins 2018); it builds over days and persists (Cox 2021, Etter 2016)
+R_COMP_TAU_H = 48.0       # compensation follows the per-puff dose with a 2-day time constant (Cox 2021, derived)
+R_COMP_CAP = 2.2          # most total puffing recovered in the LSBU data: x2.15
+R_COMP_FADE_BELOW = 0.1   # below about 2 mg/ml equivalent, compensation fades over about 3 weeks (extrapolated)
+R_ACUTE = 0.3             # the old withdrawal-driven puffing kept at 30 %: craving still adds some puffs
+
 
 class Person:
     """Hidden physiology built from a profiles.Profile (routine, cues, elasticity, craving decay, threshold)."""
 
-    def __init__(self, profile, rng, half_life_h=HALF_LIFE_H, dur_exp=DUR_EXP, dur_share=0.4, irregular=False, slow_rng=None):
+    def __init__(self, profile, rng, half_life_h=HALF_LIFE_H, dur_exp=None, dur_share=None, irregular=None, slow_rng=None,
+                 realism=None):
         p = profile
-        self.dur_exp = dur_exp
+        self.realism = REALISM if realism is None else realism
+        R = self.realism
+        dur_share = (0.57 if R else 0.4) if dur_share is None else dur_share
+        self.dur_share = dur_share
+        self.dur_exp = (R_DUR_EXP if R else DUR_EXP) if dur_exp is None else dur_exp
         self.p = p
         e = float(np.clip(p.elasticity, 0.05, 0.85))
         a = e / (1 - e)                                  # steady state: puff rise = e * dose drop
         # how compensation splits between more bouts and longer draws. 0.4 was used for v3/v4; LSBU's
         # measured split (profiles.COMP_DUR_SHARE) is 0.57 on duration, used for the difficult-people tests
-        self.rate_gain, self.dur_gain = (1 - dur_share) * a, dur_share * a
-        self.irregular = irregular                       # day-to-day swings in how much the person vapes (profile.noise)
+        acute = R_ACUTE if R else 1.0
+        self.rate_gain, self.dur_gain = acute * (1 - dur_share) * a, acute * dur_share * a
+        self.irregular = (True if R else False) if irregular is None else irregular
+        self.noise_sd = p.noise * (R_NOISE_SCALE if R else 1.0)
         self._day_mult = {}
+        tr = slow_rng or np.random.default_rng(0)
         # slow clock (relapse model v2): the long craving tail after a reduction. Urge strength among verified
         # abstainers falls exponentially with a half-life of about 19 weeks (Ussher et al. 2013, n = 452, 52 weeks),
         # so tau is about 190 d per person (lognormal spread, clipped 100 to 400 d). Receptor imaging normalises
         # faster (6 to 12 weeks, Cosgrove 2009), but craving, which drives relapse, follows the slower curve.
         # Drawn from its own stream so adding it left every earlier result bit-identical.
-        self.tau_r_min = float(np.clip(190 * np.exp((slow_rng or np.random.default_rng(0)).normal(0, 0.35)), 100, 400)) * 1440
+        self.tau_r_min = float(np.clip(190 * np.exp(tr.normal(0, 0.35)), 100, 400)) * 1440
+        # realistic-vaper traits, all from the same separate stream (new draws only after the earlier ones)
+        z_diff = -(p.relapse_threshold - 7.0) / 0.866
+        self.tank = bool(tr.random() < 0.5)                              # device: refillable tank or pod
+        self.night_waker = bool(tr.random() < float(np.clip(R_NIGHT_WAKERS * np.exp(0.6 * z_diff), 0.02, 0.3)))
+        self.eps = float(np.clip(R_EPS_MEAN + 0.6 * (e - 0.47) + 0.1 * tr.normal(), -0.05, 0.75))
+        hl_sd = R_HALF_LIFE_SD if R else 0.2
+        self.q = 1.0                                     # per-puff dose the person has got used to (2-day memory)
+        self.q_t = None
+        self.low_days = 0.0
         self.tau_min = float(np.clip(1 / p.craving_decay, 3, 14)) * 1440
-        self.half_life_h = half_life_h * float(np.exp(rng.normal(0, 0.2)))
+        self.half_life_h = half_life_h * float(np.exp(rng.normal(0, 0.2) * hl_sd / 0.2))
         self.decay = math.exp(-math.log(2) / (self.half_life_h * 60))
         self.kappa = 24 * math.log(2) / (max(p.puffs_per_day, 10) * self.half_life_h)   # daily mean C = 1 at baseline
         self.theta = 0.08 + 0.03 * (p.relapse_threshold - 5.5)                           # tolerated excess withdrawal (assumption)
-        self.dur0 = DUR_S * float(np.exp(rng.normal(0, 0.15)))
+        self.dur0 = ((R_DUR_TANK if self.tank else R_DUR_POD) if R else DUR_S) * float(np.exp(rng.normal(0, 0.15)))
         self.C = 0.0
         self.S = (5 + 2 * p.weekend_factor) / 7         # start near the weekly mean level, converges in warm-up
         self.S2 = self.S
@@ -80,7 +122,8 @@ class Person:
             if w.sum() <= 0:
                 w = awake
             daily = p.puffs_per_day * (p.weekend_factor if dow in WEEKEND else 1.0)
-            r = w / w.sum() * daily / BOUT_MEAN
+            per_start = R_BOUT_MEAN / (1 - R_SESSION_CONT) if self.realism else BOUT_MEAN   # puffs per session start
+            r = w / w.sum() * daily / per_start
             r = r * (1 + 0.25 * p.cue_vector(dow))
             self._rates[dow] = ([float(x) for x in r], [bool(x) for x in awake])
         return self._rates[dow]
@@ -89,8 +132,32 @@ class Person:
         if not self.irregular:
             return 1.0
         if clock_day not in self._day_mult:
-            self._day_mult[clock_day] = float(rng.lognormal(-0.5 * self.p.noise ** 2, self.p.noise))
+            sd = self.noise_sd
+            self._day_mult[clock_day] = float(rng.lognormal(-0.5 * sd ** 2, sd))
         return self._day_mult[clock_day]
+
+    def compensation(self):
+        """Lasting compensation (realistic mode): (rate multiplier, puff-length multiplier) from the per-puff dose
+        the person has got used to. Power law, split 43 % more puffs / 57 % longer puffs (LSBU)."""
+        if not self.realism:
+            return 1.0, 1.0
+        eps = self.eps * math.exp(-self.low_days / 21.0)
+        m = min(R_COMP_CAP, max(1.0, max(self.q, 0.05) ** (-eps)))
+        return m ** (1 - self.dur_share), m ** self.dur_share
+
+    def note_dose(self, t_h, d):
+        """Update the per-puff dose the person has got used to (2-day exponential memory)."""
+        if self.q_t is not None:
+            a = 1 - math.exp(-(t_h - self.q_t) / R_COMP_TAU_H)
+            self.q += a * (d - self.q)
+        self.q_t = t_h
+
+    def bout_size(self, rng):
+        if not self.realism:
+            return 1 + rng.poisson(BOUT_MEAN - 1)
+        if rng.random() < R_P_SINGLE:
+            return 1
+        return 2 + int(rng.geometric(1 / (1 + (R_BOUT_MEAN - R_P_SINGLE) / (1 - R_P_SINGLE) - 2)) - 1)
 
     def slow_craving(self):
         """Craving from the slow clock: how far long-term adaptation still sits above current tolerance."""
@@ -98,6 +165,11 @@ class Person:
 
     def withdrawal(self):
         return max(0.0, self.S - self.C) / (self.S + S_FLOOR)
+
+
+def sleep_hours(profile, dow):
+    kind = "we" if dow in WEEKEND else "wd"
+    return max(4.0, 24 - (profile.bed[kind] - profile.wake[kind]))
 
 
 def minute_step(person, n_min=1):
@@ -161,39 +233,55 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
         rates, awake = person.hourly_bout_rate(dow)
         h = clock_min // 60
         W = person.withdrawal()
+        comp_rate, comp_dur = person.compensation()
         if awake[h]:
             day_w += W
             day_r += person.slow_craving()
             day_awake_min += 1
-            lam = rates[h] * (1 + person.rate_gain * W) / 60 * person.day_multiplier(clock_day, day_rng)
+            lam = rates[h] * comp_rate * (1 + person.rate_gain * W) / 60 * person.day_multiplier(clock_day, day_rng)
+        elif person.realism:
+            # night waking is a trait (about 8 % of vapers, about 4 nights a week), stronger with withdrawal
+            per_night = R_NIGHT_PER_NIGHT * (0.5 + W) if person.night_waker else 0.01
+            lam = per_night / max(60 * sleep_hours(profile, dow), 60)
         else:
             lam = 0.03 * W * W / 60                   # night waking from withdrawal (assumption)
         if rng.random() < lam:
-            n = 1 + rng.poisson(BOUT_MEAN - 1)
             t = minute / 60.0
-            for i in range(n):
-                if i:
-                    t += rng.lognormal(math.log(IPI_S), 0.5) / 3600
-                W = person.withdrawal()
-                if k < WARMUP_DAYS:
-                    d = 1.0
-                else:
-                    d = float(ctrl.dose(t))
-                    if not math.isfinite(d) or d < 0:
-                        raise ValueError(f"{getattr(ctrl, 'name', ctrl)} returned an invalid dose {d}")
-                dur = float(np.clip(person.dur0 * (1 + person.dur_gain * W) * rng.lognormal(0, 0.3), 0.5, 8.0))
-                eff = min(dur, cap) if (cap and k >= WARMUP_DAYS) else dur
-                delivered = d * (eff / person.dur0) ** person.dur_exp
-                person.C += delivered * person.kappa
-                if 0 <= k < WARMUP_DAYS:
-                    log.observe(t, dur, d)
-                elif k >= WARMUP_DAYS:
-                    ctrl.observe(t, dur, d)
-                if record is not None and k >= 0:
-                    record.append((k, t, dur, d))
-                day_puffs += 1
-                day_delivered += delivered
-                day_dose += d
+            n_bouts = 1
+            if person.realism and awake[h]:
+                while rng.random() < R_SESSION_CONT:  # a session: bouts 1 to 5 min apart
+                    n_bouts += 1
+            ipi, ipi_sd, dur_sd = (R_IPI_S, R_IPI_SD, R_DUR_SD) if person.realism else (IPI_S, 0.5, 0.3)
+            for b in range(n_bouts):
+                if b:
+                    t += rng.uniform(60, 300) / 3600
+                n = person.bout_size(rng)
+                for i in range(n):
+                    if i:
+                        t += rng.lognormal(math.log(ipi), ipi_sd) / 3600
+                    W = person.withdrawal()
+                    if k < WARMUP_DAYS:
+                        d = 1.0
+                    else:
+                        d = float(ctrl.dose(t))
+                        if not math.isfinite(d) or d < 0:
+                            raise ValueError(f"{getattr(ctrl, 'name', ctrl)} returned an invalid dose {d}")
+                    dur = float(np.clip(person.dur0 * comp_dur * (1 + person.dur_gain * W) * rng.lognormal(0, dur_sd),
+                                        0.5, 10.0 if person.realism else 8.0))
+                    eff = min(dur, cap) if (cap and k >= WARMUP_DAYS) else dur
+                    delivered = d * (eff / person.dur0) ** person.dur_exp
+                    person.C += delivered * person.kappa
+                    if person.realism:
+                        person.note_dose(t, d)
+                    if 0 <= k < WARMUP_DAYS:
+                        log.observe(t, dur, d)
+                    elif k >= WARMUP_DAYS:
+                        ctrl.observe(t, dur, d)
+                    if record is not None and k >= 0:
+                        record.append((k, t, dur, d))
+                    day_puffs += 1
+                    day_delivered += delivered
+                    day_dose += d
             skip = max(1, int(math.ceil((t - minute / 60.0) * 60)))
             minute_step(person, skip)
             minute += skip
@@ -202,6 +290,8 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
             minute += 1
 
         if minute >= next_boundary:
+            if person.realism and person.q < R_COMP_FADE_BELOW:
+                person.low_days += 1
             mean_w = close_day(k)
             k += 1
             next_boundary += 1440

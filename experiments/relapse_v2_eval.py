@@ -56,12 +56,14 @@ if __name__ == "__main__":
     per = lambda k, f: np.array([np.mean([r[f] for r in rows if r["controller"] == k and (r["person"], r["group"]) == nm]) for nm in names])
     grp = np.array([g for _, g in names])
     summary = {}
-    print(f"{'':12s} {'group':10s} {'risk v2':>8s} {'surv 14d':>8s} {'surv 90d':>8s} {'surv 180d':>9s} {'risk v1':>8s}")
+    print(f"{'':12s} {'group':10s} {'relapse':>8s} {'before 0':>8s} {'after 0':>8s} {'surv 14d':>8s} {'surv 90d':>8s} {'surv 180d':>9s}")
     for g in ("difficult", "general"):
         for k in KEYS:
-            m = {f: float(np.nanmean(per(k, f)[grp == g])) for f in ("expected_risk", "survival_14", "survival_90", "survival_180", "v1_expected_risk")}
+            m = {f: float(np.nanmean(per(k, f)[grp == g])) for f in ("expected_risk", "survival_14", "survival_90", "survival_180",
+                                                                      "relapse_before_zero", "reached_zero_then_relapsed", "v1_expected_risk")}
             summary[f"{k} | {g}"] = m
-            print(f"{k:12s} {g:10s} {m['expected_risk']:8.3f} {m['survival_14']:8.3f} {m['survival_90']:8.3f} {m['survival_180']:9.3f} {m['v1_expected_risk']:8.3f}")
+            print(f"{k:12s} {g:10s} {m['expected_risk']:8.3f} {m['relapse_before_zero']:8.3f} {m['reached_zero_then_relapsed']:8.3f} "
+                  f"{m['survival_14']:8.3f} {m['survival_90']:8.3f} {m['survival_180']:9.3f}")
     rng = np.random.default_rng(0)
     pairs = {}
     for a, b in (("v4", "flat 12%"), ("v4", "v3"), ("flat 12%", "abrupt quit"), ("v4", "abrupt quit")):

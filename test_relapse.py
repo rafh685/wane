@@ -34,10 +34,12 @@ class RelapseModelV2(unittest.TestCase):
         high = replay(lg + 1.0, avail, params, n_mc=2000, seed=1)[0].mean()
         self.assertGreater(high, low)
 
-    def test_nicotine_availability_slows_lapse_to_relapse(self):
+    def test_nicotine_still_in_the_plan_lowers_relapse_overall(self):
+        # calibrated 27 Sept: fewer slips while nicotine is in the plan (taper_shift), even though each slip snowballs
+        # about as much; overall relapse must still be lower than with no nicotine left
         params = RelapseParams.calibrated()
         lg = np.full(120, params.alpha_mean)
-        with_nic = replay(lg, np.ones(120, dtype=bool), params, n_mc=2000, seed=2)[0].mean()
+        with_nic = replay(lg + params.taper_shift, np.ones(120, dtype=bool), params, n_mc=2000, seed=2)[0].mean()
         without = replay(lg, np.zeros(120, dtype=bool), params, n_mc=2000, seed=2)[0].mean()
         self.assertLess(with_nic, without)
 

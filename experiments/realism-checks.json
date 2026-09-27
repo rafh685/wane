@@ -1,0 +1,77 @@
+[
+ {
+  "check": "puffs per day (median of people)",
+  "model": 160.26190476190476,
+  "published": "median about 130 to 290 (Dautzenberg, Kosmider, LSBU)"
+ },
+ {
+  "check": "puffs per bout, 60 s rule (median of people)",
+  "model": 3.9019553963471933,
+  "published": "4.0 refillable, 2.4 pods"
+ },
+ {
+  "check": "single-puff bouts",
+  "model": 0.41118717041935215,
+  "published": "0.37 to 0.47"
+ },
+ {
+  "check": "gap between puffs in a bout, s",
+  "model": 12.893434802506931,
+  "published": "median 13 s"
+ },
+ {
+  "check": "sessions per day, 5 min rule",
+  "model": 13.19047619047619,
+  "published": "15.3 (Kosmider)"
+ },
+ {
+  "check": "puffs per session, 5 min rule",
+  "model": 11.690646063387351,
+  "published": "10.2 (Kosmider)"
+ },
+ {
+  "check": "puff length, tank users, s",
+  "model": 3.2848681098269066,
+  "published": "3.1 to 3.4"
+ },
+ {
+  "check": "puff length, pod users, s",
+  "model": 2.26777403918448,
+  "published": "about 2.2"
+ },
+ {
+  "check": "puff-to-puff CV of length",
+  "model": 0.49056535880999574,
+  "published": "about 0.5"
+ },
+ {
+  "check": "day-to-day CV of puffs",
+  "model": 0.3892334037755356,
+  "published": "0.2 to 0.6, median about 0.35"
+ },
+ {
+  "check": "weekend / weekday puffs",
+  "model": 0.9458720145721513,
+  "published": "0.75 to 0.95"
+ },
+ {
+  "check": "share of night wakers",
+  "model": 0.1,
+  "published": "0.07 to 0.10"
+ },
+ {
+  "check": "after a 3x cut: puffs per day ratio",
+  "model": 1.1632741579233428,
+  "published": "x1.18 to 1.21 (LSBU)"
+ },
+ {
+  "check": "after a 3x cut: puff length ratio",
+  "model": 1.2548496204626947,
+  "published": "x1.24 to 1.26 (LSBU)"
+ },
+ {
+  "check": "after a 3x cut: total puff time ratio",
+  "model": 1.4450146231998109,
+  "published": "x1.47 to 1.50, IQR 1.34 to 1.68 (LSBU)"
+ }
+]

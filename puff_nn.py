@@ -37,6 +37,7 @@ from puffsim import DAY_START_H, WEEKEND
 FEATURES = ["c_rel", "s_rel", "relief", "since_last", "last10", "hour_vs_habit", "today_vs_habit", "day_vs_habit",
             "dur_trend", "hour_sin", "hour_cos", "weekend", "habit_rest", "budget_used", "level", "gap_vs_habit"]
 HALF_LIFE_H = 2.0
+DRAW_EXP = 1.2          # the device's assumption of nicotine vs puff length (was 0.7; research: about 1.2)
 WEIGHTS_FILE = pathlib.Path(__file__).with_name("puff_nn_base.json")
 
 
@@ -65,7 +66,7 @@ class DeviceState:
     def draw_factor(self, dur):
         """Nicotine delivered per unit of dose for a draw of this length, relative to this person's usual draw."""
         eff = min(dur, self.cap) if self.cap else dur
-        return (eff / self.b["dur"]) ** 0.7
+        return (eff / self.b["dur"]) ** DRAW_EXP
 
     def recent_factor(self):
         if self.accounting != "delivered" or not self.durs:
@@ -132,7 +133,10 @@ class DeviceState:
         this_hour, rest, done = self.habit(t)
         window = self.times[i24:]
         longest = max((b - a for a, b in zip(window, window[1:])), default=0.0)
-        dur_trend = (np.mean(self.durs) / self.b["dur"] - 1) if self.durs else 0.0
+        # puff length is NOT shown to the network (27 Sept): after retraining on realistic vapers, a long pull made it
+        # predict fewer puffs left today and so raise the next dose, which breaks "pulling harder never buys nicotine"
+        # (caught by test_dose_is_chosen_before_the_puff_so_pulling_harder_buys_nothing). The slot stays, fixed at 0.
+        dur_trend = 0.0
         h = 2 * math.pi * (t % 24) / 24
         return np.array([
             c / cb, s / cb, min(max((s - c) / (s + 1e-6), 0.0), 1.0) if s > 0 else 0.0,
