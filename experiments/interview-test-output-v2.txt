@@ -1,0 +1,24 @@
+setting          J risk hard  risk gen succ hard  weeks wk hard wk gen
+hidden difficulty (upper bound)  1.1668    0.8278    0.6780     0.172   34.5    41.5   28.8
+interview, weak answers  1.2078    0.8590    0.6975     0.141   25.1    28.5   22.3
+interview   1.2080    0.8584    0.6991     0.142   26.4    29.9   23.6
+v4 same length (0.108)  1.2140    0.8686    0.6909     0.131   26.0    26.0   26.0
+v4 12%      1.2237    0.8736    0.7001     0.126   23.0    23.0   23.0
+  interview - v4 12% | expected_risk | hard                                        -0.0152 [-0.0288, -0.0031] better 16 worse 11
+  interview - v4 12% | expected_risk | general                                     -0.0010 [-0.0149, +0.0105] better 13 worse 34
+  interview - v4 12% | success | hard                                              +0.0152 [+0.0029, +0.0290] better 16 worse 11
+  interview - v4 12% | success | general                                           +0.0010 [-0.0111, +0.0143] better 13 worse 34
+  interview - v4 same length (0.108) | expected_risk | hard                        -0.0101 [-0.0243, +0.0025] better 16 worse 17
+  interview - v4 same length (0.108) | expected_risk | general                     +0.0082 [-0.0059, +0.0208] better 13 worse 36
+  interview - v4 same length (0.108) | success | hard                              +0.0101 [-0.0029, +0.0237] better 16 worse 17
+  interview - v4 same length (0.108) | success | general                           -0.0082 [-0.0211, +0.0062] better 13 worse 36
+  interview, weak answers - v4 same length (0.108) | expected_risk | hard          -0.0096 [-0.0214, +0.0019] better 16 worse 18
+  interview, weak answers - v4 same length (0.108) | expected_risk | general       +0.0067 [-0.0063, +0.0190] better 13 worse 33
+  interview, weak answers - v4 same length (0.108) | success | hard                +0.0096 [-0.0014, +0.0217] better 16 worse 18
+  interview, weak answers - v4 same length (0.108) | success | general             -0.0067 [-0.0189, +0.0065] better 13 worse 33
+  hidden difficulty (upper bound) - interview | expected_risk | hard               -0.0307 [-0.0469, -0.0168] better 22 worse 1
+  hidden difficulty (upper bound) - interview | expected_risk | general            -0.0211 [-0.0463, +0.0025] better 19 worse 18
+  hidden difficulty (upper bound) - interview | success | hard                     +0.0307 [+0.0165, +0.0470] better 22 worse 1
+  hidden difficulty (upper bound) - interview | success | general                  +0.0211 [-0.0023, +0.0465] better 19 worse 18
+  Lucía: v4 12%: risk 0.982 cut 0.120  v4 same length (0.108): risk 0.977 cut 0.108  interview: risk 0.921 cut 0.098  interview, weak answers: risk 0.988 cut 0.132  hidden difficulty (upper bound): risk 0.916 cut 0.060
+  Karim: v4 12%: risk 0.939 cut 0.120  v4 same length (0.108): risk 0.932 cut 0.108  interview: risk 0.961 cut 0.130  interview, weak answers: risk 0.955 cut 0.160  hidden difficulty (upper bound): risk 0.809 cut 0.060

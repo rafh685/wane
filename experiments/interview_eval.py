@@ -13,6 +13,7 @@ takes 23). Tuning uses the habit-only demand model for speed; the test uses Feli
 """
 import csv
 import json
+import os
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
@@ -27,9 +28,12 @@ from interview import InterviewPolicy, synthetic_answers, weeks_to_zero    # noq
 from population import population                                           # noqa: E402
 from puff_nn import V4, BaseNet, OnTheSpot                                  # noqa: E402
 from puffsim import WARMUP_DAYS, SlowSchedule, simulate, test_population   # noqa: E402
+from relapse import evaluate                                                # noqa: E402
 
+V2 = os.environ.get("RELAPSE") == "v2"          # relapse model v2 (relapse.py) with a 28-day burn-in
+SUFFIX = "-v2" if V2 else ""
 OUT = ROOT / "experiments"
-CHOICE = OUT / "interview-choice.json"
+CHOICE = OUT / f"interview-choice{SUFFIX}.json"
 TAPER_DAYS, FOLLOW_DAYS, MAX_WEEKS = 364, 28, 26
 
 
@@ -51,12 +55,16 @@ def run(args):
     net = BaseNet.load() if demand == "nn" else None
     make = lambda: OnTheSpot(demand, adapt=True, net=net, shape=plan["shape"])
     r = simulate(p, make, SlowSchedule(weekly_cut=plan["cut"]), taper_days=TAPER_DAYS, follow_days=FOLLOW_DAYS,
-                 seed=1000 * seed + i, physiology=HARD if group == "hard" else None, stop_at_relapse=False)
+                 seed=1000 * seed + i, physiology=HARD if group == "hard" else None, stop_at_relapse=False,
+                 burn_in_days=28 if V2 else 0)
+    if V2:
+        ev = evaluate(r, p, seed=1000 * seed + i, n_mc=300 if demand == "habit" else 500)
+        r["expected_risk"], r["relapsed"] = ev["expected_risk"], ev["expected_risk"] > 0.5
     days = r["days"][WARMUP_DAYS:]
     bw = r["baseline_w"]
     return dict(set=which, person=p.name, group=group, label=label, seed=seed, cut=plan["cut"], score=plan["score"],
                 weeks_to_zero=weeks_to_zero(plan["cut"]), expected_risk=r["expected_risk"], relapsed=int(r["relapsed"]),
-                success=int(not r["relapsed"] and r["zero_day"] is not None),
+                success=(float(1 - r["expected_risk"]) if V2 else int(not r["relapsed"])) * (r["zero_day"] is not None),
                 mean_excess=float(np.mean([d["mean_w"] - bw[d["day"] % 7] for d in days])))
 
 
@@ -100,7 +108,7 @@ def search(policies, name):
     jobs = [("dev", i, lab, pol, ans[i], 0, "habit") for lab, pol in policies.items() for i in range(n)]
     with ProcessPoolExecutor() as ex:
         rows = list(ex.map(run, jobs, chunksize=4))
-    with open(OUT / f"interview-{name}-dev.csv", "w", newline="") as fh:
+    with open(OUT / f"interview-{name}-dev{SUFFIX}.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
     return summarise(rows, list(policies))
 
@@ -155,7 +163,7 @@ if __name__ == "__main__":
                     jobs.append(("test", i, lab, pol, src[i], seed, "nn"))
         with ProcessPoolExecutor() as ex:
             rows = list(ex.map(run, jobs, chunksize=4))
-        with open(OUT / "interview-test.csv", "w", newline="") as fh:
+        with open(OUT / f"interview-test{SUFFIX}.csv", "w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
         summ = summarise(rows, list(policies))
         report(summ, policies)
@@ -181,6 +189,6 @@ if __name__ == "__main__":
             print(f"  {nm}: " + "  ".join(f"{lab}: risk {np.mean([r['expected_risk'] for r in rows if r['label'] == lab and r['person'] == nm]):.3f} "
                                             f"cut {np.mean([r['cut'] for r in rows if r['label'] == lab and r['person'] == nm]):.3f}"
                                             for lab in policies))
-        (OUT / "interview-test-summary.json").write_text(json.dumps(dict(label="SIMULATION ONLY", matched_cut=float(matched),
+        (OUT / f"interview-test-summary{SUFFIX}.json").write_text(json.dumps(dict(label="SIMULATION ONLY", matched_cut=float(matched),
                                                                          mean_weeks_interview=mean_weeks, table=summ, pairs=pairs,
                                                                          policy=pol_dict(best)), indent=1, ensure_ascii=False) + "\n")

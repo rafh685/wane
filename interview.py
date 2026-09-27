@@ -154,6 +154,14 @@ class InterviewPolicy:
         return dict(cut=cut, shape=shape, score=s)
 
 
+def chosen_policy(model="v2"):
+    """The setting chosen on development people (experiments/interview_eval.py, rule fixed before running)."""
+    import json
+    import pathlib
+    f = pathlib.Path(__file__).parent / "experiments" / f"interview-choice{'-v2' if model == 'v2' else ''}.json"
+    return InterviewPolicy(**json.loads(f.read_text())["best"])
+
+
 def weeks_to_zero(cut, low=0.15):
     """Weeks the slow layer takes from 1.0 to 0 at this weekly cut (same rule as puffsim.SlowSchedule)."""
     u, w = 1.0, 0

@@ -1,0 +1,201 @@
+{
+ "label": "SIMULATION ONLY",
+ "matched_cut": 0.10750000000000004,
+ "mean_weeks_interview": 26.4017094017094,
+ "table": {
+  "v4 12%": {
+   "risk_hard": 0.8736410256410257,
+   "risk_general": 0.700123076923077,
+   "success_hard": 0.12635897435897436,
+   "success_general": 0.2998769230769231,
+   "weeks": 23.0,
+   "weeks_hard": 23.0,
+   "weeks_general": 23.0,
+   "J": 1.2237025641025643
+  },
+  "v4 same length (0.108)": {
+   "risk_hard": 0.8685512820512821,
+   "risk_general": 0.6908615384615384,
+   "success_hard": 0.13144871794871796,
+   "success_general": 0.30913846153846153,
+   "weeks": 26.0,
+   "weeks_hard": 26.0,
+   "weeks_general": 26.0,
+   "J": 1.2139820512820512
+  },
+  "interview": {
+   "risk_hard": 0.858448717948718,
+   "risk_general": 0.699076923076923,
+   "success_hard": 0.14155128205128206,
+   "success_general": 0.30092307692307696,
+   "weeks": 26.4017094017094,
+   "weeks_hard": 29.865384615384617,
+   "weeks_general": 23.630769230769232,
+   "J": 1.2079871794871795
+  },
+  "interview, weak answers": {
+   "risk_hard": 0.8590000000000001,
+   "risk_general": 0.6975487179487179,
+   "success_hard": 0.14100000000000001,
+   "success_general": 0.302451282051282,
+   "weeks": 25.05128205128205,
+   "weeks_hard": 28.53846153846154,
+   "weeks_general": 22.26153846153846,
+   "J": 1.207774358974359
+  },
+  "hidden difficulty (upper bound)": {
+   "risk_hard": 0.827794871794872,
+   "risk_general": 0.6779589743589743,
+   "success_hard": 0.1722051282051282,
+   "success_general": 0.32204102564102566,
+   "weeks": 34.46153846153846,
+   "weeks_hard": 41.51923076923077,
+   "weeks_general": 28.815384615384616,
+   "J": 1.166774358974359
+  }
+ },
+ "pairs": {
+  "interview - v4 12% | expected_risk | hard": {
+   "diff": -0.015192307692307689,
+   "lo": -0.028795192307692296,
+   "hi": -0.0030637820512820486,
+   "better": 16,
+   "worse": 11,
+   "n": 52
+  },
+  "interview - v4 12% | expected_risk | general": {
+   "diff": -0.0010461538461538388,
+   "lo": -0.014872820512820507,
+   "hi": 0.010492564102564116,
+   "better": 13,
+   "worse": 34,
+   "n": 65
+  },
+  "interview - v4 12% | success | hard": {
+   "diff": 0.01519230769230769,
+   "lo": 0.002934615384615383,
+   "hi": 0.029025961538461542,
+   "better": 16,
+   "worse": 11,
+   "n": 52
+  },
+  "interview - v4 12% | success | general": {
+   "diff": 0.0010461538461538388,
+   "lo": -0.011087435897435901,
+   "hi": 0.014258461538461546,
+   "better": 13,
+   "worse": 34,
+   "n": 65
+  },
+  "interview - v4 same length (0.108) | expected_risk | hard": {
+   "diff": -0.01010256410256408,
+   "lo": -0.024308333333333296,
+   "hi": 0.0024750000000000076,
+   "better": 16,
+   "worse": 17,
+   "n": 52
+  },
+  "interview - v4 same length (0.108) | expected_risk | general": {
+   "diff": 0.008215384615384623,
+   "lo": -0.0058669230769230795,
+   "hi": 0.020821025641025653,
+   "better": 13,
+   "worse": 36,
+   "n": 65
+  },
+  "interview - v4 same length (0.108) | success | hard": {
+   "diff": 0.010102564102564101,
+   "lo": -0.0029365384615384635,
+   "hi": 0.023680769230769234,
+   "better": 16,
+   "worse": 17,
+   "n": 52
+  },
+  "interview - v4 same length (0.108) | success | general": {
+   "diff": -0.008215384615384616,
+   "lo": -0.021057435897435903,
+   "hi": 0.006236153846153838,
+   "better": 13,
+   "worse": 36,
+   "n": 65
+  },
+  "interview, weak answers - v4 same length (0.108) | expected_risk | hard": {
+   "diff": -0.009551282051282035,
+   "lo": -0.02142339743589741,
+   "hi": 0.0018592948717948954,
+   "better": 16,
+   "worse": 18,
+   "n": 52
+  },
+  "interview, weak answers - v4 same length (0.108) | expected_risk | general": {
+   "diff": 0.0066871794871794935,
+   "lo": -0.006329743589743594,
+   "hi": 0.01902641025641027,
+   "better": 13,
+   "worse": 33,
+   "n": 65
+  },
+  "interview, weak answers - v4 same length (0.108) | success | hard": {
+   "diff": 0.009551282051282054,
+   "lo": -0.001449358974358969,
+   "hi": 0.021680769230769236,
+   "better": 16,
+   "worse": 18,
+   "n": 52
+  },
+  "interview, weak answers - v4 same length (0.108) | success | general": {
+   "diff": -0.006687179487179491,
+   "lo": -0.01888256410256411,
+   "hi": 0.006462820512820517,
+   "better": 13,
+   "worse": 33,
+   "n": 65
+  },
+  "hidden difficulty (upper bound) - interview | expected_risk | hard": {
+   "diff": -0.030653846153846177,
+   "lo": -0.046949358974359,
+   "hi": -0.01675641025641028,
+   "better": 22,
+   "worse": 1,
+   "n": 52
+  },
+  "hidden difficulty (upper bound) - interview | expected_risk | general": {
+   "diff": -0.021117948717948715,
+   "lo": -0.04634923076923076,
+   "hi": 0.00249333333333334,
+   "better": 19,
+   "worse": 18,
+   "n": 65
+  },
+  "hidden difficulty (upper bound) - interview | success | hard": {
+   "diff": 0.03065384615384616,
+   "lo": 0.016486858974358976,
+   "hi": 0.04701314102564103,
+   "better": 22,
+   "worse": 1,
+   "n": 52
+  },
+  "hidden difficulty (upper bound) - interview | success | general": {
+   "diff": 0.021117948717948715,
+   "lo": -0.00230871794871795,
+   "hi": 0.04649358974358973,
+   "better": 19,
+   "worse": 18,
+   "n": 65
+  }
+ },
+ "policy": {
+  "base_cut": 0.12160318345542181,
+  "k": 3.489246328014275,
+  "w": {
+   "ttfv": 0.4709082497859936,
+   "night": 0.0,
+   "history": 0.7407321743442843,
+   "mood": 0.1765072286752164
+  },
+  "morning_x": 0.25,
+  "night_relief": false,
+  "pregap_social": 0.8,
+  "oracle": false
+ }
+}

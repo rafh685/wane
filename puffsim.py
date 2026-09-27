@@ -39,7 +39,7 @@ S_FLOOR = 0.3         # below this tolerance, withdrawal fades out instead of st
 class Person:
     """Hidden physiology built from a profiles.Profile (routine, cues, elasticity, craving decay, threshold)."""
 
-    def __init__(self, profile, rng, half_life_h=HALF_LIFE_H, dur_exp=DUR_EXP, dur_share=0.4, irregular=False):
+    def __init__(self, profile, rng, half_life_h=HALF_LIFE_H, dur_exp=DUR_EXP, dur_share=0.4, irregular=False, slow_rng=None):
         p = profile
         self.dur_exp = dur_exp
         self.p = p
@@ -50,6 +50,11 @@ class Person:
         self.rate_gain, self.dur_gain = (1 - dur_share) * a, dur_share * a
         self.irregular = irregular                       # day-to-day swings in how much the person vapes (profile.noise)
         self._day_mult = {}
+        # slow clock (relapse model v2): receptor-level adaptation, tau about 30 d (range 7 to 50 d), from PET studies
+        # of beta2* receptor normalisation after cessation (Cosgrove 2009, Mamede 2007; research report). The gap
+        # between this slow adaptation and fast tolerance S is the long craving tail after a reduction.
+        # drawn from its own stream so adding it left every earlier result bit-identical
+        self.tau_r_min = float(np.clip(30 * np.exp((slow_rng or np.random.default_rng(0)).normal(0, 0.35)), 7, 50)) * 1440
         self.tau_min = float(np.clip(1 / p.craving_decay, 3, 14)) * 1440
         self.half_life_h = half_life_h * float(np.exp(rng.normal(0, 0.2)))
         self.decay = math.exp(-math.log(2) / (self.half_life_h * 60))
@@ -58,6 +63,7 @@ class Person:
         self.dur0 = DUR_S * float(np.exp(rng.normal(0, 0.15)))
         self.C = 0.0
         self.S = (5 + 2 * p.weekend_factor) / 7         # start near the weekly mean level, converges in warm-up
+        self.S2 = self.S
         self.baseline_w = None
         self._rates = {}
 
@@ -85,6 +91,10 @@ class Person:
             self._day_mult[clock_day] = float(rng.lognormal(-0.5 * self.p.noise ** 2, self.p.noise))
         return self._day_mult[clock_day]
 
+    def slow_craving(self):
+        """Craving from the slow clock: how far long-term adaptation still sits above current tolerance."""
+        return max(0.0, self.S2 - self.S) / (self.S2 + S_FLOOR)
+
     def withdrawal(self):
         return max(0.0, self.S - self.C) / (self.S + S_FLOOR)
 
@@ -93,10 +103,11 @@ def minute_step(person, n_min=1):
     for _ in range(n_min):
         person.C *= person.decay
         person.S += (person.C - person.S) / person.tau_min
+        person.S2 += (person.C - person.S2) / person.tau_r_min
 
 
 def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, seed=0, record=None, routine_change=None,
-             physiology=None, stop_at_relapse=True):
+             physiology=None, stop_at_relapse=True, burn_in_days=0):
     """Run one person with one controller. Returns a result dict; per-puff rows go to `record` if given.
 
     make_controller(): a fresh controller with begin(baseline), start_day(k, u, weekend), dose(t_h), observe(t_h, dur_s, dose)
@@ -109,29 +120,37 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
     of a draw, so a longer draw gives flavour only (a hardware option; its implementation stays private).
     stop_at_relapse=False keeps simulating after the first relapse draw (recorded as usual), so the full path's
     expected relapse risk, 1 - exp(-sum of daily hazards), can be compared without outcome noise
+    burn_in_days: unrecorded days at full strength before the baseline weeks, so tolerance has settled before
+                  anything is measured (removes the start-up spike found on 27 Sept; relapse model v2 uses 28).
+    Every recorded day also stores its awake slow craving (`mean_r`) and whether it had an alcohol or a stress cue,
+    for relapse.py (relapse model v2), which works on these daily records after the run.
     """
     rng = np.random.default_rng(seed)
     day_rng = np.random.default_rng(seed + 7919)          # separate stream, so irregular days leave the rest unchanged
-    person = Person(profile, rng, **(physiology or {}))
+    person = Person(profile, rng, slow_rng=np.random.default_rng(seed + 104729), **(physiology or {}))
     cap = None
     ctrl = make_controller()
     log = BaselineLog()
     total_days = WARMUP_DAYS + taper_days + follow_days
-    minute = int(DAY_START_H * 60)                    # the simulation starts at 05:00 on a Monday
-    end_minute = minute + total_days * 1440
-    day_w, day_awake_min = 0.0, 0
-    k = 0
+    minute = int(DAY_START_H * 60) - burn_in_days * 1440   # recording starts at 05:00 on a Monday
+    end_minute = int(DAY_START_H * 60) + total_days * 1440
+    day_w, day_r, day_awake_min = 0.0, 0.0, 0
+    k = -burn_in_days
     u = 1.0
     out = dict(name=profile.name, relapsed=False, relapse_day=None, zero_day=None, days=[], cum_hazard=0.0)
     day_puffs, day_delivered, day_dose = 0, 0.0, 0.0
     next_boundary = minute + 1440
 
     def close_day(k):
-        nonlocal day_w, day_awake_min, day_puffs, day_delivered, day_dose
+        nonlocal day_w, day_r, day_awake_min, day_puffs, day_delivered, day_dose
         mean_w = day_w / max(day_awake_min, 1)
-        out["days"].append(dict(day=k, u=u, puffs=day_puffs, delivered=day_delivered, dose_sum=day_dose,
-                                mean_w=mean_w, S=person.S))
-        day_w, day_awake_min, day_puffs, day_delivered, day_dose = 0.0, 0, 0, 0.0, 0.0
+        if k >= 0:
+            dow = k % 7
+            cues = [c for c in profile.cues if dow in c.days]
+            out["days"].append(dict(day=k, u=u, puffs=day_puffs, delivered=day_delivered, dose_sum=day_dose,
+                                    mean_w=mean_w, mean_r=day_r / max(day_awake_min, 1), S=person.S,
+                                    alcohol=any(c.alcohol for c in cues), stress=any(not c.alcohol for c in cues)))
+        day_w, day_r, day_awake_min, day_puffs, day_delivered, day_dose = 0.0, 0.0, 0, 0, 0.0, 0.0
         return mean_w
 
     ctrl_started = False
@@ -143,6 +162,7 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
         W = person.withdrawal()
         if awake[h]:
             day_w += W
+            day_r += person.slow_craving()
             day_awake_min += 1
             lam = rates[h] * (1 + person.rate_gain * W) / 60 * person.day_multiplier(clock_day, day_rng)
         else:
@@ -164,11 +184,11 @@ def simulate(profile, make_controller, slow, taper_days=182, follow_days=28, see
                 eff = min(dur, cap) if (cap and k >= WARMUP_DAYS) else dur
                 delivered = d * (eff / person.dur0) ** person.dur_exp
                 person.C += delivered * person.kappa
-                if k < WARMUP_DAYS:
+                if 0 <= k < WARMUP_DAYS:
                     log.observe(t, dur, d)
-                else:
+                elif k >= WARMUP_DAYS:
                     ctrl.observe(t, dur, d)
-                if record is not None:
+                if record is not None and k >= 0:
                     record.append((k, t, dur, d))
                 day_puffs += 1
                 day_delivered += delivered

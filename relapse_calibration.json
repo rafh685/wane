@@ -1,0 +1,33 @@
+{
+ "params": {
+  "beta": 0.64,
+  "alpha_mean": -3.1,
+  "alpha_sd": 0.8,
+  "alpha_thr": 0.5,
+  "kappa": 12.0,
+  "lam_r": 0.5,
+  "alcohol": 1.0986122886681098,
+  "stress": 0.4054651081081644,
+  "contagion_avail": 0.5,
+  "contagion_none": 1.2,
+  "contagion_half_life": 5.0,
+  "relapse_lapses": 5,
+  "relapse_window": 14
+ },
+ "report": {
+  "target": {
+   "14": 0.36,
+   "30": 0.28,
+   "180": 0.16
+  },
+  "fitted": {
+   "14": 0.37328333333333336,
+   "30": 0.2424,
+   "180": 0.17061666666666667
+  },
+  "loss": 0.047262117816203306,
+  "lapses_before_relapse": 5.0,
+  "people": 60,
+  "population_seed": 61
+ }
+}
