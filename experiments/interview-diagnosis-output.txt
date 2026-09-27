@@ -1,0 +1,21 @@
+Output of experiments/risk_by_week.py (50 difficult development people, habit-only demand, 12 taper weeks). SIMULATION ONLY.
+flat nocut excess hazard per week 1..12: 0.043 0.026 0.025 0.026 0.024 0.024 0.023 0.034 0.027 0.031 0.031 0.025
+           excess W per week 1..12:      +0.022 +0.008 +0.014 +0.010 +0.007 +0.008 +0.008 +0.016 +0.012 +0.018 +0.019 +0.019
+flat cut12 excess hazard per week 1..12: 0.043 0.037 0.042 0.038 0.036 0.036 0.023 0.034 0.027 0.023 0.021 0.014
+           excess W per week 1..12:      +0.022 +0.026 +0.041 +0.028 +0.027 +0.023 +0.014 +0.019 +0.007 +0.006 -0.003 -0.010
+v4   nocut excess hazard per week 1..12: 0.049 0.017 0.011 0.008 0.010 0.009 0.010 0.014 0.011 0.012 0.013 0.010
+           excess W per week 1..12:      +0.032 -0.012 -0.014 -0.024 -0.022 -0.022 -0.025 -0.017 -0.024 -0.019 -0.017 -0.023
+v4   cut12 excess hazard per week 1..12: 0.049 0.019 0.010 0.009 0.007 0.006 0.005 0.007 0.005 0.004 0.003 0.002
+           excess W per week 1..12:      +0.032 -0.004 -0.005 -0.016 -0.021 -0.027 -0.034 -0.032 -0.041 -0.044 -0.043 -0.059
+day-to-day SD of awake W in baseline weeks 2-3: 0.1156
+
+Share of excess cumulative hazard by phase (v4, 50 difficult development people, 52-week horizon):
+cut 0.08: total 0.142; u > 0.5 82%, 0.15 < u <= 0.5 17%, tail 0 < u <= 0.15 0%, at zero 0%
+cut 0.12: total 0.132; u > 0.5 76%, 0.15 < u <= 0.5 23%, tail 1%, at zero 0%
+cut 0.18: total 0.140; u > 0.5 69%, 0.15 < u <= 0.5 28%, tail 2%, at zero 0%
+
+Output of experiments/interview_levers.py (90 development people, 3 seeds, pace 12 %, expected risk vs v4):
++ morning relief   hard    +0.0008 [-0.0001, +0.0018]   general +0.0001 [-0.0005, +0.0006]   people it applies to (n=55) +0.0008 [+0.0000, +0.0017]
++ night relief     hard    +0.0007 [-0.0002, +0.0024]   general +0.0001 [+0.0000, +0.0003]   people it applies to (n=11) +0.0038 [-0.0007, +0.0112]
++ drinking nights  hard    +0.0019 [+0.0006, +0.0036]   general +0.0003 [-0.0001, +0.0011]   people it applies to (n=39) +0.0028 [+0.0010, +0.0051]
+all three          hard    +0.0027 [+0.0008, +0.0052]   general +0.0003 [-0.0006, +0.0014]   all (n=90)                  +0.0016 [+0.0005, +0.0032]

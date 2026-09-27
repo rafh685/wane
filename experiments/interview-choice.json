@@ -1,0 +1,504 @@
+{
+ "best": {
+  "base_cut": 0.13712714947378565,
+  "k": 0.7728875951478354,
+  "w": {
+   "ttfv": 0.7335331129431408,
+   "night": 0.45489260507941753,
+   "history": 0.4283726025327331,
+   "mood": 0.8520290412145555
+  },
+  "morning_x": 0.5,
+  "night_relief": false,
+  "pregap_social": 0.2,
+  "oracle": false
+ },
+ "best_J": 0.2787961189243409,
+ "best_summary": {
+  "risk_hard": 0.2136139542076884,
+  "risk_general": 0.13036432943330506,
+  "success_hard": 0.84,
+  "success_general": 0.825,
+  "weeks": 19.044444444444444,
+  "weeks_hard": 19.38,
+  "weeks_general": 18.625,
+  "J": 0.2787961189243409
+ },
+ "rounds": {
+  "tune": {
+   "best": "r25",
+   "summary": {
+    "uni08": {
+     "risk_hard": 0.22003619801775703,
+     "risk_general": 0.13022282936647916,
+     "success_hard": 0.7,
+     "success_general": 0.9,
+     "weeks": 35.0,
+     "weeks_hard": 35.0,
+     "weeks_general": 35.0,
+     "J": 0.28514761270099664
+    },
+    "uni10": {
+     "risk_hard": 0.21302932135801736,
+     "risk_general": 0.12976516140490027,
+     "success_hard": 0.78,
+     "success_general": 0.925,
+     "weeks": 29.0,
+     "weeks_hard": 29.0,
+     "weeks_general": 29.0,
+     "J": 0.2779119020604675
+    },
+    "uni12": {
+     "risk_hard": 0.21421953672194893,
+     "risk_general": 0.12954829859811556,
+     "success_hard": 0.8,
+     "success_general": 0.875,
+     "weeks": 23.0,
+     "weeks_hard": 23.0,
+     "weeks_general": 23.0,
+     "J": 0.2789936860210067
+    },
+    "uni15": {
+     "risk_hard": 0.2146998511622668,
+     "risk_general": 0.1295683269635483,
+     "success_hard": 0.84,
+     "success_general": 0.825,
+     "weeks": 19.0,
+     "weeks_hard": 19.0,
+     "weeks_general": 19.0,
+     "J": 0.27948401464404093
+    },
+    "oracle1": {
+     "risk_hard": 0.21957918494657025,
+     "risk_general": 0.13007586287564088,
+     "success_hard": 0.8,
+     "success_general": 0.9,
+     "weeks": 27.244444444444444,
+     "weeks_hard": 30.06,
+     "weeks_general": 23.725,
+     "J": 0.2846171163843907
+    },
+    "oracle2": {
+     "risk_hard": 0.22338998744519795,
+     "risk_general": 0.13048603641300394,
+     "success_hard": 0.8,
+     "success_general": 0.875,
+     "weeks": 31.755555555555556,
+     "weeks_hard": 36.56,
+     "weeks_general": 25.75,
+     "J": 0.2886330056516999
+    },
+    "oracle3": {
+     "risk_hard": 0.22276877854149912,
+     "risk_general": 0.13445620324054353,
+     "success_hard": 0.82,
+     "success_general": 0.9,
+     "weeks": 33.833333333333336,
+     "weeks_hard": 38.82,
+     "weeks_general": 27.6,
+     "J": 0.2899968801617709
+    },
+    "r00": {
+     "risk_hard": 0.21761657009731533,
+     "risk_general": 0.1294456267841962,
+     "success_hard": 0.84,
+     "success_general": 0.875,
+     "weeks": 24.58888888888889,
+     "weeks_hard": 26.02,
+     "weeks_general": 22.8,
+     "J": 0.28233938348941345
+    },
+    "r01": {
+     "risk_hard": 0.22698540398603348,
+     "risk_general": 0.13259677956537078,
+     "success_hard": 0.82,
+     "success_general": 0.85,
+     "weeks": 15.377777777777778,
+     "weeks_hard": 15.82,
+     "weeks_general": 14.825,
+     "J": 0.2932837937687189
+    },
+    "r02": {
+     "risk_hard": 0.2249970629546861,
+     "risk_general": 0.13131553515164587,
+     "success_hard": 0.84,
+     "success_general": 0.9,
+     "weeks": 16.81111111111111,
+     "weeks_hard": 16.94,
+     "weeks_general": 16.65,
+     "J": 0.29065483053050906
+    },
+    "r03": {
+     "risk_hard": 0.22384481867563913,
+     "risk_general": 0.13132802406945215,
+     "success_hard": 0.88,
+     "success_general": 0.875,
+     "weeks": 17.622222222222224,
+     "weeks_hard": 17.94,
+     "weeks_general": 17.225,
+     "J": 0.2895088307103652
+    },
+    "r04": {
+     "risk_hard": 0.22447257660811984,
+     "risk_general": 0.13329123775079793,
+     "success_hard": 0.72,
+     "success_general": 0.9,
+     "weeks": 25.5,
+     "weeks_hard": 24.7,
+     "weeks_general": 26.5,
+     "J": 0.2911181954835188
+    },
+    "r05": {
+     "risk_hard": 0.21823809336894825,
+     "risk_general": 0.12879149976098758,
+     "success_hard": 0.78,
+     "success_general": 0.875,
+     "weeks": 24.466666666666665,
+     "weeks_hard": 24.82,
+     "weeks_general": 24.025,
+     "J": 0.2826338432494421
+    },
+    "r06": {
+     "risk_hard": 0.22450805297772733,
+     "risk_general": 0.13264541618443373,
+     "success_hard": 0.84,
+     "success_general": 0.9,
+     "weeks": 18.58888888888889,
+     "weeks_hard": 19.96,
+     "weeks_general": 16.875,
+     "J": 0.2908307610699442
+    },
+    "r07": {
+     "risk_hard": 0.22024998240586688,
+     "risk_general": 0.13173175530919512,
+     "success_hard": 0.82,
+     "success_general": 0.9,
+     "weeks": 20.155555555555555,
+     "weeks_hard": 21.66,
+     "weeks_general": 18.275,
+     "J": 0.2861158600604644
+    },
+    "r08": {
+     "risk_hard": 0.22956342944471927,
+     "risk_general": 0.13018688032578396,
+     "success_hard": 0.86,
+     "success_general": 0.9,
+     "weeks": 15.3,
+     "weeks_hard": 15.32,
+     "weeks_general": 15.275,
+     "J": 0.2946568696076113
+    },
+    "r09": {
+     "risk_hard": 0.21586081604886234,
+     "risk_general": 0.12912312940277648,
+     "success_hard": 0.86,
+     "success_general": 0.85,
+     "weeks": 23.866666666666667,
+     "weeks_hard": 24.22,
+     "weeks_general": 23.425,
+     "J": 0.2804223807502506
+    },
+    "r10": {
+     "risk_hard": 0.22578408306521008,
+     "risk_general": 0.12926501607559435,
+     "success_hard": 0.84,
+     "success_general": 0.875,
+     "weeks": 22.27777777777778,
+     "weeks_hard": 22.64,
+     "weeks_general": 21.825,
+     "J": 0.29041659110300727
+    },
+    "r11": {
+     "risk_hard": 0.21782444413643146,
+     "risk_general": 0.13064473675782234,
+     "success_hard": 0.78,
+     "success_general": 0.925,
+     "weeks": 21.011111111111113,
+     "weeks_hard": 21.74,
+     "weeks_general": 20.1,
+     "J": 0.2831468125153426
+    },
+    "r12": {
+     "risk_hard": 0.22786984135626345,
+     "risk_general": 0.13143624031478413,
+     "success_hard": 0.86,
+     "success_general": 0.9,
+     "weeks": 16.0,
+     "weeks_hard": 17.3,
+     "weeks_general": 14.375,
+     "J": 0.2935879615136555
+    },
+    "r13": {
+     "risk_hard": 0.22529477804912904,
+     "risk_general": 0.13118080161158474,
+     "success_hard": 0.84,
+     "success_general": 0.85,
+     "weeks": 15.733333333333333,
+     "weeks_hard": 15.58,
+     "weeks_general": 15.925,
+     "J": 0.2908851788549214
+    },
+    "r14": {
+     "risk_hard": 0.22078698003461908,
+     "risk_general": 0.13081673295716398,
+     "success_hard": 0.74,
+     "success_general": 0.875,
+     "weeks": 27.42222222222222,
+     "weeks_hard": 26.56,
+     "weeks_general": 28.5,
+     "J": 0.28619534651320105
+    },
+    "r15": {
+     "risk_hard": 0.21724375745190208,
+     "risk_general": 0.12923687437633288,
+     "success_hard": 0.76,
+     "success_general": 0.875,
+     "weeks": 24.522222222222222,
+     "weeks_hard": 25.14,
+     "weeks_general": 23.75,
+     "J": 0.2818621946400685
+    },
+    "r16": {
+     "risk_hard": 0.21984331860503617,
+     "risk_general": 0.12865555455488295,
+     "success_hard": 0.86,
+     "success_general": 0.875,
+     "weeks": 21.944444444444443,
+     "weeks_hard": 23.02,
+     "weeks_general": 20.6,
+     "J": 0.28417109588247763
+    },
+    "r17": {
+     "risk_hard": 0.22105992636658148,
+     "risk_general": 0.13280712171949102,
+     "success_hard": 0.86,
+     "success_general": 0.875,
+     "weeks": 15.444444444444445,
+     "weeks_hard": 15.78,
+     "weeks_general": 15.025,
+     "J": 0.287463487226327
+    },
+    "r18": {
+     "risk_hard": 0.22399871826880943,
+     "risk_general": 0.13095189238158866,
+     "success_hard": 0.82,
+     "success_general": 0.9,
+     "weeks": 18.7,
+     "weeks_hard": 19.02,
+     "weeks_general": 18.3,
+     "J": 0.2894746644596038
+    },
+    "r19": {
+     "risk_hard": 0.21883457982912996,
+     "risk_general": 0.13187961083067187,
+     "success_hard": 0.82,
+     "success_general": 0.875,
+     "weeks": 16.788888888888888,
+     "weeks_hard": 17.44,
+     "weeks_general": 15.975,
+     "J": 0.2847743852444659
+    },
+    "r20": {
+     "risk_hard": 0.2220609778052347,
+     "risk_general": 0.13122478246632235,
+     "success_hard": 0.78,
+     "success_general": 0.85,
+     "weeks": 19.011111111111113,
+     "weeks_hard": 19.98,
+     "weeks_general": 17.8,
+     "J": 0.2876733690383959
+    },
+    "r21": {
+     "risk_hard": 0.2205288206652029,
+     "risk_general": 0.12869577628593223,
+     "success_hard": 0.78,
+     "success_general": 0.85,
+     "weeks": 25.255555555555556,
+     "weeks_hard": 26.46,
+     "weeks_general": 23.75,
+     "J": 0.284876708808169
+    },
+    "r22": {
+     "risk_hard": 0.2241648531436255,
+     "risk_general": 0.13302600879888668,
+     "success_hard": 0.86,
+     "success_general": 0.9,
+     "weeks": 15.666666666666666,
+     "weeks_hard": 16.7,
+     "weeks_general": 14.375,
+     "J": 0.29067785754306885
+    },
+    "r23": {
+     "risk_hard": 0.2281988942054915,
+     "risk_general": 0.1318384143102505,
+     "success_hard": 0.82,
+     "success_general": 0.9,
+     "weeks": 16.033333333333335,
+     "weeks_hard": 16.62,
+     "weeks_general": 15.3,
+     "J": 0.2941181013606168
+    },
+    "r24": {
+     "risk_hard": 0.2225492572991419,
+     "risk_general": 0.13209564715129954,
+     "success_hard": 0.86,
+     "success_general": 0.9,
+     "weeks": 17.033333333333335,
+     "weeks_hard": 18.38,
+     "weeks_general": 15.35,
+     "J": 0.2885970808747917
+    },
+    "r25": {
+     "risk_hard": 0.2136139542076884,
+     "risk_general": 0.13036432943330506,
+     "success_hard": 0.84,
+     "success_general": 0.825,
+     "weeks": 19.044444444444444,
+     "weeks_hard": 19.38,
+     "weeks_general": 18.625,
+     "J": 0.2787961189243409
+    },
+    "r26": {
+     "risk_hard": 0.22353705497611165,
+     "risk_general": 0.13112423103734722,
+     "success_hard": 0.82,
+     "success_general": 0.85,
+     "weeks": 19.9,
+     "weeks_hard": 21.04,
+     "weeks_general": 18.475,
+     "J": 0.2890991704947853
+    },
+    "r27": {
+     "risk_hard": 0.21701897197036213,
+     "risk_general": 0.13099684359721955,
+     "success_hard": 0.84,
+     "success_general": 0.8,
+     "weeks": 26.044444444444444,
+     "weeks_hard": 25.94,
+     "weeks_general": 26.175,
+     "J": 0.2825173937689719
+    },
+    "r28": {
+     "risk_hard": 0.22538478595861958,
+     "risk_general": 0.13092678506720132,
+     "success_hard": 0.86,
+     "success_general": 0.85,
+     "weeks": 21.666666666666668,
+     "weeks_hard": 23.26,
+     "weeks_general": 19.675,
+     "J": 0.2908481784922202
+    },
+    "r29": {
+     "risk_hard": 0.22135413630776835,
+     "risk_general": 0.12862762146118176,
+     "success_hard": 0.86,
+     "success_general": 0.85,
+     "weeks": 22.944444444444443,
+     "weeks_hard": 23.58,
+     "weeks_general": 22.15,
+     "J": 0.28566794703835924
+    },
+    "r30": {
+     "risk_hard": 0.21515688820642992,
+     "risk_general": 0.12882501821295061,
+     "success_hard": 0.84,
+     "success_general": 0.875,
+     "weeks": 23.1,
+     "weeks_hard": 23.22,
+     "weeks_general": 22.95,
+     "J": 0.2795693973129052
+    },
+    "r31": {
+     "risk_hard": 0.23041577073571815,
+     "risk_general": 0.13110045627538222,
+     "success_hard": 0.86,
+     "success_general": 0.9,
+     "weeks": 15.833333333333334,
+     "weeks_hard": 16.58,
+     "weeks_general": 14.9,
+     "J": 0.29596599887340924
+    },
+    "r32": {
+     "risk_hard": 0.22350833982623833,
+     "risk_general": 0.13010843893497606,
+     "success_hard": 0.74,
+     "success_general": 0.825,
+     "weeks": 20.011111111111113,
+     "weeks_hard": 21.28,
+     "weeks_general": 18.425,
+     "J": 0.2885625592937264
+    },
+    "r33": {
+     "risk_hard": 0.2271498384075786,
+     "risk_general": 0.13251011838549576,
+     "success_hard": 0.82,
+     "success_general": 0.925,
+     "weeks": 16.38888888888889,
+     "weeks_hard": 17.06,
+     "weeks_general": 15.55,
+     "J": 0.2934048976003265
+    },
+    "r34": {
+     "risk_hard": 0.22134218748019688,
+     "risk_general": 0.13245629451165947,
+     "success_hard": 0.86,
+     "success_general": 0.875,
+     "weeks": 15.866666666666667,
+     "weeks_hard": 16.46,
+     "weeks_general": 15.125,
+     "J": 0.2875703347360266
+    },
+    "r35": {
+     "risk_hard": 0.22132328886509126,
+     "risk_general": 0.13093394217056112,
+     "success_hard": 0.82,
+     "success_general": 0.875,
+     "weeks": 21.6,
+     "weeks_hard": 23.14,
+     "weeks_general": 19.675,
+     "J": 0.28679025995037183
+    },
+    "r36": {
+     "risk_hard": 0.21917612967113745,
+     "risk_general": 0.12843590561898255,
+     "success_hard": 0.82,
+     "success_general": 0.825,
+     "weeks": 23.72222222222222,
+     "weeks_hard": 24.5,
+     "weeks_general": 22.75,
+     "J": 0.2833940824806287
+    },
+    "r37": {
+     "risk_hard": 0.22019991721610524,
+     "risk_general": 0.13236988046510426,
+     "success_hard": 0.82,
+     "success_general": 0.825,
+     "weeks": 18.177777777777777,
+     "weeks_hard": 19.58,
+     "weeks_general": 16.425,
+     "J": 0.2863848574486574
+    },
+    "r38": {
+     "risk_hard": 0.22292489999335394,
+     "risk_general": 0.13021785941576436,
+     "success_hard": 0.76,
+     "success_general": 0.9,
+     "weeks": 18.844444444444445,
+     "weeks_hard": 19.1,
+     "weeks_general": 18.525,
+     "J": 0.28803382970123614
+    },
+    "r39": {
+     "risk_hard": 0.2270021665182841,
+     "risk_general": 0.13256024968243532,
+     "success_hard": 0.86,
+     "success_general": 0.85,
+     "weeks": 16.711111111111112,
+     "weeks_hard": 17.8,
+     "weeks_general": 15.35,
+     "J": 0.29328229135950173
+    }
+   }
+  }
+ }
+}

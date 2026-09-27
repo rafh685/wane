@@ -354,7 +354,7 @@ class OnTheSpot:
         for k in sorted(gs)[:-1]:                                   # the last baseline day's gap may not have ended
             self.gap_hist["we" if k % 7 in WEEKEND else "wd"].append(gs[k])
         self.gap_seen = max(gs) - 1 if gs else -1
-        self.pos, self.relief_bout = 0, True
+        self.pos, self.relief_bout, self.bout_gap = 0, True, 99.0
 
     def _learn_gap(self, k):
         """At the start of day k, add the gap start of day k - 2 (its longest gap has surely ended by now)."""
@@ -402,17 +402,25 @@ class OnTheSpot:
         last = s.times[-1] if s.times else None
         if last is None or t - last > 5 / 60:
             self.pos, self.relief_bout = 0, last is None or t - last >= sh.get("relief_gap_h", 3.0)
+            self.bout_gap = 99.0 if last is None else t - last
         else:
             self.pos += 1
         m = self.RELIEF_LO + (self.RELIEF_HI - self.RELIEF_LO) * s.relief(t) if sh["pk"] else 1.0
         if self.relief_bout and sh["relief_boost"] != 1.0:
-            m *= sh["relief_boost"] if self.pos < self.RELIEF_N else 1.0
+            boost = sh["relief_boost"]
+            if sh.get("morning_x") and self.bout_gap >= 6.0:          # interview: vapes soon after waking
+                boost *= 1 + sh["morning_x"]
+            m *= boost if self.pos < self.RELIEF_N else 1.0
         elif sh["front"]:
             k, a = self.front_k, sh["front"]
             m *= 1 + a * (1 - self.pos / k) if self.pos < k else 1 - 0.4 * a
         g = self.gap_today
-        if sh["pregap_cut"] != 1.0 and g is not None and (t - DAY_START_H) % 24 >= g - sh.get("pregap_h", self.PREGAP_H):
-            m *= sh["pregap_cut"]
+        rel = (t - DAY_START_H) % 24
+        if sh["pregap_cut"] != 1.0 and g is not None and rel >= g - sh.get("pregap_h", self.PREGAP_H):
+            night_waking = sh.get("night_relief") and rel >= g + 1.0      # interview: wakes at night to vape
+            if not night_waking:
+                social = s.day is not None and (s.day % 7) in sh.get("social_dows", ())
+                m *= sh.get("pregap_social", sh["pregap_cut"]) if social else sh["pregap_cut"]
         return m
 
     def dose(self, t):
