@@ -4,7 +4,7 @@ import numpy as np
 
 from population import population
 from puff_nn import Flat
-from puffsim import SlowSchedule, simulate
+from puffsim import ManualTaper, SlowSchedule, simulate
 from relapse import RelapseParams, daily_logits, evaluate, replay
 
 
@@ -46,6 +46,31 @@ class RelapseModelV2(unittest.TestCase):
     def test_evaluate_returns_probabilities(self):
         ev = evaluate(self.res, self.p, n_mc=200)
         self.assertTrue(0 <= ev["expected_risk"] <= 1)
+
+
+class TraditionalTaper(unittest.TestCase):
+    def levels(self, sched, puffs):
+        return [sched.level(d, puffs(d)) for d in range(252)]
+
+    def test_only_shop_strengths_and_zero_by_week_24(self):
+        for seed in range(20):
+            lv = self.levels(ManualTaper(seed=seed), lambda d: 100)
+            self.assertTrue(set(lv) <= set(ManualTaper.LADDER))
+            self.assertEqual(lv[168:], [0.0] * 84)
+            steps = [d for d in range(1, 168) if lv[d] < lv[d - 1]]           # the week-24 deadline may come sooner
+            self.assertTrue(all(b - a >= 28 for a, b in zip(steps, steps[1:])))
+
+    def test_goes_back_to_the_stronger_bottle_when_puffing_jumps(self):
+        backs = 0
+        for seed in range(40):
+            s = ManualTaper(seed=seed)
+            lv = []
+            for d in range(252):
+                prev = lv[-1] if lv else 1.0
+                lv.append(s.level(d, 100 if prev == 1.0 else 150))      # 50 % more puffs on every weaker bottle
+            backs += s.step_backs
+            self.assertLessEqual(s.step_backs, 4)
+        self.assertTrue(10 < backs < 150)
 
 
 if __name__ == "__main__":

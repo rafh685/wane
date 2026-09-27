@@ -409,6 +409,56 @@ class SlowSchedule:
         return self.u
 
 
+class ManualTaper(SlowSchedule):
+    """Traditional taper done by hand: what a vaper does today without Wane (realistic control, 27 Sept 2026).
+
+    Bottles as sold in shops: 18 -> 12 -> 6 -> 3 -> 0 mg/ml, i.e. 1, 2/3, 1/3, 1/6 and 0 of the starting strength.
+    The person buys the next weaker bottle every 4 to 7 weeks (drawn per step), so zero comes in week 22 on
+    average, about when Wane's weekly plan gets there (week 23). Every puff has the bottle's strength.
+    Imperfect adherence (assumption): when the first week on a new bottle brings back_rise more puffs than the
+    last week before the step, a share back_p of people go back to the stronger bottle for back_weeks, then try
+    the same step again; each step is undone at most once. The plan ends by end_day at the latest (Wane's window),
+    so a late last step happens then. Fixed before running; no parameter was tuned on results.
+    """
+    LADDER = (1.0, 2 / 3, 1 / 3, 1 / 6, 0.0)
+
+    def __init__(self, seed=0, weeks=(4, 7), back_rise=0.15, back_p=0.5, back_weeks=2, end_day=168):
+        super().__init__()
+        self.rng = np.random.default_rng(seed)
+        self.weeks, self.back_rise, self.back_p, self.back_weeks, self.end_day = weeks, back_rise, back_p, back_weeks, end_day
+        self.i = 0
+        self.next_step = 7 * int(self.rng.integers(weeks[0], weeks[1] + 1))
+        self.check_day = None           # end of the first week on a new bottle
+        self.undone = set()
+        self.step_backs = 0
+        self.weekly = {}
+
+    def level(self, taper_day, last_day_puffs):
+        self.cur += last_day_puffs
+        if taper_day == 0:
+            self.cur = 0
+            return self.LADDER[0]
+        if taper_day % 7 == 0:
+            self.weekly[taper_day] = self.cur
+            self.cur = 0
+            if taper_day == self.check_day:
+                self.check_day = None
+                before, after = self.weekly.get(taper_day - 7), self.weekly[taper_day]
+                if (before and after > (1 + self.back_rise) * before and self.i not in self.undone
+                        and self.rng.random() < self.back_p):
+                    self.undone.add(self.i)
+                    self.i -= 1
+                    self.step_backs += 1
+                    self.next_step = taper_day + 7 * self.back_weeks
+            if taper_day >= self.next_step and self.i < len(self.LADDER) - 1:
+                self.i += 1
+                self.check_day = taper_day + 7
+                self.next_step = taper_day + 7 * int(self.rng.integers(self.weeks[0], self.weeks[1] + 1))
+        if taper_day >= self.end_day:
+            self.i = len(self.LADDER) - 1
+        return self.LADDER[self.i]
+
+
 def test_population(n=60, seed=12):
     """Population B (the one no model was fitted on) plus the five named people."""
     return list(PROFILES) + population(n, seed)

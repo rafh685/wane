@@ -222,7 +222,11 @@ class AdaptiveHead:
 # ---------------------------------------------------------------- controllers (same interface as puffsim expects)
 
 class Flat:
-    """Traditional taper: every puff at today's level, no daily cap. What a weaker bottle does."""
+    """Idealised control: Wane's smooth weekly plan with every puff at today's level, no daily cap.
+
+    Called "weaker bottle" in results before 27 Sept 2026 (late) and "Wane's weekly plan only" since. It is NOT the
+    traditional taper people do by hand (shop strengths, uneven timing, stepping back): that is puffsim.ManualTaper.
+    """
     name = "flat (weaker bottle)"
 
     def begin(self, baseline):

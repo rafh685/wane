@@ -1,0 +1,22 @@
+                             group       relapse in taper  after 0 still off
+Stop all at once             general       0.868    0.000    0.868     0.132
+Traditional taper by hand    general       0.777    0.383    0.393     0.223
+Wane's weekly plan only      general       0.733    0.427    0.306     0.267
+Wane                         general       0.716    0.423    0.293     0.284
+Stop all at once             difficult     0.999    0.000    0.999     0.001
+Traditional taper by hand    difficult     0.995    0.888    0.107     0.005
+Wane's weekly plan only      difficult     0.991    0.918    0.073     0.009
+Wane                         difficult     0.988    0.916    0.072     0.012
+traditional taper: {'zero_week_mean': 22.56, 'zero_week_range': [18.0, 24.0], 'step_backs_per_person': 0.62, 'share_with_a_step_back': 0.5}
+  v4           - traditional  general    -0.0605 [-0.0781, -0.0445] better 39 worse 0 of 65
+  v4           - traditional  difficult  -0.0066 [-0.0140, -0.0007] better 5 worse 0 of 52
+  flat 12%     - traditional  general    -0.0439 [-0.0569, -0.0316] better 37 worse 0 of 65
+  flat 12%     - traditional  difficult  -0.0035 [-0.0076, -0.0003] better 4 worse 0 of 52
+  v4           - flat 12%     general    -0.0166 [-0.0214, -0.0123] better 35 worse 0 of 65
+  v4           - flat 12%     difficult  -0.0032 [-0.0069, -0.0003] better 5 worse 0 of 52
+  traditional  - abrupt quit  general    -0.0911 [-0.1195, -0.0643] better 40 worse 0 of 65
+  traditional  - abrupt quit  difficult  -0.0048 [-0.0125, -0.0003] better 4 worse 0 of 52
+  v4           - abrupt quit  general    -0.1516 [-0.1962, -0.1085] better 41 worse 0 of 65
+  v4           - abrupt quit  difficult  -0.0114 [-0.0261, -0.0010] better 5 worse 0 of 52
+  Lucía: Stop all at once 1.000  Traditional taper by hand 0.990  Wane's weekly plan only 0.989  Wane 0.984
+  Karim: Stop all at once 0.984  Traditional taper by hand 0.863  Wane's weekly plan only 0.804  Wane 0.773

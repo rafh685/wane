@@ -1,0 +1,107 @@
+{
+ "label": "SIMULATION ONLY",
+ "variants": {
+  "main assumptions": {
+   "zero_week_mean": 22.558404558404558,
+   "general": {
+    "traditional_still_off": 0.22343589743589742,
+    "wane_still_off": 0.2839794871794873,
+    "wane_minus_traditional": -0.06054358974358975,
+    "lo": -0.07814384615384616,
+    "hi": -0.04448153846153845
+   },
+   "difficult": {
+    "traditional_still_off": 0.005384615384615543,
+    "wane_still_off": 0.01200000000000001,
+    "wane_minus_traditional": -0.006615384615384615,
+    "lo": -0.013975961538461553,
+    "hi": -0.0006666666666666636
+   }
+  },
+  "never steps back": {
+   "zero_week_mean": 21.792022792022795,
+   "general": {
+    "traditional_still_off": 0.22020512820512816,
+    "wane_still_off": 0.2839794871794873,
+    "wane_minus_traditional": -0.06377435897435897,
+    "lo": -0.08125153846153846,
+    "hi": -0.04679923076923076
+   },
+   "difficult": {
+    "traditional_still_off": 0.005192307692307607,
+    "wane_still_off": 0.01200000000000001,
+    "wane_minus_traditional": -0.006807692307692303,
+    "lo": -0.014513461538461534,
+    "hi": -0.0006916666666666585
+   }
+  },
+  "always steps back when puffing jumps": {
+   "zero_week_mean": 23.056980056980056,
+   "general": {
+    "traditional_still_off": 0.22435897435897445,
+    "wane_still_off": 0.2839794871794873,
+    "wane_minus_traditional": -0.05962051282051282,
+    "lo": -0.07768256410256412,
+    "hi": -0.0437025641025641
+   },
+   "difficult": {
+    "traditional_still_off": 0.0056538461538462315,
+    "wane_still_off": 0.01200000000000001,
+    "wane_minus_traditional": -0.006346153846153841,
+    "lo": -0.013807692307692302,
+    "hi": -0.0005641025641025596
+   }
+  },
+  "quicker steps, every 3 to 5 weeks": {
+   "zero_week_mean": 17.444444444444446,
+   "general": {
+    "traditional_still_off": 0.1976923076923076,
+    "wane_still_off": 0.2839794871794873,
+    "wane_minus_traditional": -0.08628717948717948,
+    "lo": -0.1100953846153846,
+    "hi": -0.06364076923076924
+   },
+   "difficult": {
+    "traditional_still_off": 0.002871794871794786,
+    "wane_still_off": 0.01200000000000001,
+    "wane_minus_traditional": -0.009128205128205124,
+    "lo": -0.019449038461538455,
+    "hi": -0.001089743589743583
+   }
+  },
+  "slower steps, every 5 to 8 weeks": {
+   "zero_week_mean": 23.88603988603989,
+   "general": {
+    "traditional_still_off": 0.22603076923076926,
+    "wane_still_off": 0.2839794871794873,
+    "wane_minus_traditional": -0.057948717948717955,
+    "lo": -0.07506820512820515,
+    "hi": -0.04118897435897434
+   },
+   "difficult": {
+    "traditional_still_off": 0.005717948717948729,
+    "wane_still_off": 0.01200000000000001,
+    "wane_minus_traditional": -0.006282051282051273,
+    "lo": -0.013372115384615383,
+    "hi": -0.0006282051282051166
+   }
+  },
+  "salt bottles 20 -> 10 -> 5 -> 0, every 5 to 8 weeks": {
+   "zero_week_mean": 20.42735042735043,
+   "general": {
+    "traditional_still_off": 0.20237948717948728,
+    "wane_still_off": 0.2839794871794873,
+    "wane_minus_traditional": -0.0816,
+    "lo": -0.1046053846153846,
+    "hi": -0.06004076923076922
+   },
+   "difficult": {
+    "traditional_still_off": 0.004705128205128362,
+    "wane_still_off": 0.01200000000000001,
+    "wane_minus_traditional": -0.007294871794871788,
+    "lo": -0.015372115384615382,
+    "hi": -0.0009483974358974201
+   }
+  }
+ }
+}

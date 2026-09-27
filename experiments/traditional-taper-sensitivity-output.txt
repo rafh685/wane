@@ -1,0 +1,6 @@
+main assumptions                                     zero wk  22.6  general: still off 0.223 vs Wane 0.284, relapse diff -0.0605 [-0.0781, -0.0445]   difficult diff -0.0066
+never steps back                                     zero wk  21.8  general: still off 0.220 vs Wane 0.284, relapse diff -0.0638 [-0.0813, -0.0468]   difficult diff -0.0068
+always steps back when puffing jumps                 zero wk  23.1  general: still off 0.224 vs Wane 0.284, relapse diff -0.0596 [-0.0777, -0.0437]   difficult diff -0.0063
+quicker steps, every 3 to 5 weeks                    zero wk  17.4  general: still off 0.198 vs Wane 0.284, relapse diff -0.0863 [-0.1101, -0.0636]   difficult diff -0.0091
+slower steps, every 5 to 8 weeks                     zero wk  23.9  general: still off 0.226 vs Wane 0.284, relapse diff -0.0579 [-0.0751, -0.0412]   difficult diff -0.0063
+salt bottles 20 -> 10 -> 5 -> 0, every 5 to 8 weeks  zero wk  20.4  general: still off 0.202 vs Wane 0.284, relapse diff -0.0816 [-0.1046, -0.0600]   difficult diff -0.0073
