@@ -1,0 +1,57 @@
+{
+ "label": "SIMULATION ONLY",
+ "end_plan": {
+  "weekly_cut": 0.2,
+  "bottom_steps": 14
+ },
+ "table": {
+  "general": {
+   "relapse_during_taper": 0.4399589743589744,
+   "stuck": 0.0,
+   "relapse_after_zero": 0.2633333333333333,
+   "free": 0.29670769230769234,
+   "relapse": 0.7032923076923077
+  },
+  "difficult": {
+   "relapse_during_taper": 0.9204358974358975,
+   "stuck": 0.0,
+   "relapse_after_zero": 0.06593589743589744,
+   "free": 0.01362820512820513,
+   "relapse": 0.9863717948717947
+  }
+ },
+ "pairs": {
+  "v4 end plan - v4 | general": {
+   "diff": 0.01272820512820512,
+   "lo": 0.009291282051282039,
+   "hi": 0.01653333333333333,
+   "better": 33,
+   "worse": 0,
+   "n": 65
+  },
+  "v4 end plan - v4 | difficult": {
+   "diff": 0.00162820512820513,
+   "lo": 0.00035865384615384687,
+   "hi": 0.0032439102564102615,
+   "better": 5,
+   "worse": 0,
+   "n": 52
+  },
+  "v4 end plan - traditional | general": {
+   "diff": 0.21501538461538464,
+   "lo": 0.1517430769230769,
+   "hi": 0.28305102564102563,
+   "better": 41,
+   "worse": 0,
+   "n": 65
+  },
+  "v4 end plan - traditional | difficult": {
+   "diff": 0.009051282051282052,
+   "lo": 0.0005766025641025632,
+   "hi": 0.02016698717948718,
+   "better": 6,
+   "worse": 1,
+   "n": 52
+  }
+ }
+}

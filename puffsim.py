@@ -377,11 +377,13 @@ class SlowSchedule:
     12 %/week relative cuts every Monday; below LOW, fixed absolute steps to zero (like engine.apply_cut).
     adaptive=True: hold the level for a week when last week's puffing rose more than 10 % over the week before
     (device-observable compensation brake, same rule for every controller).
+    bottom_steps: below LOW, reach zero in this many equal weekly steps instead (END_PLAN, 27 Sept 2026, night:
+    front-loaded plan chosen in experiments/end_of_taper.py). Default None keeps every earlier result identical.
     """
     LOW = 0.15
 
-    def __init__(self, weekly_cut=0.12, adaptive=False):
-        self.cut, self.adaptive = weekly_cut, adaptive
+    def __init__(self, weekly_cut=0.12, adaptive=False, bottom_steps=None):
+        self.cut, self.adaptive, self.bottom_steps = weekly_cut, adaptive, bottom_steps
         self.u = 1.0
         self.week_puffs = []
         self.cur = 0
@@ -404,9 +406,12 @@ class SlowSchedule:
                 if self.u > self.LOW:
                     self.u = max(self.LOW, self.u * (1 - self.cut))
                 else:
-                    step = self.LOW * self.cut
+                    step = self.LOW / self.bottom_steps if self.bottom_steps else self.LOW * self.cut
                     self.u = 0.0 if self.u - step < step / 2 else self.u - step
         return self.u
+
+
+END_PLAN = dict(weekly_cut=0.20, bottom_steps=14)   # 20 % a week to 15 % of the start (week 9), then 14 small steps: zero in week 23
 
 
 class ManualTaper(SlowSchedule):
@@ -419,17 +424,33 @@ class ManualTaper(SlowSchedule):
     last week before the step, a share back_p of people go back to the stronger bottle for back_weeks, then try
     the same step again; each step is undone at most once. The plan ends by end_day at the latest (Wane's window),
     so a late last step happens then. Fixed before running; no parameter was tuned on results.
+
+    Stuck on the ladder (27 Sept 2026, night; Rafael: people get stuck on a bottle and never finish). Two routes,
+    both assumptions (no trial measures stalling in self-tapers; ITC 4CV 2016-18: 85 % of vapers kept the same
+    strength over two years, and 35 % of 0 mg vapers went back up to nicotine):
+      stall        chance of never buying the next bottle, per step (to 12, 6, 3, 0 mg/ml): the person stays
+                   on the current strength for good. The last step, to no nicotine at all, is the likeliest to stall
+      give_up      failing the same step twice (puffing jumps again on the retry): with chance back_p the person
+                   goes back to the stronger bottle and stops tapering
+    With stuck people allowed there is no deadline (end_day=None): a slow ladder simply finishes late. Stall draws
+    come from their own stream, so step timing is identical with and without them.
+    stall=None, give_up=False, end_day=168 reproduces the first version (27 Sept, evening).
     """
     LADDER = (1.0, 2 / 3, 1 / 3, 1 / 6, 0.0)
 
-    def __init__(self, seed=0, weeks=(4, 7), back_rise=0.15, back_p=0.5, back_weeks=2, end_day=168):
+    def __init__(self, seed=0, weeks=(4, 7), back_rise=0.15, back_p=0.5, back_weeks=2, end_day=None,
+                 stall=(0.10, 0.10, 0.10, 0.25), give_up=True):
         super().__init__()
         self.rng = np.random.default_rng(seed)
+        self.stall_rng = np.random.default_rng(seed + 7)
         self.weeks, self.back_rise, self.back_p, self.back_weeks, self.end_day = weeks, back_rise, back_p, back_weeks, end_day
+        self.stall, self.give_up = stall, give_up
         self.i = 0
         self.next_step = 7 * int(self.rng.integers(weeks[0], weeks[1] + 1))
         self.check_day = None           # end of the first week on a new bottle
         self.undone = set()
+        self.tried = set()
+        self.stuck = False
         self.step_backs = 0
         self.weekly = {}
 
@@ -444,17 +465,26 @@ class ManualTaper(SlowSchedule):
             if taper_day == self.check_day:
                 self.check_day = None
                 before, after = self.weekly.get(taper_day - 7), self.weekly[taper_day]
-                if (before and after > (1 + self.back_rise) * before and self.i not in self.undone
-                        and self.rng.random() < self.back_p):
+                jumped = bool(before) and after > (1 + self.back_rise) * before
+                if jumped and self.i not in self.undone and self.rng.random() < self.back_p:
                     self.undone.add(self.i)
                     self.i -= 1
                     self.step_backs += 1
                     self.next_step = taper_day + 7 * self.back_weeks
-            if taper_day >= self.next_step and self.i < len(self.LADDER) - 1:
-                self.i += 1
-                self.check_day = taper_day + 7
-                self.next_step = taper_day + 7 * int(self.rng.integers(self.weeks[0], self.weeks[1] + 1))
-        if taper_day >= self.end_day:
+                elif jumped and self.i in self.undone and self.give_up and self.stall_rng.random() < self.back_p:
+                    self.i -= 1                  # second failure of the same step: back up, and stop tapering
+                    self.step_backs += 1
+                    self.stuck = True
+            if taper_day >= self.next_step and self.i < len(self.LADDER) - 1 and not self.stuck:
+                first_try = self.i + 1 not in self.tried
+                self.tried.add(self.i + 1)
+                if first_try and self.stall and self.stall_rng.random() < self.stall[self.i]:
+                    self.stuck = True            # never buys the next bottle
+                else:
+                    self.i += 1
+                    self.check_day = taper_day + 7
+                    self.next_step = taper_day + 7 * int(self.rng.integers(self.weeks[0], self.weeks[1] + 1))
+        if self.end_day is not None and taper_day >= self.end_day:
             self.i = len(self.LADDER) - 1
         return self.LADDER[self.i]
 

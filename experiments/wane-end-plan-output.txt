@@ -1,0 +1,6 @@
+Wane with end plan  general    relapse_during_taper  44.0  stuck   0.0  relapse_after_zero  26.3  free  29.7  relapse  70.3
+Wane with end plan  difficult  relapse_during_taper  92.0  stuck   0.0  relapse_after_zero   6.6  free   1.4  relapse  98.6
+  nicotine-free, end plan - v4           general    +1.27 [+0.93, +1.65] better 33 worse 0 of 65
+  nicotine-free, end plan - v4           difficult  +0.16 [+0.04, +0.32] better 5 worse 0 of 52
+  nicotine-free, end plan - traditional  general    +21.50 [+15.17, +28.31] better 41 worse 0 of 65
+  nicotine-free, end plan - traditional  difficult  +0.91 [+0.06, +2.02] better 6 worse 1 of 52

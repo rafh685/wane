@@ -1,5 +1,6 @@
 {
  "label": "SIMULATION ONLY",
+ "outcome": "nicotine-free at 9 months = not relapsed and on 0 mg/ml on the last day",
  "names": {
   "abrupt quit": "Stop all at once",
   "traditional": "Traditional taper by hand",
@@ -8,164 +9,154 @@
  },
  "table": {
   "abrupt quit | general": {
-   "relapse": 0.8676615384615384,
    "relapse_during_taper": 0.0,
-   "reach_zero": 1.0,
+   "stuck": 0.0,
    "relapse_after_zero": 0.8676615384615384,
-   "still_off": 0.13233846153846163,
-   "survival_90": 0.1716102564102564,
-   "survival_180": 0.14154871794871796
+   "free": 0.13233846153846152,
+   "relapse": 0.8676615384615384,
+   "reach_zero": 0.9999999999999999
   },
   "traditional | general": {
-   "relapse": 0.7765641025641026,
-   "relapse_during_taper": 0.38321025641025647,
-   "reach_zero": 0.6167897435897436,
-   "relapse_after_zero": 0.3933538461538461,
-   "still_off": 0.22343589743589742,
-   "survival_90": 0.7292820512820514,
-   "survival_180": 0.3903692307692308
+   "relapse_during_taper": 0.384676923076923,
+   "stuck": 0.3538461538461539,
+   "relapse_after_zero": 0.17978461538461538,
+   "free": 0.08169230769230769,
+   "relapse": 0.5644615384615383,
+   "reach_zero": 0.26147692307692305
   },
   "flat 12% | general": {
-   "relapse": 0.7326358974358974,
    "relapse_during_taper": 0.42704615384615385,
-   "reach_zero": 0.5729538461538461,
+   "stuck": 0.0,
    "relapse_after_zero": 0.3055897435897436,
-   "still_off": 0.2673641025641026,
-   "survival_90": 0.6825333333333333,
-   "survival_180": 0.44324102564102563
+   "free": 0.2673641025641026,
+   "relapse": 0.7326358974358974,
+   "reach_zero": 0.5729538461538461
   },
   "v4 | general": {
-   "relapse": 0.7160205128205127,
    "relapse_during_taper": 0.42288205128205125,
-   "reach_zero": 0.5771179487179487,
+   "stuck": 0.0,
    "relapse_after_zero": 0.2931384615384615,
-   "still_off": 0.2839794871794873,
-   "survival_90": 0.6642974358974358,
-   "survival_180": 0.4598666666666667
+   "free": 0.2839794871794872,
+   "relapse": 0.7160205128205127,
+   "reach_zero": 0.5771179487179487
   },
   "abrupt quit | difficult": {
-   "relapse": 0.9993846153846153,
    "relapse_during_taper": 0.0,
-   "reach_zero": 1.0,
+   "stuck": 0.0,
    "relapse_after_zero": 0.9993846153846153,
-   "still_off": 0.0006153846153846843,
-   "survival_90": 0.0037179487179487183,
-   "survival_180": 0.0013589743589743587
+   "free": 0.000615384615384616,
+   "relapse": 0.9993846153846153,
+   "reach_zero": 0.9999999999999999
   },
   "traditional | difficult": {
-   "relapse": 0.9946153846153845,
-   "relapse_during_taper": 0.8880512820512821,
-   "reach_zero": 0.11194871794871786,
-   "relapse_after_zero": 0.10656410256410258,
-   "still_off": 0.005384615384615543,
-   "survival_90": 0.2695128205128205,
-   "survival_180": 0.03638461538461538
+   "relapse_during_taper": 0.9061025641025643,
+   "stuck": 0.04402564102564103,
+   "relapse_after_zero": 0.04529487179487179,
+   "free": 0.004576923076923078,
+   "relapse": 0.9513974358974361,
+   "reach_zero": 0.04987179487179486
   },
   "flat 12% | difficult": {
-   "relapse": 0.9911538461538462,
    "relapse_during_taper": 0.9182307692307693,
-   "reach_zero": 0.0817692307692307,
-   "relapse_after_zero": 0.07292307692307692,
-   "still_off": 0.008846153846153837,
-   "survival_90": 0.20475641025641028,
-   "survival_180": 0.03874358974358975
+   "stuck": 0.0,
+   "relapse_after_zero": 0.07292307692307691,
+   "free": 0.008846153846153847,
+   "relapse": 0.9911538461538462,
+   "reach_zero": 0.08176923076923076
   },
   "v4 | difficult": {
-   "relapse": 0.988,
    "relapse_during_taper": 0.915576923076923,
-   "reach_zero": 0.08442307692307705,
+   "stuck": 0.0,
    "relapse_after_zero": 0.07242307692307694,
-   "still_off": 0.01200000000000001,
-   "survival_90": 0.18234615384615382,
-   "survival_180": 0.043923076923076926
+   "free": 0.012,
+   "relapse": 0.988,
+   "reach_zero": 0.08442307692307693
   }
  },
  "traditional": {
-  "zero_week_mean": 22.558404558404558,
-  "zero_week_range": [
-   18.0,
-   24.0
-  ],
-  "step_backs_per_person": 0.6153846153846154,
-  "share_with_a_step_back": 0.5014245014245015
+  "zero_week_mean_of_those_reaching_zero": 23.125827814569536,
+  "share_ending_on_a_bottle": 0.5698005698005698,
+  "share_stuck_flag": 0.5698005698005698,
+  "step_backs_per_person": 0.5042735042735043,
+  "share_with_a_step_back": 0.358974358974359
  },
  "pairs": {
   "v4 - traditional | general": {
-   "diff": -0.06054358974358975,
-   "lo": -0.07814384615384616,
-   "hi": -0.04448153846153845,
-   "better": 39,
+   "diff": 0.2022871794871795,
+   "lo": 0.14120871794871792,
+   "hi": 0.26881128205128213,
+   "better": 41,
    "worse": 0,
    "n": 65
   },
   "v4 - traditional | difficult": {
-   "diff": -0.006615384615384615,
-   "lo": -0.013975961538461553,
-   "hi": -0.0006666666666666636,
+   "diff": 0.007423076923076921,
+   "lo": 0.0001919871794871798,
+   "hi": 0.01676955128205128,
    "better": 5,
-   "worse": 0,
+   "worse": 1,
    "n": 52
   },
   "flat 12% - traditional | general": {
-   "diff": -0.043928205128205125,
-   "lo": -0.05693384615384614,
-   "hi": -0.03158923076923078,
-   "better": 37,
+   "diff": 0.18567179487179486,
+   "lo": 0.1267551282051282,
+   "hi": 0.2514989743589744,
+   "better": 38,
    "worse": 0,
    "n": 65
   },
   "flat 12% - traditional | difficult": {
-   "diff": -0.003461538461538471,
-   "lo": -0.007589743589743606,
-   "hi": -0.00026923076923077366,
-   "better": 4,
-   "worse": 0,
+   "diff": 0.004269230769230768,
+   "lo": -0.000153846153846154,
+   "hi": 0.010051923076923076,
+   "better": 3,
+   "worse": 1,
    "n": 52
   },
   "v4 - flat 12% | general": {
-   "diff": -0.016615384615384608,
-   "lo": -0.021364358974358965,
-   "hi": -0.012317948717948723,
+   "diff": 0.016615384615384622,
+   "lo": 0.012317948717948718,
+   "hi": 0.02136435897435898,
    "better": 35,
    "worse": 0,
    "n": 65
   },
   "v4 - flat 12% | difficult": {
-   "diff": -0.003153846153846144,
-   "lo": -0.0068977564102564,
-   "hi": -0.0003333333333333265,
+   "diff": 0.0031538461538461533,
+   "lo": 0.000333333333333333,
+   "hi": 0.0068977564102564075,
    "better": 5,
    "worse": 0,
    "n": 52
   },
   "traditional - abrupt quit | general": {
-   "diff": -0.0910974358974359,
-   "lo": -0.11947769230769228,
-   "hi": -0.06425461538461537,
-   "better": 40,
-   "worse": 0,
+   "diff": -0.050646153846153855,
+   "lo": -0.10186923076923077,
+   "hi": -0.0055876923076923005,
+   "better": 19,
+   "worse": 14,
    "n": 65
   },
   "traditional - abrupt quit | difficult": {
-   "diff": -0.004769230769230765,
-   "lo": -0.012539102564102561,
-   "hi": -0.00025641025641025164,
-   "better": 4,
+   "diff": 0.0039615384615384625,
+   "lo": 0.0002564102564102567,
+   "hi": 0.010461538461538463,
+   "better": 5,
    "worse": 0,
    "n": 52
   },
   "v4 - abrupt quit | general": {
-   "diff": -0.15164102564102563,
-   "lo": -0.19622871794871793,
-   "hi": -0.10851897435897434,
+   "diff": 0.15164102564102566,
+   "lo": 0.10851897435897437,
+   "hi": 0.19622871794871796,
    "better": 41,
    "worse": 0,
    "n": 65
   },
   "v4 - abrupt quit | difficult": {
-   "diff": -0.01138461538461538,
-   "lo": -0.02606474358974359,
-   "hi": -0.0010124999999999876,
+   "diff": 0.011384615384615384,
+   "lo": 0.0010125000000000004,
+   "hi": 0.02606474358974359,
    "better": 5,
    "worse": 0,
    "n": 52

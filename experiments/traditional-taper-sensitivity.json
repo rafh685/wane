@@ -2,105 +2,264 @@
  "label": "SIMULATION ONLY",
  "variants": {
   "main assumptions": {
-   "zero_week_mean": 22.558404558404558,
+   "share_ending_on_a_bottle": 0.5698005698005698,
    "general": {
-    "traditional_still_off": 0.22343589743589742,
-    "wane_still_off": 0.2839794871794873,
-    "wane_minus_traditional": -0.06054358974358975,
-    "lo": -0.07814384615384616,
-    "hi": -0.04448153846153845
+    "traditional_free": 0.08169230769230769,
+    "wane_free": 0.2839794871794872,
+    "traditional_stuck": 0.3538461538461539,
+    "wane_minus_traditional": {
+     "diff": 0.2022871794871795,
+     "lo": 0.14120871794871792,
+     "hi": 0.26881128205128213,
+     "better": 41,
+     "worse": 0,
+     "n": 65
+    }
    },
    "difficult": {
-    "traditional_still_off": 0.005384615384615543,
-    "wane_still_off": 0.01200000000000001,
-    "wane_minus_traditional": -0.006615384615384615,
-    "lo": -0.013975961538461553,
-    "hi": -0.0006666666666666636
+    "traditional_free": 0.004576923076923078,
+    "wane_free": 0.012,
+    "traditional_stuck": 0.04402564102564103,
+    "wane_minus_traditional": {
+     "diff": 0.007423076923076921,
+     "lo": 0.0001919871794871798,
+     "hi": 0.01676955128205128,
+     "better": 5,
+     "worse": 1,
+     "n": 52
+    }
+   }
+  },
+  "first version: nobody stuck, zero by week 24": {
+   "share_ending_on_a_bottle": 0.0,
+   "general": {
+    "traditional_free": 0.22343589743589742,
+    "wane_free": 0.2839794871794872,
+    "traditional_stuck": 0.0,
+    "wane_minus_traditional": {
+     "diff": 0.06054358974358975,
+     "lo": 0.04435846153846154,
+     "hi": 0.07716,
+     "better": 39,
+     "worse": 0,
+     "n": 65
+    }
+   },
+   "difficult": {
+    "traditional_free": 0.005384615384615386,
+    "wane_free": 0.012,
+    "traditional_stuck": 0.0,
+    "wane_minus_traditional": {
+     "diff": 0.006615384615384614,
+     "lo": 0.0006791666666666667,
+     "hi": 0.014205448717948717,
+     "better": 5,
+     "worse": 0,
+     "n": 52
+    }
+   }
+  },
+  "nobody stuck, no deadline": {
+   "share_ending_on_a_bottle": 0.0,
+   "general": {
+    "traditional_free": 0.23356923076923078,
+    "wane_free": 0.2839794871794872,
+    "traditional_stuck": 0.0,
+    "wane_minus_traditional": {
+     "diff": 0.050410256410256406,
+     "lo": 0.03623589743589743,
+     "hi": 0.0666771794871795,
+     "better": 38,
+     "worse": 2,
+     "n": 65
+    }
+   },
+   "difficult": {
+    "traditional_free": 0.006935897435897438,
+    "wane_free": 0.012,
+    "traditional_stuck": 0.0,
+    "wane_minus_traditional": {
+     "diff": 0.0050641025641025616,
+     "lo": 3.846153846153777e-05,
+     "hi": 0.01175641025641025,
+     "better": 5,
+     "worse": 1,
+     "n": 52
+    }
+   }
+  },
+  "half as many stalls": {
+   "share_ending_on_a_bottle": 0.396011396011396,
+   "general": {
+    "traditional_free": 0.13268717948717948,
+    "wane_free": 0.2839794871794872,
+    "traditional_stuck": 0.2349025641025641,
+    "wane_minus_traditional": {
+     "diff": 0.1512923076923077,
+     "lo": 0.10476615384615386,
+     "hi": 0.2032420512820513,
+     "better": 41,
+     "worse": 0,
+     "n": 65
+    }
+   },
+   "difficult": {
+    "traditional_free": 0.005256410256410257,
+    "wane_free": 0.012,
+    "traditional_stuck": 0.03052564102564103,
+    "wane_minus_traditional": {
+     "diff": 0.006743589743589741,
+     "lo": 0.000166346153846152,
+     "hi": 0.014910897435897432,
+     "better": 5,
+     "worse": 1,
+     "n": 52
+    }
+   }
+  },
+  "twice as many stalls": {
+   "share_ending_on_a_bottle": 0.7606837606837606,
+   "general": {
+    "traditional_free": 0.02967179487179487,
+    "wane_free": 0.2839794871794872,
+    "traditional_stuck": 0.4789025641025641,
+    "wane_minus_traditional": {
+     "diff": 0.25430769230769235,
+     "lo": 0.1781515384615385,
+     "hi": 0.33850538461538465,
+     "better": 41,
+     "worse": 0,
+     "n": 65
+    }
+   },
+   "difficult": {
+    "traditional_free": 0.00021794871794871817,
+    "wane_free": 0.012,
+    "traditional_stuck": 0.07694871794871795,
+    "wane_minus_traditional": {
+     "diff": 0.011782051282051283,
+     "lo": 0.0007692307692307691,
+     "hi": 0.02807788461538462,
+     "better": 5,
+     "worse": 0,
+     "n": 52
+    }
    }
   },
   "never steps back": {
-   "zero_week_mean": 21.792022792022795,
+   "share_ending_on_a_bottle": 0.5042735042735043,
    "general": {
-    "traditional_still_off": 0.22020512820512816,
-    "wane_still_off": 0.2839794871794873,
-    "wane_minus_traditional": -0.06377435897435897,
-    "lo": -0.08125153846153846,
-    "hi": -0.04679923076923076
+    "traditional_free": 0.10182564102564103,
+    "wane_free": 0.2839794871794872,
+    "traditional_stuck": 0.3263794871794871,
+    "wane_minus_traditional": {
+     "diff": 0.18215384615384614,
+     "lo": 0.12524,
+     "hi": 0.24536435897435896,
+     "better": 40,
+     "worse": 0,
+     "n": 65
+    }
    },
    "difficult": {
-    "traditional_still_off": 0.005192307692307607,
-    "wane_still_off": 0.01200000000000001,
-    "wane_minus_traditional": -0.006807692307692303,
-    "lo": -0.014513461538461534,
-    "hi": -0.0006916666666666585
-   }
-  },
-  "always steps back when puffing jumps": {
-   "zero_week_mean": 23.056980056980056,
-   "general": {
-    "traditional_still_off": 0.22435897435897445,
-    "wane_still_off": 0.2839794871794873,
-    "wane_minus_traditional": -0.05962051282051282,
-    "lo": -0.07768256410256412,
-    "hi": -0.0437025641025641
-   },
-   "difficult": {
-    "traditional_still_off": 0.0056538461538462315,
-    "wane_still_off": 0.01200000000000001,
-    "wane_minus_traditional": -0.006346153846153841,
-    "lo": -0.013807692307692302,
-    "hi": -0.0005641025641025596
+    "traditional_free": 0.004282051282051284,
+    "wane_free": 0.012,
+    "traditional_stuck": 0.03869230769230769,
+    "wane_minus_traditional": {
+     "diff": 0.007717948717948716,
+     "lo": 0.0007173076923076918,
+     "hi": 0.01662916666666667,
+     "better": 5,
+     "worse": 0,
+     "n": 52
+    }
    }
   },
   "quicker steps, every 3 to 5 weeks": {
-   "zero_week_mean": 17.444444444444446,
+   "share_ending_on_a_bottle": 0.5441595441595442,
    "general": {
-    "traditional_still_off": 0.1976923076923076,
-    "wane_still_off": 0.2839794871794873,
-    "wane_minus_traditional": -0.08628717948717948,
-    "lo": -0.1100953846153846,
-    "hi": -0.06364076923076924
+    "traditional_free": 0.07853333333333333,
+    "wane_free": 0.2839794871794872,
+    "traditional_stuck": 0.3351179487179487,
+    "wane_minus_traditional": {
+     "diff": 0.20544615384615383,
+     "lo": 0.1442692307692308,
+     "hi": 0.27427769230769233,
+     "better": 41,
+     "worse": 0,
+     "n": 65
+    }
    },
    "difficult": {
-    "traditional_still_off": 0.002871794871794786,
-    "wane_still_off": 0.01200000000000001,
-    "wane_minus_traditional": -0.009128205128205124,
-    "lo": -0.019449038461538455,
-    "hi": -0.001089743589743583
+    "traditional_free": 0.00241025641025641,
+    "wane_free": 0.012,
+    "traditional_stuck": 0.042153846153846146,
+    "wane_minus_traditional": {
+     "diff": 0.009589743589743589,
+     "lo": 0.0009743589743589745,
+     "hi": 0.02033461538461539,
+     "better": 5,
+     "worse": 0,
+     "n": 52
+    }
    }
   },
   "slower steps, every 5 to 8 weeks": {
-   "zero_week_mean": 23.88603988603989,
+   "share_ending_on_a_bottle": 0.5698005698005698,
    "general": {
-    "traditional_still_off": 0.22603076923076926,
-    "wane_still_off": 0.2839794871794873,
-    "wane_minus_traditional": -0.057948717948717955,
-    "lo": -0.07506820512820515,
-    "hi": -0.04118897435897434
+    "traditional_free": 0.11555897435897436,
+    "wane_free": 0.2839794871794872,
+    "traditional_stuck": 0.3471897435897435,
+    "wane_minus_traditional": {
+     "diff": 0.16842051282051285,
+     "lo": 0.10809512820512822,
+     "hi": 0.23467692307692306,
+     "better": 33,
+     "worse": 7,
+     "n": 65
+    }
    },
    "difficult": {
-    "traditional_still_off": 0.005717948717948729,
-    "wane_still_off": 0.01200000000000001,
-    "wane_minus_traditional": -0.006282051282051273,
-    "lo": -0.013372115384615383,
-    "hi": -0.0006282051282051166
+    "traditional_free": 0.008051282051282051,
+    "wane_free": 0.012,
+    "traditional_stuck": 0.04371794871794872,
+    "wane_minus_traditional": {
+     "diff": 0.003948717948717948,
+     "lo": -0.0018977564102564104,
+     "hi": 0.01112916666666667,
+     "better": 3,
+     "worse": 1,
+     "n": 52
+    }
    }
   },
   "salt bottles 20 -> 10 -> 5 -> 0, every 5 to 8 weeks": {
-   "zero_week_mean": 20.42735042735043,
+   "share_ending_on_a_bottle": 0.49572649572649574,
    "general": {
-    "traditional_still_off": 0.20237948717948728,
-    "wane_still_off": 0.2839794871794873,
-    "wane_minus_traditional": -0.0816,
-    "lo": -0.1046053846153846,
-    "hi": -0.06004076923076922
+    "traditional_free": 0.09851282051282052,
+    "wane_free": 0.2839794871794872,
+    "traditional_stuck": 0.28772307692307697,
+    "wane_minus_traditional": {
+     "diff": 0.18546666666666667,
+     "lo": 0.1307279487179487,
+     "hi": 0.24275641025641032,
+     "better": 41,
+     "worse": 0,
+     "n": 65
+    }
    },
    "difficult": {
-    "traditional_still_off": 0.004705128205128362,
-    "wane_still_off": 0.01200000000000001,
-    "wane_minus_traditional": -0.007294871794871788,
-    "lo": -0.015372115384615382,
-    "hi": -0.0009483974358974201
+    "traditional_free": 0.0022435897435897443,
+    "wane_free": 0.012,
+    "traditional_stuck": 0.04074358974358975,
+    "wane_minus_traditional": {
+     "diff": 0.009756410256410256,
+     "lo": 0.0009227564102564096,
+     "hi": 0.021346153846153845,
+     "better": 5,
+     "worse": 0,
+     "n": 52
+    }
    }
   }
  }
